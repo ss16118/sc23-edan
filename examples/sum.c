@@ -6,11 +6,11 @@
  */
 
 #include <stdio.h>
-#define N 5
+#define N 4
 int main(int argc, char **argv)
 {
   // Array initialization
-  int arr[N] = {1, 2, 3, 4, 5};
+  int arr[N] = {1, 2, 3, 4};
   int sum = 0;
   // Performs summation
   for (int i = 0; i < N; ++i)
