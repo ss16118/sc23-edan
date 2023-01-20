@@ -1,6 +1,6 @@
 import os
 import argparse
-from riscv_parser import RiscvParser
+from edag_generator import EDagGenerator, ISA
 
 
 if __name__ == "__main__":
@@ -30,9 +30,9 @@ if __name__ == "__main__":
         graph_file = filename + "_eDAG"
     else:
         graph_file = args.graph_file
-
-    parser = RiscvParser(args.trace_file_path, args.only_mem_acc,
-                         args.remove_single_vertices)
-    eDag = parser.parse()
+    # Initializes eDAG generator
+    generator = EDagGenerator(args.trace_file_path, ISA.RISC_V, args.only_mem_acc,
+                           args.remove_single_vertices)
+    eDag = generator.generate()
     graph = eDag.visualize(args.highlight_mem_acc)
     graph.render(graph_file, view=True)
