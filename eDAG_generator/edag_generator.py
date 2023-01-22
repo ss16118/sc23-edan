@@ -73,26 +73,22 @@ class EDagGenerator:
             new_vertex = \
                 self.parser.generate_vertex(vertex_id, instruction, operands)
 
+            eDag.add_vertex(new_vertex)
+
             # Creates dependency edges
-            if (not self.only_mem_acc) or \
-                (self.only_mem_acc and new_vertex.is_mem_acc):
-
-                if self.only_mem_acc and new_vertex.is_mem_acc:
-                    pass
-
-                for dep in new_vertex.dependencies:
-                    source = curr_vertex.get(dep)
-                    if source is not None:
-                        eDag.add_edge(source, new_vertex)
-                
-                if new_vertex.target is not None:
-                    curr_vertex[new_vertex.target] = new_vertex
-
-                eDag.add_vertex(new_vertex)
-
+            for dep in new_vertex.dependencies:
+                source = curr_vertex.get(dep)
+                if source is not None:
+                    eDag.add_edge(source, new_vertex)
+            
+            if new_vertex.target is not None:
+                curr_vertex[new_vertex.target] = new_vertex
             vertex_id += 1
         trace.close()
 
         if self.remove_single_vertices:
             eDag.remove_single_vertices()
+
+        if self.only_mem_acc:
+            eDag.filter_vertices(lambda v: v.is_mem_acc)
         return eDag

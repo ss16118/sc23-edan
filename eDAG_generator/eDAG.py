@@ -1,4 +1,4 @@
-from typing import List, Dict, Optional, Set, Tuple
+from typing import List, Dict, Optional, Set, Tuple, Callable   
 from graphviz import Digraph
 
 
@@ -10,7 +10,7 @@ class Vertex:
     """
     def __init__(self, id: int, instruction: str, operands: List[str],
                 target: Optional[str], dependencies: Set[str],
-                is_mem_acc: bool) -> None:
+                is_mem_acc: bool = False) -> None:
         """
         @param id: a unique number given to each vertex by the parser.
         @param instruction: assembly instruction, e.g. add, sub, mv.
@@ -35,6 +35,9 @@ class Vertex:
 
     def __str__(self) -> str:
         return f"{self.id}: {self.instruction} {','.join(self.operands)}"
+    
+    def __repr__(self) -> str:
+        return f"{self.id}: {self.instruction} {','.join(self.operands)}"
 
     def __hash__(self) -> int:
         return hash((self.id, self.instruction, self.operands))
@@ -43,24 +46,33 @@ class Vertex:
 class EDag:
     """
     An object that represents an execution Directed Acyclic Graph (eDAG)
-    as an adjacency list of different vertices
+    as an modified adjacency list of different vertices
     """
+    _in = 0
+    _out = 1
+
     def __init__(self) -> None:
         self.vertices: Set[Vertex] = set()
-        # An adjacency list that maps each vertex of a set
-        # of vertices it points to
-        self.adj_list: Dict[Vertex, Set[Vertex]] = {}
+        # A dictionary that maps the ID of the vertex to the
+        # corresponding object. This is only present for
+        # easier access to specific vertex
+        self.id_to_vertex: Dict[int, Vertex] = {}
+        # An adjacency list that maps each vertex to two sets
+        # of vertices. The first set will be the vertices
+        # on which it depends, while the second set will be
+        # the vertices it points to, i.e. vertices that depend on it
+        self.adj_list: Dict[Vertex, List[Set[Vertex]]] = {}
 
     def add_vertex(self, vertex: Vertex) -> None:
         """
         Adds a single vertex to this execution DAG.
         """
-        # Makes sure that we do not add the same vertex more than once
-        assert(vertex not in self.vertices)
-        self.vertices.add(vertex)
+        if vertex not in self.vertices:
+            self.vertices.add(vertex)
+            self.id_to_vertex[vertex.id] = vertex
 
-        if self.adj_list.get(vertex) is None:
-            self.adj_list[vertex] = set()
+        if vertex not in self.adj_list:
+            self.adj_list[vertex] = [set(), set()]
 
     def add_edge(self, source: Vertex, target: Vertex) -> None:
         """
@@ -69,7 +81,9 @@ class EDag:
         depends on the source, as in the source precedes the target.
         """
         assert(source in self.vertices)
-        self.adj_list[source].add(target)
+        assert(target in self.vertices)
+        self.adj_list[source][EDag._out].add(target)
+        self.adj_list[target][EDag._in].add(source)
 
     def edges(self) -> List[Tuple[str, str]]:
         """
@@ -79,8 +93,8 @@ class EDag:
         vertex 1 to vertex 2.
         """
         edges = []
-        for source, targets in self.adj_list.items():
-            for target in targets:
+        for source, (_, out_vertices) in self.adj_list.items():
+            for target in out_vertices:
                 edges.append((f"{source.id}", f"{target.id}"))
         return edges
 
@@ -89,23 +103,71 @@ class EDag:
         """
         Removes all the vertices that have no dependencies from the eDAG.
         "No dependencies" means that a vertex does not have any edges
-        connected to it.
+        connected to it, i.e. both in and out degrees of the vertex are 0.
         """
-        non_single_vertices = set()
-        # Iterates through the adjacency list to collect all
-        # vertices that have at least one edge connected to them
-        for source, targets in self.adj_list.items():
-            if len(targets) > 0:
-                non_single_vertices.add(source)
-                non_single_vertices = non_single_vertices.union(targets)
-        single_vertices = self.vertices.difference(non_single_vertices)
+        in_out_degrees = self.get_in_out_degrees()
+        for vertex_id, (in_degree, out_degree) in in_out_degrees.items():
+            if in_degree == 0 and out_degree == 0:
+                # Retrieves the vertex to be removed from the dictionary
+                vertex = self.id_to_vertex.get(vertex_id)
+                assert(vertex is not None)
+                del self.id_to_vertex[vertex_id]
+                # Removes the vertex from the set of vertices in eDAG
+                self.vertices.remove(vertex)
+
+                # Removes the vertex from the adjacency list
+                del self.adj_list[vertex]
         
-        new_adj_list: Dict[Vertex, Set[Vertex]] = {}
-        for source, targets in self.adj_list.items():
-            if source not in single_vertices:
-                new_adj_list[source] = targets.difference(single_vertices)
-        self.vertices = non_single_vertices
-        self.adj_list = new_adj_list
+
+    def get_in_out_degrees(self) -> Dict[int, List[int]]:
+        """
+        Returns the in and out degrees of all the vertices in the eDAG.
+        The output is in the format of a dictionary that maps the
+        the ID of a vertex to a list containing two integers [`in`, `out`], 
+        where `in` and `out` denote the in and out degrees respectively.
+        """
+        res: Dict[int, List[int]] = {}
+        for vertex, (in_vertices, out_vertices) in self.adj_list.items():
+            res[vertex.id] = [len(in_vertices), len(out_vertices)]
+        return res
+
+
+    def filter_vertices(self, cond: Callable[[Vertex], bool]) -> None:
+        """
+        Given a certain condition, iteratively removes all nodes from the eDAG 
+        which do not satisfy the condition, i.e. when called, the function
+        returns False. After a vertex is removed, the dependencies of its
+        predecessors and successors are maintained. For instance, if A -> B,
+        B -> C, and B is removed, then the edge A -> C will be added.
+        """
+        filtered_vertices = set()
+        for vertex in self.vertices:
+            # If condition is not satisfied
+            if not cond(vertex):
+                # Removes vertex v from the dictionary
+                del self.id_to_vertex[vertex.id]
+                # Retrieves the set of vertices on which v
+                # depend and the set that depend on v
+                assert(vertex in self.adj_list)
+                in_vertices, out_vertices = self.adj_list[vertex]
+                for in_vertex in in_vertices:
+                    # Removes v from the out set of in_vertices
+                    self.adj_list[in_vertex][EDag._out].remove(vertex)
+                for out_vertex in out_vertices:
+                    # Removes v from the in set of out_vertices
+                    self.adj_list[out_vertex][EDag._in].remove(vertex)
+                for in_vertex in in_vertices:
+                    for out_vertex in out_vertices:
+                        # Adds an edge between each pair of 
+                        # in_vertex and out_vertex
+                        self.add_edge(in_vertex, out_vertex)
+                # Removes vertex v from the adjacency list entirely
+                del self.adj_list[vertex]
+            else:
+                filtered_vertices.add(vertex)
+
+        self.vertices = filtered_vertices
+
 
     def visualize(self, highlight_mem_acc: bool = True) -> Digraph:
         """
