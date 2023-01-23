@@ -3,7 +3,8 @@ import argparse
 from typing import Optional
 
 
-def cleanup_trace_file(trace_file_path: str, new_filename: Optional[str] = None) -> None:
+def cleanup_trace_file(trace_file_path: str, start_delimiter: str = "<main>:",
+                       new_filename: Optional[str] = None) -> None:
     """
     Iterates through every line in the given trace file and
     removes redundant lines. If the name of the post-cleanup trace file
@@ -23,8 +24,8 @@ def cleanup_trace_file(trace_file_path: str, new_filename: Optional[str] = None)
     for line in trace_file:
         # Inserts assembly instructions into the new cleaned-up
         # trace file only when 'start' is set to true, that
-        # is when '<main>' is detected
-        if "<main>:" in line:
+        # is when the `start_delimiter` is detected
+        if start_delimiter in line:
             start = True
         elif "<__GI_exit>:" in line:
             # When the program exits from main, the relevant code stops
@@ -44,6 +45,9 @@ if __name__ == "__main__":
     parser.add_argument("-f", "--trace-file",
                         dest="trace_file_path",
                         help="File path to the instruction trace file")
+    parser.add_argument("-s", "--start-delimiter",
+                        dest="start_delimiter", default="<main>:",
+                        help="A string whose appearance marks the start of the actual trace")
     parser.add_argument("-c", "--new-filename",
                         dest="new_filename",
                         help="The new filename of the trace file post clean up")
@@ -52,4 +56,4 @@ if __name__ == "__main__":
     if args.trace_file_path is None:
         print("[ERROR] Path to the trace file must be provided")
         exit(-1)
-    cleanup_trace_file(args.trace_file_path, args.new_filename)
+    cleanup_trace_file(args.trace_file_path, args.start_delimiter, args.new_filename)
