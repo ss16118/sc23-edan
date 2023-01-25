@@ -5,6 +5,7 @@ src=$1
 target=$2
 
 # Preparation
+source ./setup.sh
 sudo pkill --signal 9 qemu-riscv64
 rm trace.out
 
