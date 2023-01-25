@@ -10,7 +10,7 @@ class Vertex:
     """
     def __init__(self, id: int, instruction: str, operands: List[str],
                 target: Optional[str], dependencies: Set[str],
-                is_mem_acc: bool = False) -> None:
+                is_mem_acc: bool = False, is_mem_load: bool = False) -> None:
         """
         @param id: a unique number given to each vertex by the parser.
         @param instruction: assembly instruction, e.g. add, sub, mv.
@@ -23,6 +23,8 @@ class Vertex:
         this vertex depends. As an example, the command `sd a1,-64(s0)` depends
         on the registers a1 and s0, whereas the command `ld a5,-40(s0)` depends
         on the memory location denoted by `-40(s0)`.
+        @param is_mem_load: a boolean value indicating whether the instruction
+        represented by this vertex is loading from memory.
         @param is_mem_acc: a boolean value that indicates whether
         this specific instruction contains memory access.
         """
@@ -32,6 +34,13 @@ class Vertex:
         self.target = target
         self.dependencies = dependencies
         self.is_mem_acc = is_mem_acc
+        self.is_mem_load = is_mem_load
+        # given that this vertex represents a memory access
+        # instruction, this argument indicates whether the data stored in the
+        # memory address is already in cache according to a predefined
+        # cache model. This variable should be set at a later stage
+        # if a cache model is used.
+        self.cache_hit = False
 
     def __str__(self) -> str:
         return f"{self.id}: {self.instruction} {','.join(self.operands)}"
@@ -84,6 +93,19 @@ class EDag:
         assert(target in self.vertices)
         self.adj_list[source][EDag._out].add(target)
         self.adj_list[target][EDag._in].add(source)
+
+    def get_starting_vertices(self) -> Set[Vertex]:
+        """
+        Retrieves a set of starting vertices, i.e. vertices whose
+        in degree is 0.
+        """
+        res = set()
+
+        in_out_degrees = self.get_in_out_degrees()
+        for vertex_id, (in_degree, _) in in_out_degrees.items():
+            if in_degree == 0:
+                res.add(self.id_to_vertex[vertex_id])
+        return res
 
     def edges(self) -> List[Tuple[str, str]]:
         """
@@ -168,6 +190,48 @@ class EDag:
 
         self.vertices = filtered_vertices
 
+    def get_depth(self) -> int:
+        """
+        Calculates the depth, i.e. in this case diameter of the eDAG by 
+        exploring the graph from each starting vertex to each end vertex
+        and keeping track of the longest distance.
+        """
+        def find_depth(curr: Vertex, depth: int) -> int:
+            """
+            A helper function that performs depth-first-search recursively
+            to find the depth of the eDAG starting from a certain vertex.
+            """
+            out_vertices = self.adj_list[curr][EDag._out]
+            if len(out_vertices) == 0:
+                # Base case: checks if the current vertex is the end vertex
+                # i.e. out degree is 0
+                return depth
+
+            max_depth = 0
+            for out_vertex in out_vertices:
+                max_depth = max(max_depth, find_depth(out_vertex, depth + 1))
+            return max_depth
+        
+        depth = 0
+        for vertex in self.get_starting_vertices():
+            depth = max(depth, find_depth(vertex, 0))
+
+        return depth
+    
+    def get_work(self, cond: Optional[Callable[[Vertex], bool]] = None) -> int:
+        """
+        Counts the number of vertices which satisfy the given condition. If
+        a condition is not provided, the output will simply be the total number
+        of vertices in the eDAG.
+        """
+        if cond is None:
+            return len(self.vertices)
+
+        work_count = 0
+        for vertex in self.vertices:
+            if cond(vertex):
+                work_count += 1
+        return work_count
 
     def visualize(self, highlight_mem_acc: bool = True) -> Digraph:
         """
@@ -179,8 +243,14 @@ class EDag:
         graph = Digraph()
         for vertex in self.vertices:
             if highlight_mem_acc and vertex.is_mem_acc:
+                if vertex.is_mem_load and vertex.cache_hit:
+                    # The vertex color should be green if cache hit
+                    color = "green"
+                else:
+                    color = "red"
+                
                 graph.node(f"{vertex.id}", str(vertex),
-                            style="filled", color="red")
+                            style="filled", color=color)
             else:
                 graph.node(f"{vertex.id}", str(vertex))
         graph.edges(self.edges())

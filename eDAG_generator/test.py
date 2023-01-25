@@ -28,6 +28,7 @@ if __name__ == "__main__":
     eDag.add_edge(v2, v4)
     eDag.add_edge(v3, v4)
     print(eDag.get_in_out_degrees())
+    print(eDag.get_depth())
     # eDag.remove_single_vertices()
     # eDag.filter_vertices(lambda v: v.is_mem_acc)
 

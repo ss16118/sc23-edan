@@ -1,6 +1,7 @@
 import os
 import argparse
 from edag_generator import EDagGenerator, ISA
+from cache_model import SingleLevelSetAssociativeCache
 
 
 if __name__ == "__main__":
@@ -30,9 +31,12 @@ if __name__ == "__main__":
         graph_file = filename + "_eDAG"
     else:
         graph_file = args.graph_file
+    
+    cache = SingleLevelSetAssociativeCache()
     # Initializes eDAG generator
     generator = EDagGenerator(args.trace_file_path, ISA.RISC_V, args.only_mem_acc,
-                           args.remove_single_vertices)
+                           args.remove_single_vertices, cache_model=cache)
     eDag = generator.generate()
+    print(eDag.get_depth())
     graph = eDag.visualize(args.highlight_mem_acc)
     graph.render(graph_file, view=True)

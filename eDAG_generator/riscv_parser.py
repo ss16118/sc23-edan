@@ -20,8 +20,9 @@ class RiscvParser(InstructionParser):
         { "xori", "ori", "andi", "slli", "srli", "srai", "sll", "xor", "srl", 
         "sra", "or", "and" }
     uncond_jump_instructions = { "j", "jal", "jalr" }
-    cond_jump_instructions = \
-        { "beq", "bne", "bge", "blt", "bltu", "bgeu", "bgez" }
+    cond_jump_2ops_instructions = { "bgez", "blez" }
+    cond_jump_3ops_instructions = \
+        { "beq", "bne", "bge", "blt", "bltu", "bgeu"}
     ret_instructions = { "ret", "uret", "sret", "mret" }
 
     reg_offset_pattern = re.compile(r"-?\d+\((\w+\d?)\)")
@@ -53,6 +54,7 @@ class RiscvParser(InstructionParser):
         # needs to be improved
         target = None
         is_mem_acc = False
+        is_mem_load = False
         dependencies = set()
 
         # Iterates through all types of instructions and checks to which
@@ -68,6 +70,7 @@ class RiscvParser(InstructionParser):
                 dependencies.add(self._get_offset_reg(operands[1]))
                 dependencies.add(operands[1])
                 is_mem_acc = True
+                is_mem_load = True
 
         elif instruction in RiscvParser.store_instructions:
             assert(len(operands) == 2)
@@ -128,13 +131,16 @@ class RiscvParser(InstructionParser):
                 dependencies.add(operands[1])
             else:
                 assert(len(operands) == 1)
+        elif instruction in RiscvParser.cond_jump_2ops_instructions:
+            # Conditional jump instructions with 2 operands
+            assert(len(operands) == 2)
+            dependencies.add(operands[0])
 
-        elif instruction in RiscvParser.cond_jump_instructions:
-            # Conditional jump instructions
+        elif instruction in RiscvParser.cond_jump_3ops_instructions:
+            # Conditional jump instructions with 3 operands
             assert(len(operands) == 3)
             dependencies.add(operands[0])
             dependencies.add(operands[1])
-
         else:
             # An unknown instruction has been encountered
             raise ValueError(f"[ERROR] Unknown instruction {instruction}")
@@ -145,7 +151,7 @@ class RiscvParser(InstructionParser):
 
         new_vertex = Vertex(id, instruction, operands,
                             target=target, dependencies=dependencies,
-                            is_mem_acc=is_mem_acc)
+                            is_mem_acc=is_mem_acc, is_mem_load=is_mem_load)
 
         return new_vertex
         

@@ -4,7 +4,7 @@ from enum import Enum, auto
 from eDAG import EDag, Vertex
 from instruction_parser import InstructionParser
 from riscv_parser import RiscvParser
-
+from cache_model import CacheModel
 
 class ISA(Enum):
     RISC_V = auto()
@@ -25,7 +25,8 @@ class EDagGenerator:
 
     # =========== Constructor ===========
     def __init__(self, trace_file: str, isa: ISA, only_mem_acc: bool,
-                remove_single_vertices: bool = True) -> None:
+                remove_single_vertices: bool = True,
+                cache_model: Optional[CacheModel] = None)-> None:
         """
         @param trace_file: path to the trace file as input for the constructor.
         @isa: the ISA of the assembly instructions contained in the trace file.
@@ -43,6 +44,7 @@ class EDagGenerator:
             raise ValueError(f"[ERROR] ISA {isa.name} is not yet supported")
         else:
             self.parser = self.parser()
+        self.cache_model = cache_model
 
     def generate(self) -> EDag:
         """
@@ -61,17 +63,23 @@ class EDagGenerator:
 
         # Iterates through every line except for the last in the trace file
         for line in lines[:-1]:
-            # Splits the line by white spaces and ignores the first two tokens
-            tokens = line.split()[2:]
+            # Splits the line by white spaces and ignores the first token
+            tokens = line.split()[1:]
             instruction = tokens[0]
-            # Skips the return instructions
-            if instruction in RiscvParser.ret_instructions:
+            # Skips instructions that do not have any operands, e.g. ret
+            if len(tokens) < 2:
                 continue
             operands = tokens[1].split(",")
             
             # Creates a new vertex as per the instruction
-            new_vertex = \
+            new_vertex: Vertex = \
                 self.parser.generate_vertex(vertex_id, instruction, operands)
+            
+            # If a cache model is used and the 
+            if self.cache_model is not None and new_vertex.is_mem_load:
+                # The last token should be the memory address accessed
+                addr = tokens[-1]
+                new_vertex.cache_hit = self.cache_model.find(addr)
 
             eDag.add_vertex(new_vertex)
 
