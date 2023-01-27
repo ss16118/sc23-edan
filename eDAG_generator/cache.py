@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Optional, List
+from typing import Dict, Optional, List, Tuple
 from collections import OrderedDict
 
 class Cache(ABC):
@@ -10,11 +10,15 @@ class Cache(ABC):
         self.size = size
 
     @abstractmethod
-    def get(self, key: int) -> bool:
+    def get(self, tag: int) -> bool:
         pass
     
     @abstractmethod
-    def put(self, key: int, val: int) -> None:
+    def put(self, tag: int, val: int) -> None:
+        pass
+    
+    @abstractmethod
+    def to_list(self) -> List[Optional[int]]:
         pass
 
 
@@ -54,3 +58,17 @@ class LRUCache(Cache):
             # If the cache is full evicts the last item
             self.lru_cache.popitem(tag)
         self.lru_cache[tag] = val
+    
+    def to_list(self) -> List[Optional[int]]:
+        """
+        Converts the content in the cache as a list of integers representing
+        the tags of the cache line. The unfilled entries in the cache are
+        denoted by None.
+        """
+        repr = []
+        for tag in self.lru_cache.keys():
+            repr.append(tag)
+        for _ in range(self.size - len(self.lru_cache)):
+            repr.append(None)
+        return repr
+

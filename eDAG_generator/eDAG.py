@@ -1,7 +1,6 @@
 from typing import List, Dict, Optional, Set, Tuple, Callable   
 from graphviz import Digraph
 
-
 class Vertex:
     """
     A class representation of a single vertex in an execution DAG.

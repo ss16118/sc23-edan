@@ -20,8 +20,11 @@ if __name__ == "__main__":
     parser.add_argument("-r", "--remove-single-vertices", dest="remove_single_vertices",
                         default=False, action="store_true",
                         help="If set, single vertices without any connections will be removed")
-
+    parser.add_argument("-c", "--use-cache-model", dest="use_cache_model",
+                        default=False, action="store_true",
+                        help="If set, a predefined LRU cache model will be used")
     args = parser.parse_args()
+
     if args.trace_file_path is None:
         print("[ERROR] Path to the trace file must be provided")
         exit(-1)
@@ -32,7 +35,10 @@ if __name__ == "__main__":
     else:
         graph_file = args.graph_file
     
-    cache = SingleLevelSetAssociativeCache()
+    if args.use_cache_model:
+        cache = SingleLevelSetAssociativeCache()
+    else:
+        cache = None
     # Initializes eDAG generator
     generator = EDagGenerator(args.trace_file_path, ISA.RISC_V, args.only_mem_acc,
                            args.remove_single_vertices, cache_model=cache)

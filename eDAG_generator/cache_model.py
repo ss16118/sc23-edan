@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Dict, Optional
 from collections import OrderedDict
 from enum import Enum, auto
+from texttable import Texttable
 from math import log
 from cache import *
 
@@ -41,10 +42,21 @@ class CacheModel(ABC):
         """
         pass
 
+    @abstractmethod
+    def print_state(self) -> None:
+        """
+        Displays the cache state as a string.
+        """
+        pass
+
 
 class SingleLevelSetAssociativeCache(CacheModel):
     """
-    A class representation of single level 
+    A class representation of single level set associative cache.
+    FIXME: Now this cache model simulates the behavior of a write-through
+    cache, where the store operations are write back to memory. Since
+    this triggers a main memory access, it counts as a cache miss.
+    Later on, maybe an implementation of write-back cache.
     """
     # Maps eviction strategy to specific implementations of cache
     strategy_to_cache: Dict[EvictionStrategy, Cache] = {
@@ -149,3 +161,22 @@ class SingleLevelSetAssociativeCache(CacheModel):
         if not cache_hit:
             self.cache[set].put(tag, addr_int)
         return cache_hit
+
+    def print_state(self) -> None:
+        """
+        Displays the current state of the set-associative cache as a string.
+        Shows which cache lines are filled and which are free, as well
+        as the data currently stored in the cache.
+        """
+        cache_state_table = Texttable()
+        cache_state_table.header(["Set", "Tag"])
+        for set in range(self.num_sets):
+            content = self.cache[set].to_list()
+            for tag in content:
+                if tag is not None:
+                    cache_state_table.add_row([str(set), hex(tag)])
+                else:
+                    cache_state_table.add_row([str(set), ""])
+        cache_state_table.set_cols_align(['c','c'])
+        print(cache_state_table.draw())
+

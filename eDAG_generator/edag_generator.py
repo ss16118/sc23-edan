@@ -74,7 +74,7 @@ class EDagGenerator:
             # Creates a new vertex as per the instruction
             new_vertex: Vertex = \
                 self.parser.generate_vertex(vertex_id, instruction, operands)
-            
+
             # If a cache model is used and the 
             if self.cache_model is not None and new_vertex.is_mem_load:
                 # The last token should be the memory address accessed
@@ -94,9 +94,10 @@ class EDagGenerator:
             vertex_id += 1
         trace.close()
 
-        if self.remove_single_vertices:
-            eDag.remove_single_vertices()
-
         if self.only_mem_acc:
             eDag.filter_vertices(lambda v: v.is_mem_acc)
+
+        if self.remove_single_vertices:
+            eDag.remove_single_vertices()
+        
         return eDag
