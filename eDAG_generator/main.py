@@ -20,6 +20,9 @@ if __name__ == "__main__":
     parser.add_argument("-r", "--remove-single-vertices", dest="remove_single_vertices",
                         default=False, action="store_true",
                         help="If set, single vertices without any connections will be removed")
+    parser.add_argument("-s", "--simplified", dest="simplified", 
+                        default=False, action="store_true",
+                        help="Simplifies the eDAG to the bare minimum for theoretical work-depth analysis")
     parser.add_argument("-c", "--use-cache-model", dest="use_cache_model",
                         default=False, action="store_true",
                         help="If set, a predefined LRU cache model will be used")
@@ -40,9 +43,17 @@ if __name__ == "__main__":
     else:
         cache = None
     # Initializes eDAG generator
-    generator = EDagGenerator(args.trace_file_path, ISA.RISC_V, args.only_mem_acc,
-                           args.remove_single_vertices, cache_model=cache)
+    generator = EDagGenerator(args.trace_file_path, ISA.RISC_V, args.only_mem_acc, 
+                            args.remove_single_vertices, args.simplified,
+                            cache_model=cache)
     eDag = generator.generate()
-    print(eDag.get_depth())
+    
+    print(f"Work : {eDag.get_work()}")
+    print(f"Depth: {eDag.get_depth()}")
+    print(f"Parallelism: {eDag.get_work() / eDag.get_depth()}")
+
+    for asm in eDag.to_asm():
+        print(asm)
+
     graph = eDag.visualize(args.highlight_mem_acc)
     graph.render(graph_file, view=True)
