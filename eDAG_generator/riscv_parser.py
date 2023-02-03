@@ -24,6 +24,10 @@ class RiscvParser(InstructionParser):
     cond_jump_3ops_instructions = \
         { "beq", "bne", "bge", "blt", "bltu", "bgeu", "ble"}
     ret_instructions = { "ret", "uret", "sret", "mret", "tail" }
+    # Associative and commutative operations
+    comm_assoc_ops = {
+        "xor", "and", "or", "mul", "add", "addw", "mulw"
+    }
 
     reg_offset_pattern = re.compile(r"-?\d+\((\w+\d?)\)")
 
@@ -32,7 +36,7 @@ class RiscvParser(InstructionParser):
         super().__init__()
 
 
-    def _get_offset_reg(self, operand: str) -> str:
+    def __get_offset_reg(self, operand: str) -> str:
         """
         A private helper function that returns the offset register used
         in register-offset addressing mode. Uses regex to parse the given
@@ -56,7 +60,7 @@ class RiscvParser(InstructionParser):
         target = None
         op_type = None
         dependencies = set()
-
+        is_comm_assoc = instruction in RiscvParser.comm_assoc_ops
         # Iterates through all types of instructions and checks to which
         # group of instructions it belongs
         if instruction in RiscvParser.load_instructions:
@@ -67,7 +71,7 @@ class RiscvParser(InstructionParser):
             # it is not accessing memory
             if 'i' not in instruction:
                 # The addressing mode is register-offset
-                dependencies.add(self._get_offset_reg(operands[1]))
+                dependencies.add(self.__get_offset_reg(operands[1]))
                 dependencies.add(operands[1])
                 op_type = OpType.LOAD_MEM
             else:
@@ -78,7 +82,7 @@ class RiscvParser(InstructionParser):
             # Target of a `load` instruction is always the second operand
             target = operands[1]
             dependencies.add(operands[0])
-            dependencies.add(self._get_offset_reg(operands[1]))
+            dependencies.add(self.__get_offset_reg(operands[1]))
             op_type = OpType.STORE_MEM
 
         elif instruction in RiscvParser.mv_instructions:
@@ -168,7 +172,8 @@ class RiscvParser(InstructionParser):
 
         new_vertex = Vertex(id, instruction, operands,
                             target=target, dependencies=dependencies,
-                            op_type=op_type, cpu=cpu, insn_addr=insn_addr)
+                            op_type=op_type, is_comm_assoc=is_comm_assoc,
+                            cpu=cpu, insn_addr=insn_addr)
 
         return new_vertex
         

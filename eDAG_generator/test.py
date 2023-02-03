@@ -1,46 +1,52 @@
 from eDAG import EDag, Vertex, OpType
 from edag_sanitizer import *
+from riscv_subgraph_optimizer import *
 
 if __name__ == "__main__":
-    # Example eDAG
-    # 0 -> 1
-    # 1 -> 2, 3
-    # 2 -> 3, 4
+    # Example eDAG:
+    # 1 -> 4
+    # 2 -> 4
     # 3 -> 4
-    # 5 -> []
-    # 6 -> 7
-    # 7 -> []
+    # 4 -> 6
+    # 5 -> 6
+    # 6 -> 8
+    # 7 -> 8
+    # 8 -> 10
+    # 9 -> 10
+    # 10 -> []
     eDag = EDag()
-    v0 = Vertex(0, "sw", ["s0", "0(s1)"], None, set(), OpType.STORE_MEM)
-    eDag.add_vertex(v0)
-    v1 = Vertex(1, "li", ["s2", "1"], None, set(), OpType.LOAD_IMM)
-    eDag.add_vertex(v1)
-    v2 = Vertex(2, "lw", ["s1", "0(s1)"], None, set(), OpType.LOAD_MEM)
-    eDag.add_vertex(v2)
-    v3 = Vertex(3, "sw", ["s0", "0(s0)"], None, set(), OpType.STORE_MEM)
-    eDag.add_vertex(v3)
-    v4 = Vertex(4, "li", ["s1", "0"], None, set(), OpType.LOAD_IMM)
-    eDag.add_vertex(v4)
-    v5 = Vertex(5, "sw", ["s0", "64(s1)"], None, set(), OpType.STORE_MEM)
-
-    v6 = Vertex(6, "addi", ["s0", "s2", "s3"], None, set(), OpType.ARITHMETIC)
-    eDag.add_vertex(v6)
-    v7 = Vertex(7, "addi", ["s0", "s2", "s3"], None, set(), OpType.ARITHMETIC)
-    eDag.add_vertex(v7)
-
-    eDag.add_edge(v0, v1)
-    eDag.add_edge(v1, v2)
-    eDag.add_edge(v1, v3)
-    eDag.add_edge(v2, v3)
+    v1 = Vertex(1, "ld", ["s3", "0(s0)"], None, set(), OpType.LOAD_MEM)
+    v2 = Vertex(2, "ld", ["s1", "0(s0)"], None, set(), OpType.LOAD_MEM)
+    v3 = Vertex(3, "ld", ["s2", "0(s0)"], None, set(), OpType.LOAD_MEM)
+    v4 = Vertex(4, "add", ["s1", "s1", "s2"], None, set(), OpType.ARITHMETIC, True)
+    v5 = Vertex(5, "ld", ["s2", "0(s0)"], None, set(), OpType.LOAD_MEM)
+    v6 = Vertex(6, "add", ["s1", "s1", "s2"], None, set(), OpType.ARITHMETIC, True)
+    v7 = Vertex(7, "ld", ["s2", "0(s0)"], None, set(), OpType.LOAD_MEM)
+    v8 = Vertex(8, "add", ["s1", "s1", "s2"], None, set(), OpType.ARITHMETIC, True)
+    v9 = Vertex(9, "ld", ["s2", "0(s0)"], None, set(), OpType.LOAD_MEM)
+    v10 = Vertex(10, "add", ["s1", "s1", "s2"], None, set(), OpType.ARITHMETIC, True)
+    for v in [v1, v2, v3, v4, v5, v6, v7, v8, v9, v10]:
+        eDag.add_vertex(v)
+    eDag.add_edge(v1, v4)
     eDag.add_edge(v2, v4)
     eDag.add_edge(v3, v4)
-    eDag.add_edge(v6, v7)
+    eDag.add_edge(v4, v6)
+    eDag.add_edge(v5, v6)
+    eDag.add_edge(v6, v8)
+    eDag.add_edge(v7, v8)
+    eDag.add_edge(v8, v10)
+    eDag.add_edge(v9, v10)
+
     print(eDag.get_in_out_degrees())
     print(eDag.get_depth())
     # eDag.remove_single_vertices()
     # eDag.filter_vertices(lambda v: v.is_mem_acc)
     sanitizer = RiscvEDagSanitizer()
     sanitizer.sanitize_edag(eDag)
+
+    optimizer = RiscvSubgraphOptimizer()
+    optimizer.optimize(eDag)
+
     graph = eDag.visualize()
 
     graph.render("../eDAG/test", view=True)

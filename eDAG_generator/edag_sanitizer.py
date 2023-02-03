@@ -59,7 +59,6 @@ class RiscvEDagSanitizer(EDagSanitizer):
         eDag.filter_vertices(cond)
         # Heuristic 2
         # Remove a chain of identical arithmetic operations
-        visited = set()
         arithmetic_ops = { OpType.ARITHMETIC_IMM, OpType.ARITHMETIC }
         
         def remove(subgraph: EDag) -> bool:

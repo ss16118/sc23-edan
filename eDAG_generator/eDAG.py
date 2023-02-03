@@ -30,7 +30,7 @@ class Vertex:
     """
     def __init__(self, id: int, opcode: str, operands: List[str],
                 target: Optional[str], dependencies: Set[str],
-                op_type: OpType,
+                op_type: OpType, is_comm_assoc: bool = False,
                 # Optional attributes
                 cpu: Optional[int] = None,
                 insn_addr: Optional[None] = None,
@@ -48,6 +48,9 @@ class Vertex:
         on the registers a1 and s0, whereas the command `ld a5,-40(s0)` depends
         on the memory location denoted by `-40(s0)`.
         @param op_type: Type of operation performed in this vertex.
+        @param is_comm_assoc: Indicates whether the operation performed by
+        the instruction is both commutative and associative. Used by
+        the subgraph optimizer.
         @param cpu: ID of the CPU on which the instruction was executed.
         @param insn_addr: Virtual memory address where the instruction contained
         in this vertex is stored.
@@ -61,6 +64,7 @@ class Vertex:
         self.target = target
         self.dependencies = dependencies
         self.op_type = op_type
+        self.is_comm_assoc = is_comm_assoc
         self.cpu = cpu
         self.insn_addr = insn_addr
         self.data_addr = data_addr
@@ -137,6 +141,14 @@ class EDag:
         # constructing the eDAG. split_disjoint_subgraphs() have to
         # be invoked to retrieve them
         self.disjoint_subgraphs: List[EDag] = []
+
+    @property
+    def sorted_vertices(self) -> List[Vertex]:
+        """
+        Sorts the vertices in the eDAG by their ID, i.e. the order
+        in which they were added / parsed, and returns them as a list.
+        """
+        return [vertex for (_, vertex) in sorted(self.id_to_vertex.items())]
 
     def add_vertex(self, vertex: Vertex) -> None:
         """
@@ -388,16 +400,22 @@ class EDag:
                 # Adds the subgraph to self.disjoint_subgraphs
                 self.disjoint_subgraphs.append(subgraph)
 
-    def to_asm(self) -> List[str]:
+    def to_asm(self, full_str: bool = True) -> List[str]:
         """
         Converts the entire eDAG back into a list of assembly instructions
         according to the sequential order in which they were parsed.
+        If `full_str`is set to True, the instructions returned will be
+        the same as they were stored in the trace file, i.e. including
+        cpu, instruction address, etc.
         Returns a list containing all the instructions.
         """
         # Sorts the vertices by their IDs so that the order in which
         # they were parsed / added
-        asm = [vertex.full_str() \
-            for (_, vertex) in sorted(self.id_to_vertex.items())]
+        sorted_vertices = self.sorted_vertices
+        if full_str:
+            asm = [vertex.full_str() for vertex in sorted_vertices]
+        else:
+            asm = [vertex.asm for vertex in sorted_vertices]
         return asm
 
     def visualize(self, highlight_mem_acc: bool = True) -> Digraph:
