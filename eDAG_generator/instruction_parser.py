@@ -7,6 +7,10 @@ class InstructionParser(ABC):
     A generic abstract class that represents 
     """
     @abstractmethod
+    def is_ret_instruction(self, instruction: str) -> bool:
+        pass
+
+    @abstractmethod
     def generate_vertex(self, id: int, instruction: str,
                         operands: List[str],
                         cpu: Optional[int] = None,

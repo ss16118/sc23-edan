@@ -25,9 +25,9 @@ if __name__ == "__main__":
     v8 = Vertex(8, "add", ["s1", "s1", "s2"], None, set(), OpType.ARITHMETIC, True)
     v9 = Vertex(9, "ld", ["s2", "0(s0)"], None, set(), OpType.LOAD_MEM)
     v10 = Vertex(10, "add", ["s1", "s1", "s2"], None, set(), OpType.ARITHMETIC, True)
-    for v in [v1, v2, v3, v4, v5, v6, v7, v8, v9, v10]:
+    for v in [v2, v3, v4, v5, v6, v7, v8, v9, v10]:
         eDag.add_vertex(v)
-    eDag.add_edge(v1, v4)
+    # eDag.add_edge(v1, v4)
     eDag.add_edge(v2, v4)
     eDag.add_edge(v3, v4)
     eDag.add_edge(v4, v6)

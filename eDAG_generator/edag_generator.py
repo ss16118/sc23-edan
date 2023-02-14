@@ -1,4 +1,5 @@
 import os
+from tqdm import tqdm
 from typing import List, Optional, Dict
 from enum import Enum, auto
 from eDAG import EDag, Vertex, OpType
@@ -90,17 +91,18 @@ class EDagGenerator:
         vertex_id = 0
 
         # Iterates through every line in the trace file
-        for line in lines:
+        for line in tqdm(lines):
             # Splits the line by white spaces
             # the first two items are CPU ID and instruction address
             tokens = line.split()
-            # Skips instructions that do not have any operands, e.g. ret
-            if len(tokens) < 4:
+            if (len(tokens) < 4):
                 continue
-
-            cpu, insn_addr, *tokens = tokens
-            instruction = tokens[0]
-            operands = tokens[1].split(",")
+            
+            cpu, insn_addr, instruction, *tokens = tokens
+            # Skips instructions that do not have any operands, e.g. ret
+            if self.parser.is_ret_instruction(instruction):
+                continue
+            operands = tokens[0].split(",")
             # Creates a new vertex as per the instruction
             new_vertex: Vertex = self.parser.generate_vertex(
                     vertex_id, instruction, operands, int(cpu), insn_addr)
@@ -136,6 +138,8 @@ class EDagGenerator:
 
                 if not self.simplified and \
                     new_vertex.target is not None:
+                    # If `simplified` is True, only true dependencies
+                    # will be kept
                     new_vertex.dependencies.add(new_vertex.target)
 
                 # Creates dependency edges
@@ -150,8 +154,8 @@ class EDagGenerator:
             vertex_id += 1
         trace.close()
 
-        if self.simplified:
-            self.sanitizer.sanitize_edag(eDag)
+        # if self.simplified:
+        #     self.sanitizer.sanitize_edag(eDag)
 
         if self.only_mem_acc:
             eDag.filter_vertices(lambda v: v.is_mem_acc)

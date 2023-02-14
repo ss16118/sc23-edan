@@ -25,7 +25,7 @@ class RiscvEDagSanitizer(EDagSanitizer):
     """
     non_critical_vertex_types = {
         OpType.LOAD_IMM,
-        OpType.STORE_MEM,
+        # OpType.STORE_MEM,
         OpType.MOVE,
         OpType.BRANCH
     }

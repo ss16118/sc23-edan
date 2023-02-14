@@ -9,27 +9,34 @@ class RiscvParser(InstructionParser):
     An eDAG parser which only targets the RISC-V assembly trace
     """
 
-    load_instructions = { "lb", "lh", "lw", "ld", "li", "lhu", "lbu", "lui" }
+    load_instructions = \
+        { "lb", "lh", "lw", "ld", "li", "lhu", "lbu", "lui", "fld" }
     store_instructions = { "sb", "sh", "sw", "sd" }
     mv_instructions = { "mv", "sext.w" }
     add_instructions = { "addi", "addw", "addiw", "add" }
     sub_instructions = { "sub", "subw" }
     mul_instructions = { "mul", "mulw" }
+    div_instructions = { "divw", "divuw" }
+    rem_instructions = { "remw", "remuw" }
+    atomic_op_instructions = {
+        "amoswap.w", "amoxor.w", "amoadd.w", "amoxor.w",
+        "amoand.w", "amoor.w", "amomin.w", "amomax.u", "amominu.w", "amomaxu.w" 
+    }
     comp_and_set_instructions = { "slti", "sltiu", "slt", "sltu" }
     bit_op_instructions = \
         { "xori", "ori", "andi", "slli", "srli", "srai", "sll", "xor", "srl", 
         "sra", "or", "and", "srliw", "sraiw" }
     uncond_jump_instructions = { "j", "jal", "jalr" }
-    cond_jump_2ops_instructions = { "bgez", "blez" }
+    cond_jump_2ops_instructions = { "bgez", "blez", "bgtz" }
     cond_jump_3ops_instructions = \
-        { "beq", "bne", "bge", "blt", "bltu", "bgeu", "ble"}
+        { "beq", "bne", "bge", "bgt", "bgtu", "blt", "bltu", "bgeu", "ble"}
     ret_instructions = { "ret", "uret", "sret", "mret", "tail" }
     # Associative and commutative operations
     comm_assoc_ops = {
         "xor", "and", "or", "mul", "add", "addw", "mulw"
     }
 
-    reg_offset_pattern = re.compile(r"-?\d+\((\w+\d?)\)")
+    reg_offset_pattern = re.compile(r"-?\d*\((\w+\d?)\)")
 
     # =========== Constructor ===========
     def __init__(self) -> None:
@@ -47,6 +54,12 @@ class RiscvParser(InstructionParser):
             raise ValueError(f"[ERROR] Invalid operand for register-offset addressing mode: {operand}")
         offset_reg = matches.group(1)
         return offset_reg
+    
+    def is_ret_instruction(self, instruction: str) -> bool:
+        """
+        Returns True if the given instruction is considered `return`.
+        """
+        return instruction in RiscvParser.ret_instructions
 
     def generate_vertex(self, id: int, instruction: str,
                         operands: List[str], cpu: Optional[int] = None,
@@ -114,6 +127,29 @@ class RiscvParser(InstructionParser):
             dependencies.add(operands[1])
             dependencies.add(operands[2])
             op_type = OpType.ARITHMETIC
+        
+        elif instruction in RiscvParser.div_instructions:
+            assert(len(operands) == 3)
+            target = operands[0]
+            dependencies.add(operands[1])
+            dependencies.add(operands[2])
+            op_type = OpType.ARITHMETIC
+
+        elif instruction in RiscvParser.rem_instructions:
+            assert(len(operands) == 3)
+            target = operands[0]
+            dependencies.add(operands[1])
+            dependencies.add(operands[2])
+            op_type = OpType.ARITHMETIC
+
+        elif instruction in RiscvParser.atomic_op_instructions:
+            # Atomic operations that require memory access
+            assert(len(operands) == 3)
+            target = operands[0]
+            dependencies.add(operands[1])
+            dependencies.add(self.__get_offset_reg(operands[2]))
+            # FIXME: Should probably have a separate Op type for atomic operations
+            op_type = OpType.LOAD_MEM
 
         elif instruction in RiscvParser.comp_and_set_instructions:
             # Compare and set instructions
@@ -162,6 +198,7 @@ class RiscvParser(InstructionParser):
             dependencies.add(operands[0])
             dependencies.add(operands[1])
             op_type = OpType.BRANCH
+        
         else:
             # An unknown instruction has been encountered
             raise ValueError(f"[ERROR] Unknown instruction {instruction}")

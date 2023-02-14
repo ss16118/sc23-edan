@@ -51,6 +51,11 @@ if __name__ == "__main__":
                             args.remove_single_vertices, args.simplified,
                             cache_model=cache)
     eDag = generator.generate()
+    print("[INFO] eDAG generated")
+    
+    # for asm in eDag.to_asm(False):
+    #     print(asm)
+    
     if args.optimize_subgraph:
         optimizer = RiscvSubgraphOptimizer()
         optimizer.optimize(eDag)
@@ -59,5 +64,8 @@ if __name__ == "__main__":
     print(f"Depth: {eDag.get_depth()}")
     print(f"Parallelism: {eDag.get_work() / eDag.get_depth()}")
     
+    if args.remove_single_vertices:
+        eDag.remove_single_vertices()
+
     graph = eDag.visualize(args.highlight_mem_acc)
     graph.render(graph_file, view=True)
