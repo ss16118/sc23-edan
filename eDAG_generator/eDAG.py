@@ -1,6 +1,9 @@
 from __future__ import annotations
+import networkx as nx
 from enum import Enum, auto
-from typing import List, Dict, Optional, Set, Tuple, Callable
+from tqdm import tqdm
+from collections import defaultdict
+from typing import List, Dict, Optional, Set, Tuple, Callable, Union
 from graphviz import Digraph
 
 
@@ -167,23 +170,58 @@ class EDag:
         and the relationship between the vertices is that the target vertex
         depends on the source, as in the source precedes the target.
         """
+        # Ensures that both the source and target vertices have already
+        # been added to the eDAG
         assert(source in self.vertices)
         assert(target in self.vertices)
         self.adj_list[source][EDag._out].add(target)
         self.adj_list[target][EDag._in].add(source)
 
-    def get_starting_vertices(self) -> Set[Vertex]:
+    def get_starting_vertices(self, id_only: bool = False) \
+        -> Union[Set[Vertex], Set[int]]:
         """
         Retrieves a set of starting vertices, i.e. vertices whose
-        in degree is 0.
+        in degree is 0. If `id_only` is True, only IDs of the vertices
+        will be returned.
         """
         res = set()
 
         in_out_degrees = self.get_in_out_degrees()
         for vertex_id, (in_degree, _) in in_out_degrees.items():
             if in_degree == 0:
-                res.add(self.id_to_vertex[vertex_id])
+                if id_only:
+                    res.add(vertex_id)
+                else:
+                    res.add(self.id_to_vertex[vertex_id])
         return res
+
+    def get_end_vertices(self, id_only: bool = False) \
+        -> Union[Set[Vertex], Set[int]]:
+        """
+        Retrieves a set of end vertices, i.e. vertices whose out degree is 0.
+        If `id_only` is True, only IDs of the vertices will be returned.
+        """
+        res = set()
+        in_out_degrees = self.get_in_out_degrees()
+        for vertex_id, (_, out_degree) in in_out_degrees.items():
+            if out_degree == 0:
+                if id_only:
+                    res.add(vertex_id)
+                else:
+                    res.add(self.id_to_vertex[vertex_id])
+        return res
+
+    def get_vertex_id_adj_list(self) -> Dict[int, List[Set[int]]]:
+        """
+        Iterates over the current adjacency list and converts all `Vertex`
+        objects to their corresponding IDs for faster processing.
+        """
+        adj_list = {}
+        for vertex, (in_vertices, out_vertices) in self.adj_list.items():
+            in_ids = set(map(lambda v: v.id, in_vertices))
+            out_ids = set(map(lambda v: v.id, out_vertices))
+            adj_list[vertex.id] = [in_ids, out_ids]
+        return adj_list
 
     def edges(self) -> List[Tuple[str, str]]:
         """
@@ -197,7 +235,6 @@ class EDag:
             for target in out_vertices:
                 edges.append((f"{source.id}", f"{target.id}"))
         return edges
-
 
     def remove_single_vertices(self) -> None:
         """
@@ -213,7 +250,6 @@ class EDag:
                 assert(vertex is not None)
                 self.remove_vertex(vertex, False)
         
-
     def get_in_out_degrees(self) -> Dict[int, List[int]]:
         """
         Returns the in and out degrees of all the vertices in the eDAG.
@@ -287,7 +323,8 @@ class EDag:
             if curr in visited:
                 continue
             in_vertices, out_vertices = self.adj_list[curr]
-            to_visit = to_visit.union(in_vertices).union(out_vertices)
+            to_visit.update(in_vertices)
+            to_visit.update(out_vertices)
             visited.add(curr)
 
         id_to_vertex_copy = self.id_to_vertex.copy()
@@ -303,7 +340,6 @@ class EDag:
 
         return sub_eDag
     
-
     def filter_vertices(self, cond: Callable[[Vertex], bool]) -> None:
         """
         Given a certain condition, iteratively removes all nodes from the eDAG 
@@ -335,26 +371,38 @@ class EDag:
         exploring the graph from each starting vertex to each end vertex
         and keeping track of the longest distance.
         """
-        def find_depth(curr: Vertex, depth: int) -> int:
-            """
-            A helper function that performs depth-first-search recursively
-            to find the depth of the eDAG starting from a certain vertex.
-            """
-            out_vertices = self.adj_list[curr][EDag._out]
-            if len(out_vertices) == 0:
-                # Base case: checks if the current vertex is the end vertex
-                # i.e. out degree is 0
-                return depth
+        # Calculates the depth using an iterative and DP approach
+        # to guarantee maximum efficiency and to avoid stack overflow
+        dp = defaultdict(int)
+        adj_list = self.get_vertex_id_adj_list()
+        end_vertices = self.get_end_vertices(True)
+        prev_level = set()
+        curr_level = set()
+        for curr in end_vertices:
+            # Marks the depth of the end vertex as 1
+            dp[curr] = 1
+            in_vertices, _ = adj_list[curr]
+            curr_level.update(in_vertices)
+        # Visits the eDAG from bottom to top
+        while len(curr_level) > 0:
+            # Collects vertices from the level above while
+            # traversing through the current level
+            for curr in curr_level:
+                in_vertices, out_vertices = adj_list[curr]
+                for out_vertex in out_vertices:
+                    # Using `if` is faster than `max()`
+                    new_val = 1 + dp[out_vertex]
+                    dp[curr] = dp[curr] if dp[curr] > new_val else new_val
+                # Adds all `in_vertices` to the level above since
+                # they will be visited in the next iteration
+                prev_level.update(in_vertices)
+            curr_level = prev_level
+            prev_level = set()
 
-            max_depth = 1
-            for out_vertex in out_vertices:
-                max_depth = max(max_depth, find_depth(out_vertex, depth + 1))
-            return max_depth
-        
-        depth = 1
-        for vertex in self.get_starting_vertices():
-            depth = max(depth, find_depth(vertex, 1))
-
+        # Iterates through the starting node to find the maximum depth
+        depth = 0
+        for start_vertex in self.get_starting_vertices(True):
+            depth = max(depth, dp[start_vertex])
         return depth
     
     def get_work(self, cond: Optional[Callable[[Vertex], bool]] = None) -> int:
@@ -366,6 +414,7 @@ class EDag:
         if cond is None:
             return len(self.vertices)
 
+        # FIXME: Can probably use Python `filter()`
         work_count = 0
         for vertex in self.vertices:
             if cond(vertex):
@@ -396,7 +445,7 @@ class EDag:
         for start_vertex in self.get_starting_vertices():
             if start_vertex not in visited:
                 subgraph = self.get_subgraph(start_vertex)
-                visited = visited.union(subgraph.vertices)
+                visited.update(subgraph.vertices)
                 # Adds the subgraph to self.disjoint_subgraphs
                 self.disjoint_subgraphs.append(subgraph)
 
@@ -418,14 +467,20 @@ class EDag:
             asm = [vertex.asm for vertex in sorted_vertices]
         return asm
 
-    def visualize(self, highlight_mem_acc: bool = True) -> Digraph:
+    def visualize(self, highlight_mem_acc: bool = True, 
+                large_graph_thresh: int = 1000) -> Digraph:
         """
         Converts the eDAG to an graphviz.Digraph, which can then be
         rendered and saved as a PDF file.
         @param highlight_mem_acc: If set to True, vertices that perform memory
         accesses will be highlighted.
+        @param large_graph_thresh: An integer which marks the threshold above
+        which a graph will be considered large and the layout engine used for
+        graphviz will be changed to sfdp instead of dot
         """
-        graph = Digraph()
+        # Uses sfdp as the layout engine for large graph
+        engine = "sfdp" if len(self.vertices) > large_graph_thresh else None
+        graph = Digraph(engine=engine, graph_attr={"overlap": "scale"})
         for vertex in self.vertices:
             if highlight_mem_acc and vertex.is_mem_acc:
                 if vertex.op_type == OpType.LOAD_MEM and vertex.cache_hit:

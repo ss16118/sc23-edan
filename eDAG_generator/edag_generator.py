@@ -121,9 +121,9 @@ class EDagGenerator:
                     self.cache_model.find(new_vertex.data_addr)
 
             is_critical = True
-            if self.simplified:
+            # if self.simplified:
                 # Only critical vertices are kept
-                is_critical = self.sanitizer.is_critical_vertex(new_vertex)
+                # is_critical = self.sanitizer.is_critical_vertex(new_vertex)
 
             if is_critical:
                 eDag.add_vertex(new_vertex)
@@ -142,7 +142,7 @@ class EDagGenerator:
                 
                 if new_vertex.target is not None:
                     curr_vertex[new_vertex.target] = new_vertex
-
+                    
             vertex_id += 1
         trace.close()
 

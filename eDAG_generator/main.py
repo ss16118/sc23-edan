@@ -1,5 +1,6 @@
 import os
 import argparse
+import cProfile
 from edag_generator import EDagGenerator, ISA
 from cache_model import SingleLevelSetAssociativeCache
 from riscv_parser import RiscvParser
@@ -64,7 +65,6 @@ if __name__ == "__main__":
                             args.remove_single_vertices, args.simplified,
                             cache_model=cache)
     eDag = generator.generate()
-    
     # for asm in eDag.to_asm(False):
     #     print(asm)
     
@@ -72,12 +72,17 @@ if __name__ == "__main__":
         optimizer = RiscvSubgraphOptimizer()
         optimizer.optimize(eDag)
     
-    print(f"Work : {eDag.get_work()}")
-    print(f"Depth: {eDag.get_depth()}")
-    print(f"Parallelism: {eDag.get_work() / eDag.get_depth()}")
+    print("[INFO] Calculating eDAG work")
+    work = eDag.get_work()
+    print(f"Work : {work}")
+    print("[INFO] Calculating eDAG depth")
+    cProfile.run('depth = eDag.get_depth()')
+    # depth = eDag.get_depth()
+    print(f"Depth: {depth}")
+    print(f"Parallelism: {work / depth}")
     
     if args.remove_single_vertices:
         eDag.remove_single_vertices()
-
+    
     graph = eDag.visualize(args.highlight_mem_acc)
     graph.render(graph_file, view=True)
