@@ -8,7 +8,14 @@ class RiscvParser(InstructionParser):
     """
     An eDAG parser which only targets the RISC-V assembly trace
     """
-
+    # A dictionary that maps specific letters in instructions
+    # to the size of data that is manipulated
+    data_size_symbol = {
+        "b": 1,
+        "h": 2,
+        "w": 4,
+        "d": 8
+    }
     load_instructions = {
         "lb", "lh", "lw", "ld", "li", "lhu", "lbu", "lui",
         "fld", "flw"
@@ -31,8 +38,8 @@ class RiscvParser(InstructionParser):
         { "xori", "ori", "andi", "slli", "srli", "srai", "sll", "xor", "srl", 
         "sra", "or", "and", "srliw", "sraiw" }
     uncond_jump_instructions = { "j", "jal", "jalr" }
-    cond_jump_2ops_instructions = { "bgez", "blez", "bgtz" }
-    cond_jump_3ops_instructions = \
+    cond_br_2ops_instructions = { "bgez", "blez", "bgtz" }
+    cond_br_3ops_instructions = \
         { "beq", "bne", "bge", "bgt", "bgtu", "blt", "bltu", "bgeu", "ble"}
     ret_instructions = { "ret", "uret", "sret", "mret", "tail", "ecall" }
 
@@ -90,7 +97,17 @@ class RiscvParser(InstructionParser):
                 assert(data_addr is not None)
                 return data_addr
         return None
-        
+
+    def get_insn_data_size(self, opcode: str) -> int:
+        """
+        Give the opcode of an instruction, returns the size of data which
+        is manipulated.
+        TODO: Currently only memory access operations are supported
+        """
+        for symbol, size in RiscvParser.data_size_symbol.items():
+            if symbol in opcode:
+                return size
+        raise ValueError(f"[ERROR] Unknown data size for opcode: {opcode}")
 
     def parse_line(self, line: str) -> Optional[Dict]:
         """
@@ -142,6 +159,7 @@ class RiscvParser(InstructionParser):
         target = None
         op_type = None
         dependencies = set()
+        data_size = 0
         is_comm_assoc = instruction in RiscvParser.comm_assoc_ops
         # Iterates through all types of instructions and checks to which
         # group of instructions it belongs
@@ -155,6 +173,7 @@ class RiscvParser(InstructionParser):
                 # The addressing mode is register-offset
                 dependencies.add(self.__get_offset_reg(operands[1]))
                 dependencies.add(operands[1])
+                data_size = self.get_insn_data_size(instruction)
                 op_type = OpType.LOAD_MEM
             else:
                 op_type = OpType.LOAD_IMM
@@ -165,6 +184,7 @@ class RiscvParser(InstructionParser):
             target = operands[1]
             dependencies.add(operands[0])
             dependencies.add(self.__get_offset_reg(operands[1]))
+            data_size = self.get_insn_data_size(instruction)
             op_type = OpType.STORE_MEM
 
         elif instruction in RiscvParser.mv_instructions:
@@ -255,14 +275,14 @@ class RiscvParser(InstructionParser):
                 assert(len(operands) == 1)
             op_type = OpType.BRANCH
 
-        elif instruction in RiscvParser.cond_jump_2ops_instructions:
-            # Conditional jump instructions with 2 operands
+        elif instruction in RiscvParser.cond_br_2ops_instructions:
+            # Conditional branch instructions with 2 operands
             assert(len(operands) == 2)
             dependencies.add(operands[0])
             op_type = OpType.BRANCH
 
-        elif instruction in RiscvParser.cond_jump_3ops_instructions:
-            # Conditional jump instructions with 3 operands
+        elif instruction in RiscvParser.cond_br_3ops_instructions:
+            # Conditional branch instructions with 3 operands
             assert(len(operands) == 3)
             dependencies.add(operands[0])
             dependencies.add(operands[1])
@@ -323,7 +343,8 @@ class RiscvParser(InstructionParser):
         new_vertex = Vertex(id, instruction, operands,
                             target=target, dependencies=dependencies,
                             op_type=op_type, is_comm_assoc=is_comm_assoc,
-                            cpu=cpu, insn_addr=insn_addr, data_addr=data_addr)
+                            cpu=cpu, insn_addr=insn_addr, data_addr=data_addr,
+                            data_size=data_size)
 
         return new_vertex
         

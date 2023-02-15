@@ -1,5 +1,4 @@
 from __future__ import annotations
-import networkx as nx
 from enum import Enum, auto
 from tqdm import tqdm
 from collections import defaultdict
@@ -37,7 +36,8 @@ class Vertex:
                 # Optional attributes
                 cpu: Optional[int] = None,
                 insn_addr: Optional[None] = None,
-                data_addr: Optional[str] = None) -> None:
+                data_addr: Optional[str] = None,
+                data_size: Optional[int] = 0) -> None:
         """
         @param id: a unique number given to each vertex by the parser.
         @param opcode: opcode of the assembly instruction, e.g. add, sub, mv.
@@ -60,6 +60,10 @@ class Vertex:
         @param data_addr: Data address of the virtual memory accessed in 
         this vertex. Note that this argument should be None unless the opcode 
         type is a memory access.
+        @param data_size: Size of data movement in bytes when the vertex
+        represents a memory access operation. If it is not memory access,
+        this argument should 0.
+        TODO: can later extend `data_size` to non-memory-access operations.
         """
         self.id = id
         self.opcode = opcode
@@ -71,7 +75,8 @@ class Vertex:
         self.cpu = cpu
         self.insn_addr = insn_addr
         self.data_addr = data_addr
-        # given that this vertex represents a memory access
+        self.data_size = data_size
+        # Given that this vertex represents a memory access
         # instruction, this argument indicates whether the data stored in the
         # memory address is already in cache according to a predefined
         # cache model. This variable should be set at a later stage
@@ -384,7 +389,7 @@ class EDag:
             in_vertices, _ = adj_list[curr]
             curr_level.update(in_vertices)
         # Visits the eDAG from bottom to top
-        while len(curr_level) > 0:
+        while curr_level:
             # Collects vertices from the level above while
             # traversing through the current level
             for curr in curr_level:
@@ -392,6 +397,7 @@ class EDag:
                 for out_vertex in out_vertices:
                     # Using `if` is faster than `max()`
                     new_val = 1 + dp[out_vertex]
+                    # dp[curr] = max(dp[curr], 1 + dp[curr])
                     dp[curr] = dp[curr] if dp[curr] > new_val else new_val
                 # Adds all `in_vertices` to the level above since
                 # they will be visited in the next iteration

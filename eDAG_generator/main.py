@@ -8,6 +8,29 @@ from metrics import *
 from riscv_subgraph_optimizer import RiscvSubgraphOptimizer
 
 
+insn_cycles = [
+    # Memory load
+    ({ "lb", "lh", "lw", "ld", "lhu", "lbu", "fld", "flw" }, 200.0),
+    # Load immediate
+    ({ "li", "lui" }, 1.0),
+    (RiscvParser.store_instructions, 200.0),
+    (RiscvParser.mv_instructions, 1.0),
+    (RiscvParser.add_instructions, 1.0),
+    (RiscvParser.sub_instructions, 1.0),
+    (RiscvParser.mul_instructions, 8.0),
+    (RiscvParser.div_instructions, 20.0),
+    (RiscvParser.rem_instructions, 20.0),
+    (RiscvParser.atomic_op_instructions, 1.0),
+    (RiscvParser.comp_and_set_instructions, 1.0),
+    (RiscvParser.bit_op_instructions, 1.0),
+    (RiscvParser.uncond_jump_instructions, 3.0),
+    (RiscvParser.cond_br_2ops_instructions, 3.0),
+    (RiscvParser.cond_br_3ops_instructions, 3.0),
+    (RiscvParser.fp_2ops_instructions, 1.0),
+    (RiscvParser.fp_3ops_instructions, 20.0),
+    (RiscvParser.fp_4ops_instructions, 1.0),
+]
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="Trace file cleanup",
                                      description="`Clean up the instruction trace file produced by gdb")
@@ -33,6 +56,9 @@ if __name__ == "__main__":
     parser.add_argument("--reuse-histogram", dest="reuse_histogram",
                         default=False, action="store_true",
                         help="If set, will generate the reuse distance histogram based on the given trace")
+    parser.add_argument("--bandwidth", dest="calc_bandwidth",
+                        default=False, action="store_true",
+                        help="If set, will estimate the bandwidth utilization")
     parser.add_argument("-c", "--use-cache-model", dest="use_cache_model",
                         default=False, action="store_true",
                         help="If set, a predefined LRU cache model will be used")
@@ -72,6 +98,11 @@ if __name__ == "__main__":
         optimizer = RiscvSubgraphOptimizer()
         optimizer.optimize(eDag)
     
+    if args.calc_bandwidth:
+        bandwidth_util = BandwidthUtilization(eDag)
+        bandwidth = bandwidth_util.compute_bandwidth(insn_cycles)
+        print(f"Bandwidth utilization: {bandwidth / 10 ** 6} MB/s")
+
     print("[INFO] Calculating eDAG work")
     work = eDag.get_work()
     print(f"Work : {work}")
@@ -80,9 +111,9 @@ if __name__ == "__main__":
     # depth = eDag.get_depth()
     print(f"Depth: {depth}")
     print(f"Parallelism: {work / depth}")
-    
+
     if args.remove_single_vertices:
         eDag.remove_single_vertices()
-    
+
     graph = eDag.visualize(args.highlight_mem_acc)
     graph.render(graph_file, view=True)

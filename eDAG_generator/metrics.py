@@ -3,15 +3,17 @@
 import os
 import math
 import matplotlib.pyplot as plt
-from typing import List, Optional, Set, Dict
+from typing import List, Optional, Set, Dict, Tuple
 from collections import OrderedDict, defaultdict
 from instruction_parser import InstructionParser
+from eDAG import EDag, OpType
 
 
 
 class ReuseDistance:
     """
-    An object representation of the 
+    An object that encapsulates all the functionalities related to
+    reuse distance computation.
     """
     def __init__(self, trace_file: str, parser: InstructionParser) -> None:
         """
@@ -112,3 +114,64 @@ class ReuseDistance:
         else:
             plt.show()
         
+
+class BandwidthUtilization:
+    """
+    A object that computes the bandwidth utilization
+    """
+    def __init__(self, eDag: EDag) -> None:
+        """
+        @param eDag: An execution DAG object which will be the
+        target of bandwidth utilization analysis.
+        """
+        self.eDag = eDag
+
+    def compute_bandwidth(self, insn_cycles: List[Tuple[Set[str], float]],
+                          frequency: int = 3.6 * 10 ** 9,
+                          use_cache_model: bool = False,
+                          cache_hit_cycles: int = 4) -> float:
+        """
+        Computes the estimation of average memory bandwidth utilization in
+        bytes per second based on the list of given parameters.
+        @param insn_cycles: A list of tuples that maps a set of instructions to
+        their corresponding estimated compute cycles.
+        @param frequency: The frequency of the CPU, whose reciprocal, when
+        multiplied with the total number of cycles executed, will be used
+        to estimate the time.
+        @param use_cache_model: If set to True, memory load instructions
+        that are cache hits will not be considered.
+        @param cache_hit_cycles: The number of clock cycles that will take
+        for a memory load to complete if it is cache hit. Will only be
+        considered when `use_cache_model` is set to True.
+        """
+        def get_op_cycles(opcode: str) -> float:
+            """
+            A helper function that retrieves the number of cycles
+            that will take the given opcode to complete based on
+            the information specified in `insn_cycles`.
+            Raises an error if the opcode is not included in `insn_cycles`.
+            """
+            for opcode_set, op_cycles in insn_cycles:
+                if vertex.opcode in opcode_set:
+                    return op_cycles
+            raise ValueError(f"[ERROR] Opcode '{opcode}' has unknown cycles")
+
+        # FIXME: The current approach treats the given eDAG as a sequential
+        # program, which needs to be changed
+        cycles = 0
+        # Amount of data moved between main memory and CPU
+        bytes_moved = 0
+        # Iterates through all the vertices in the eDAG
+        for vertex in self.eDag.vertices:
+            if use_cache_model and vertex.cache_hit:
+                cycles += cache_hit_cycles
+                continue
+            cycles += get_op_cycles(vertex.opcode)
+            if vertex.is_mem_acc:
+                # If instruction is memory access
+                assert(vertex.data_size > 0)
+                bytes_moved += vertex.data_size
+        
+        time = cycles / frequency
+        return bytes_moved / time
+                
