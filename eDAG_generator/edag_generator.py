@@ -47,7 +47,7 @@ class EDagGenerator:
         non-relevant vertices unrelated to the core of computation will be
         removed. This is used to for theoretical analysis of work and depth
         of parallel algorithms.
-        @cache_model: Specifies the cache model to use while generating
+        @param cache_model: Specifies the cache model to use while generating
         the eDAG.
         """
         assert(os.path.exists(trace_file))
@@ -80,7 +80,6 @@ class EDagGenerator:
         Converts the given instruction trace into a single execution DAG
         """
         trace = open(self.trace_file, "r")
-        lines = trace.readlines()
 
         eDag = EDag()
         # A dictionary that maps a register or memory location represented
@@ -91,35 +90,28 @@ class EDagGenerator:
         vertex_id = 0
 
         # Iterates through every line in the trace file
-        for line in tqdm(lines):
-            # Splits the line by white spaces
-            # the first two items are CPU ID and instruction address
-            tokens = line.split()
-            if (len(tokens) < 4):
+        for line in tqdm(trace):
+            parsed_line = self.parser.parse_line(line)
+
+            if parsed_line is None:
                 continue
-            
-            cpu, insn_addr, instruction, *tokens = tokens
-            # Skips instructions that do not have any operands, e.g. ret
-            if self.parser.is_ret_instruction(instruction):
-                continue
-            operands = tokens[0].split(",")
+
             # Creates a new vertex as per the instruction
-            new_vertex: Vertex = self.parser.generate_vertex(
-                    vertex_id, instruction, operands, int(cpu), insn_addr)
-            
+            new_vertex: Vertex = \
+                self.parser.generate_vertex(id=vertex_id, **parsed_line)
             if new_vertex.is_mem_acc:
-                # The last token should be the memory address of the data
-                # that has been accessed
-                addr = tokens[-1]
-                new_vertex.data_addr = addr
+                # addr = tokens[-1]
+                # new_vertex.data_addr = addr
+                addr = new_vertex.data_addr
                 # Keeps track of the writes to memory addresses
                 if new_vertex.op_type == OpType.STORE_MEM:
                     curr_vertex[addr] = new_vertex
                 elif new_vertex.op_type == OpType.LOAD_MEM:
                     dep = curr_vertex.get(addr)
                     if dep is not None:
-                    # Creates a dependency between the previous write
-                    # to the same address and the new vertex
+                        # Creates a dependency between the vertex that 
+                        # previously wrote to the same address and the 
+                        # new vertex
                         new_vertex.dependencies.add(dep)
 
             # If a cache model is used

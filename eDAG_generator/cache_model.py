@@ -65,7 +65,7 @@ class SingleLevelSetAssociativeCache(CacheModel):
 
     def __init__(self, cache_line_size: int = 8,
                 cache_size: int = 64,
-                addr_len: int = 40,
+                addr_len: int = 64,
                 k: int = 2,
                 strategy: EvictionStrategy = EvictionStrategy.LRU) -> None:
         """

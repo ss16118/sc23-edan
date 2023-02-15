@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import List, Optional, Dict
 from eDAG import Vertex
 
 class InstructionParser(ABC):
@@ -8,6 +8,14 @@ class InstructionParser(ABC):
     """
     @abstractmethod
     def is_ret_instruction(self, instruction: str) -> bool:
+        pass
+    
+    @abstractmethod
+    def get_load_data_addr(self, line: str) -> Optional[str]:
+        pass
+
+    @abstractmethod
+    def parse_line(self, line: str) -> Dict:
         pass
 
     @abstractmethod

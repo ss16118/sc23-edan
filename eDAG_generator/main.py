@@ -2,6 +2,8 @@ import os
 import argparse
 from edag_generator import EDagGenerator, ISA
 from cache_model import SingleLevelSetAssociativeCache
+from riscv_parser import RiscvParser
+from metrics import *
 from riscv_subgraph_optimizer import RiscvSubgraphOptimizer
 
 
@@ -27,6 +29,9 @@ if __name__ == "__main__":
     parser.add_argument("-o", "--optimize", dest="optimize_subgraph",
                         default=False, action="store_true",
                         help="If set, will attempt optimize the eDAG in terms of work and depth according to pre-defined heuristics")
+    parser.add_argument("--reuse-histogram", dest="reuse_histogram",
+                        default=False, action="store_true",
+                        help="If set, will generate the reuse distance histogram based on the given trace")
     parser.add_argument("-c", "--use-cache-model", dest="use_cache_model",
                         default=False, action="store_true",
                         help="If set, a predefined LRU cache model will be used")
@@ -46,12 +51,19 @@ if __name__ == "__main__":
         cache = SingleLevelSetAssociativeCache()
     else:
         cache = None
+
+    if args.reuse_histogram:
+        # Generates the reuse distance histogram based on the given trace
+        print("[INFO] Generating reuse distance histogram")
+        reuse_distance = ReuseDistance(args.trace_file_path, RiscvParser())
+        reuse_distance.plot_histogram("../examples/histo.pdf")
+
     # Initializes eDAG generator
+    print("[INFO] Generating eDAG")
     generator = EDagGenerator(args.trace_file_path, ISA.RISC_V, args.only_mem_acc, 
                             args.remove_single_vertices, args.simplified,
                             cache_model=cache)
     eDag = generator.generate()
-    print("[INFO] eDAG generated")
     
     # for asm in eDag.to_asm(False):
     #     print(asm)

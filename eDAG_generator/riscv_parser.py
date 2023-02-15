@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Tuple
 import re
 from instruction_parser import InstructionParser
 from eDAG import Vertex, OpType
@@ -9,10 +9,14 @@ class RiscvParser(InstructionParser):
     An eDAG parser which only targets the RISC-V assembly trace
     """
 
-    load_instructions = \
-        { "lb", "lh", "lw", "ld", "li", "lhu", "lbu", "lui", "fld" }
-    store_instructions = { "sb", "sh", "sw", "sd" }
-    mv_instructions = { "mv", "sext.w" }
+    load_instructions = {
+        "lb", "lh", "lw", "ld", "li", "lhu", "lbu", "lui",
+        "fld", "flw"
+    }
+    store_instructions = { "sb", "sh", "sw", "sd", "fsd" }
+    mv_instructions = { "mv", "sext.w", "fmv.d.x" }
+    # FIXME: Probably it is better to combine all the arithmetic
+    # operations into one category
     add_instructions = { "addi", "addw", "addiw", "add" }
     sub_instructions = { "sub", "subw" }
     mul_instructions = { "mul", "mulw" }
@@ -30,10 +34,19 @@ class RiscvParser(InstructionParser):
     cond_jump_2ops_instructions = { "bgez", "blez", "bgtz" }
     cond_jump_3ops_instructions = \
         { "beq", "bne", "bge", "bgt", "bgtu", "blt", "bltu", "bgeu", "ble"}
-    ret_instructions = { "ret", "uret", "sret", "mret", "tail" }
+    ret_instructions = { "ret", "uret", "sret", "mret", "tail", "ecall" }
+
+    # Floating point operations
+    fp_2ops_instructions = { "fcvt.d.w" }
+    fp_3ops_instructions = {
+        "fmul.d", "fmul.s", "fmadd.s", "fdiv.s"
+     }
+    fp_4ops_instructions = { "fmadd.d", "fmadd.s", "fnmadd.d" }
+
     # Associative and commutative operations
     comm_assoc_ops = {
-        "xor", "and", "or", "mul", "add", "addw", "mulw"
+        "xor", "and", "or", "mul", "add", "addw", "mulw",
+        "fmul.d", "fmul.s", "fmadd.d", "fmadd.s"
     }
 
     reg_offset_pattern = re.compile(r"-?\d*\((\w+\d?)\)")
@@ -61,9 +74,65 @@ class RiscvParser(InstructionParser):
         """
         return instruction in RiscvParser.ret_instructions
 
+    def get_load_data_addr(self, line: str) -> Optional[str]:
+        """
+        Given a single line from the assembly trace, returns the virtual
+        memory address of the data that is loaded. Returns None
+        if the given line is not a memory load instruction.
+        """
+        parsed = self.parse_line(line)
+        if parsed is not None:
+            insn = parsed["instruction"]
+            assert(insn is not None)
+            # Checks whether the instruction is loading from memory
+            if insn in RiscvParser.load_instructions and "i" not in insn:
+                data_addr = parsed["data_addr"]
+                assert(data_addr is not None)
+                return data_addr
+        return None
+        
+
+    def parse_line(self, line: str) -> Optional[Dict]:
+        """
+        Parses a single line of assembly trace, and returns
+        all the relevant information in a dictionary that contains the 
+        following keys. Note that some of the values might be None.
+        
+        ["cpu_id", "insn_addr", "instruction", "operands", "data_addr"]
+        
+        If a return instruction is encountered, returns None.
+        """
+        res = dict.fromkeys(
+            ["cpu", "insn_addr", "instruction", "operands", "data_addr"]
+        )
+        # Strips the newline character on the right of a line
+        line = line.rstrip("\n")
+        # Splits the line by the given delimiter
+        tokens = line.split(";")
+        if len(tokens) < 3:
+            return None
+        # The first two tokens are CPU ID and instruction address
+        cpu_id, insn_addr, *tokens = tokens
+        insn_tokens = tokens[0].split()
+        instruction = insn_tokens[0]
+        # Skips instructions that do not have any operands, e.g. ret
+        if instruction in RiscvParser.ret_instructions:
+            return None
+        operands = insn_tokens[1].split(",")
+        res["cpu"] = int(cpu_id)
+        res["insn_addr"] = insn_addr
+        res["instruction"] = instruction
+        res["operands"] = operands
+        if len(tokens) > 1:
+            # The last token should be the memory address of the data
+            # that has been accessed
+            res["data_addr"] = tokens[-1]
+        return res
+
     def generate_vertex(self, id: int, instruction: str,
                         operands: List[str], cpu: Optional[int] = None,
-                        insn_addr: Optional[str] = None) -> Vertex:
+                        insn_addr: Optional[str] = None,
+                        data_addr: Optional[str] = None) -> Vertex:
         """
         A function that converts the given assembly instruction
         and its corresponding operands into an eDAG vertex.
@@ -198,7 +267,51 @@ class RiscvParser(InstructionParser):
             dependencies.add(operands[0])
             dependencies.add(operands[1])
             op_type = OpType.BRANCH
+
+        elif instruction in RiscvParser.fp_2ops_instructions:
+            # Floating point operations with two operands
+            # The number of elements in the operand list can
+            # be either 2 or 3 depending on whether the round mode
+            # field exists or not
+            assert(len(operands) == 2 or len(operands) == 3)
+            if len(operands) == 2:
+                # If rounding mode does not exist
+                target = operands[0]
+                dependencies.add(operands[1])
+            else:
+                # If rounding mode exists, ignore it
+                target = operands[1]
+                dependencies.add(operands[2])
+            op_type = OpType.ARITHMETIC
         
+        elif instruction in RiscvParser.fp_3ops_instructions:
+            # Floating point operations with three operands
+            assert(len(operands) == 3 or len(operands) == 4)
+            if len(operands) == 3:
+                # If rounding mode does not exist
+                target = operands[0]
+                dependencies.add(operands[1])
+                dependencies.add(operands[2])
+            else:
+                # If rounding mode exists, ignore it
+                target = operands[1]
+                dependencies.add(operands[2])
+                dependencies.add(operands[3])
+            op_type = OpType.ARITHMETIC
+
+        elif instruction in RiscvParser.fp_4ops_instructions:
+            # Floating point operations with four operands
+            assert(len(operands) == 4 or len(operands) == 5)
+            if len(operands) == 4:
+                # If rounding mode does not exist
+                target = operands[0]
+                dependencies.update(operands[1:])
+            else:
+                # If rounding mode does exist, ignore it
+                target = operands[1]
+                dependencies.update(operands[2:])
+            op_type = OpType.ARITHMETIC
+
         else:
             # An unknown instruction has been encountered
             raise ValueError(f"[ERROR] Unknown instruction {instruction}")
@@ -210,7 +323,7 @@ class RiscvParser(InstructionParser):
         new_vertex = Vertex(id, instruction, operands,
                             target=target, dependencies=dependencies,
                             op_type=op_type, is_comm_assoc=is_comm_assoc,
-                            cpu=cpu, insn_addr=insn_addr)
+                            cpu=cpu, insn_addr=insn_addr, data_addr=data_addr)
 
         return new_vertex
         
