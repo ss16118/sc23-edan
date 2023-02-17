@@ -80,7 +80,7 @@ class ReuseDistance:
             if data_addr is None:
                 continue
             distance = get_distance(data_addr)
-            # print(f"[DEBUG] addr: {data_addr}, dist: {distance}")
+            print(f"[DEBUG] addr: {data_addr}, dist: {distance}")
             res[distance] += 1
         trace.close()
         return res
@@ -103,7 +103,7 @@ class ReuseDistance:
 
         # Sets the axis labels
         plt.xlabel("Reuse distance")
-        plt.yscale("log")
+        # plt.yscale("log")
         plt.ylabel("Number of references")
 
         _, labels = plt.xticks()

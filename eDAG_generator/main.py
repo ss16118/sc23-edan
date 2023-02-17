@@ -1,6 +1,7 @@
 import os
 import argparse
 import cProfile
+from time import time
 from edag_generator import EDagGenerator, ISA
 from cache_model import SingleLevelSetAssociativeCache
 from riscv_parser import RiscvParser
@@ -68,11 +69,11 @@ if __name__ == "__main__":
         print("[ERROR] Path to the trace file must be provided")
         exit(-1)
 
-    if args.graph_file is None:
-        filename, file_extension = os.path.splitext(args.trace_file_path)
-        graph_file = filename + "_eDAG"
-    else:
-        graph_file = args.graph_file
+    # if args.graph_file is None:
+    #     filename, file_extension = os.path.splitext(args.trace_file_path)
+    #     graph_file = filename + "_eDAG"
+    # else:
+    #     graph_file = args.graph_file
     
     if args.use_cache_model:
         cache = SingleLevelSetAssociativeCache()
@@ -107,13 +108,16 @@ if __name__ == "__main__":
     work = eDag.get_work()
     print(f"Work : {work}")
     print("[INFO] Calculating eDAG depth")
-    cProfile.run('depth = eDag.get_depth()')
-    # depth = eDag.get_depth()
+    # cProfile.run('depth = eDag.get_depth()')
+    start = time()
+    depth = eDag.get_depth()
+    print(f"[DEBUG] Time taken: {time() - start}")
     print(f"Depth: {depth}")
     print(f"Parallelism: {work / depth}")
 
     if args.remove_single_vertices:
         eDag.remove_single_vertices()
 
-    graph = eDag.visualize(args.highlight_mem_acc)
-    graph.render(graph_file, view=True)
+    if args.graph_file is not None:
+        graph = eDag.visualize(args.highlight_mem_acc)
+        graph.render(args.graph_file, view=True)

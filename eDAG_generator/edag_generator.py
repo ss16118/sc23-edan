@@ -89,9 +89,6 @@ class EDagGenerator:
         # increments after a vertex is added to the eDAG
         vertex_id = 0
 
-        # A variable that keeps track of the last generated vertex
-        prev_vertex = None
-
         # Iterates through every line in the trace file
         for line in tqdm(trace):
             parsed_line = self.parser.parse_line(line)
@@ -143,17 +140,16 @@ class EDagGenerator:
                     if source is not None:
                         eDag.add_edge(source, new_vertex)
                 
-                if prev_vertex and prev_vertex.op_type == OpType.BRANCH:
-                    # If the previous vertex contains branch/jump
-                    # instruction, adds a dependency between it
-                    # and the current vertex
-                    eDag.add_edge(prev_vertex, new_vertex)
+                # if prev_vertex and prev_vertex.op_type == OpType.BRANCH:
+                #     # If the previous vertex contains branch/jump
+                #     # instruction, adds a dependency between it
+                #     # and the current vertex
+                #     eDag.add_edge(prev_vertex, new_vertex)
 
                 if new_vertex.target is not None:
                     curr_vertex[new_vertex.target] = new_vertex
             
             vertex_id += 1
-            prev_vertex = new_vertex
         trace.close()
 
         # if self.simplified:

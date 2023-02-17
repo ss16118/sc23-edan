@@ -1,7 +1,10 @@
 from __future__ import annotations
 from enum import Enum, auto
 from tqdm import tqdm
+import numpy as np
+import math
 from collections import defaultdict
+from multiprocessing import Pool, Process, Manager
 from typing import List, Dict, Optional, Set, Tuple, Callable, Union
 from graphviz import Digraph
 
@@ -22,6 +25,31 @@ class OpType(Enum):
     MOVE = auto()
     # Branch
     BRANCH = auto()
+
+def task(curr_level: Set[int], task_dp: Dict[int, int],
+        adj_list: Dict[int, List[Set[int]]], res: List) -> Dict[int, int]:
+    """
+    A helper function executed by each worker thread.
+    """
+    prev_level = set()
+    # Visits the eDAG from bottom to top
+    while curr_level:
+        # Collects vertices from the level above while
+        # traversing through the current level
+        for curr in curr_level:
+            in_vertices, out_vertices = adj_list[curr]
+            for out_vertex in out_vertices:
+                # Using `if` is faster than `max()`
+                new_val = 1 + task_dp[out_vertex]
+                task_dp[curr] = \
+                    task_dp[curr] if task_dp[curr] > new_val else new_val
+            # Adds all `in_vertices` to the level above since
+            # they will be visited in the next iteration
+            prev_level.update(in_vertices)
+        curr_level = prev_level
+        prev_level = set()
+    
+    res.append(task_dp)
 
 
 class Vertex:
@@ -267,7 +295,6 @@ class EDag:
             res[vertex.id] = [len(in_vertices), len(out_vertices)]
         return res
     
-
     def remove_vertex(self, vertex: Vertex, maintain_deps: bool = True) -> None:
         """
         Removes the given vertex from the eDAG. If `maintain_deps` is
@@ -381,7 +408,7 @@ class EDag:
         dp = defaultdict(int)
         adj_list = self.get_vertex_id_adj_list()
         end_vertices = self.get_end_vertices(True)
-        prev_level = set()
+        # prev_level = set()
         curr_level = set()
         for curr in end_vertices:
             # Marks the depth of the end vertex as 1
@@ -389,26 +416,47 @@ class EDag:
             in_vertices, _ = adj_list[curr]
             curr_level.update(in_vertices)
         # Visits the eDAG from bottom to top
-        while curr_level:
-            # Collects vertices from the level above while
-            # traversing through the current level
-            for curr in curr_level:
-                in_vertices, out_vertices = adj_list[curr]
-                for out_vertex in out_vertices:
-                    # Using `if` is faster than `max()`
-                    new_val = 1 + dp[out_vertex]
-                    # dp[curr] = max(dp[curr], 1 + dp[curr])
-                    dp[curr] = dp[curr] if dp[curr] > new_val else new_val
-                # Adds all `in_vertices` to the level above since
-                # they will be visited in the next iteration
-                prev_level.update(in_vertices)
-            curr_level = prev_level
-            prev_level = set()
+        # while curr_level:
+        #     # Collects vertices from the level above while
+        #     # traversing through the current level
+        #     for curr in curr_level:
+        #         in_vertices, out_vertices = adj_list[curr]
+        #         for out_vertex in out_vertices:
+        #             # Using `if` is faster than `max()`
+        #             new_val = 1 + dp[out_vertex]
+        #             # dp[curr] = max(dp[curr], 1 + dp[curr])
+        #             dp[curr] = dp[curr] if dp[curr] > new_val else new_val
+        #         # Adds all `in_vertices` to the level above since
+        #         # they will be visited in the next iteration
+        #         prev_level.update(in_vertices)
+        #     curr_level = prev_level
+        #     prev_level = set()
 
         # Iterates through the starting node to find the maximum depth
+        N = min(math.ceil(len(self.vertices) / 8000), 8)
+        ps = []
+        subsets = [set(sub_array) for sub_array in np.array_split(list(curr_level), N)]
+        res = Manager().list()
+        # Starts N processes
+        for i in range(N):
+            print(f"[INFO] Spawned process {i} processing {len(subsets[i])} elements")
+            p = Process(target=task,
+                        args=(subsets[i], dp, adj_list, res))
+            p.start()
+            ps.append(p)
+
+        for i in range(N):
+            ps[i].join()
+            
+        # with Pool(processes=N) as pool:
+        #     # Splits the initial starting vertices into N subsets
+        #     dps = pool.starmap(task, zip(subsets, [dp.copy() for _ in range(N)],
+        #                             [adj_list for _ in range(N)]))
         depth = 0
         for start_vertex in self.get_starting_vertices(True):
-            depth = max(depth, dp[start_vertex])
+            # depth = max(depth, dp[start_vertex])
+            for dp_tmp in res:
+                depth = max(depth, dp_tmp[start_vertex])
         return depth
     
     def get_work(self, cond: Optional[Callable[[Vertex], bool]] = None) -> int:
