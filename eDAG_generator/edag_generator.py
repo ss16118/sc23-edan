@@ -122,8 +122,8 @@ class EDagGenerator:
 
             is_critical = True
             # if self.simplified:
-                # Only critical vertices are kept
-                # is_critical = self.sanitizer.is_critical_vertex(new_vertex)
+            #     # Only critical vertices are kept
+            #     is_critical = self.sanitizer.is_critical_vertex(new_vertex)
 
             if is_critical:
                 eDag.add_vertex(new_vertex)

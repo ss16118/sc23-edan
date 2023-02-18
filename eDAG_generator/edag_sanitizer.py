@@ -52,9 +52,11 @@ class RiscvEDagSanitizer(EDagSanitizer):
         # Heuristic 1
         # All predecessors of LOAD_MEM vertices will be removed
         def cond(vertex: Vertex):
-            for successor in eDag.adj_list[vertex][EDag._out]:
-                if successor.op_type == OpType.LOAD_MEM:
-                    return False
+            if not vertex.is_mem_acc:
+                for successor_id in eDag.adj_list[vertex.id][EDag._out]:
+                    successor = eDag.id_to_vertex[successor_id]
+                    if successor.op_type == OpType.LOAD_MEM:
+                        return False
             return True
         eDag.filter_vertices(cond)
         # Heuristic 2
@@ -68,7 +70,7 @@ class RiscvEDagSanitizer(EDagSanitizer):
             the subgraph should likely be removed, and True is returned.
             """
             for vertex in subgraph.vertices:
-                if vertex.op_type not in arithmetic_ops:
+                if eDag.id_to_vertex[vertex].op_type not in arithmetic_ops:
                     return False
             return True
         # Constructs a list of disjoint subgraphs

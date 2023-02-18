@@ -108,10 +108,10 @@ if __name__ == "__main__":
     work = eDag.get_work()
     print(f"Work : {work}")
     print("[INFO] Calculating eDAG depth")
-    # cProfile.run('depth = eDag.get_depth()')
+    cProfile.run('depth = eDag.get_depth()')
 
     # start = time()
-    depth = eDag.get_depth()
+    # depth = eDag.get_depth()
     # print(f"[DEBUG] Time taken: {time() - start}")
     print(f"Depth: {depth}")
     print(f"Parallelism: {work / depth}")

@@ -163,7 +163,7 @@ class EDag:
     _out = 1
 
     def __init__(self) -> None:
-        self.vertices: Set[Vertex] = set()
+        self.vertices: Set[int] = set()
         # A dictionary that maps the ID of the vertex to the
         # corresponding object. This is only present for
         # easier access to specific vertex
@@ -172,7 +172,9 @@ class EDag:
         # of vertices. The first set will be the vertices
         # on which it depends, while the second set will be
         # the vertices it points to, i.e. vertices that depend on it
-        self.adj_list: Dict[Vertex, List[Set[Vertex]]] = {}
+        # Note that for performance reasons, only the IDs of the
+        # vertices will appear this dictionary
+        self.adj_list: Dict[int, List[Set[int]]] = {}
         
         # A list of disjoint subgraphs contained in the eDAG.
         # Note that this list will not be filled automatically while
@@ -193,11 +195,11 @@ class EDag:
         Adds a single vertex to this execution DAG.
         """
         if vertex not in self.vertices:
-            self.vertices.add(vertex)
+            self.vertices.add(vertex.id)
             self.id_to_vertex[vertex.id] = vertex
 
         if vertex not in self.adj_list:
-            self.adj_list[vertex] = [set(), set()]
+            self.adj_list[vertex.id] = [set(), set()]
 
     def add_edge(self, source: Vertex, target: Vertex) -> None:
         """
@@ -207,10 +209,10 @@ class EDag:
         """
         # Ensures that both the source and target vertices have already
         # been added to the eDAG
-        assert(source in self.vertices)
-        assert(target in self.vertices)
-        self.adj_list[source][EDag._out].add(target)
-        self.adj_list[target][EDag._in].add(source)
+        assert(source.id in self.vertices)
+        assert(target.id in self.vertices)
+        self.adj_list[source.id][EDag._out].add(target.id)
+        self.adj_list[target.id][EDag._in].add(source.id)
 
     def get_starting_vertices(self, id_only: bool = False) \
         -> Union[Set[Vertex], Set[int]]:
@@ -268,7 +270,7 @@ class EDag:
         edges = []
         for source, (_, out_vertices) in self.adj_list.items():
             for target in out_vertices:
-                edges.append((f"{source.id}", f"{target.id}"))
+                edges.append((f"{source}", f"{target}"))
         return edges
 
     def remove_single_vertices(self) -> None:
@@ -294,47 +296,43 @@ class EDag:
         """
         res: Dict[int, List[int]] = {}
         for vertex, (in_vertices, out_vertices) in self.adj_list.items():
-            res[vertex.id] = [len(in_vertices), len(out_vertices)]
+            res[vertex] = [len(in_vertices), len(out_vertices)]
         return res
     
-    def topological_sort(self, id_only: bool = True, reverse: bool = False) \
-        -> Union[List[int], List[Vertex]]:
+    def topological_sort(self, reverse: bool = False) -> List[int]:
         """
-        Returns one topological sort of the eDAG in a list.
+        Returns one topological sort of the vertices of an eDAG in a list
+        containing their IDs.
         Implementation from
         https://www.geeksforgeeks.org/python-program-for-topological-sorting/
 
-        @param id_only: If True, only vertex IDs will be contained in the
-        returned list.
         @param reverse: If True, all predecessors will be on the right as
         opposed to on the left.
         """
         path = []
         visited = set()
-
-        def sort(vertex: Vertex) -> None:
+        adj_list = self.adj_list.copy()
+        # adj_list = self.get_vertex_id_adj_list()
+        def sort(vertex: int) -> None:
             """
             A helper function that visits all the successors of
             a given vertex.
+            FIXME: Can still be optimized
             """
             to_visit = [vertex]
             while to_visit:
                 curr = to_visit[-1]
                 visited.add(curr)
-                _, out_vertices = self.adj_list[curr]
-                out_vertices = [v for v in out_vertices if v not in visited]
+                _, out_vertices = adj_list[curr]
+                out_vertices.difference_update(visited)
                 if not out_vertices:
                     # No children or all of them have already been visited
-                    if id_only:
-                        path.append(curr.id)
-                    else:
-                        path.append(curr)
+                    path.append(curr)
                     
                     to_visit.pop()
                 else:
-                    to_visit.append(out_vertices[0])
+                    to_visit.append(next(iter(out_vertices)))
                     
-        
         for vertex in self.vertices:
             if vertex not in visited:
                 sort(vertex)
@@ -353,35 +351,39 @@ class EDag:
         after B's removal would be A -> C. If `maintain_deps` is False,
         there will be no dependency between vertex A and C.
         """
+        vertex_id = vertex.id
         # Removes vertex v from the dictionary
-        del self.id_to_vertex[vertex.id]
+        del self.id_to_vertex[vertex_id]
 
         # Retrieves the set of vertices on which v depends
         # and the set of vertices that depends on v
-        assert(vertex in self.adj_list)
-        in_vertices, out_vertices = self.adj_list[vertex]
+        assert(vertex_id in self.adj_list)
+        in_vertices, out_vertices = self.adj_list[vertex_id]
         for in_vertex in in_vertices:
             # Removes v from the out set of in_vertices
-            self.adj_list[in_vertex][EDag._out].remove(vertex)
+            self.adj_list[in_vertex][EDag._out].remove(vertex_id)
         for out_vertex in out_vertices:
             # Removes v from the in set of out_vertices
-            self.adj_list[out_vertex][EDag._in].remove(vertex)
+            self.adj_list[out_vertex][EDag._in].remove(vertex_id)
         if maintain_deps:
             # Adds an edge between each pair of in_vertex and
             # out_vertex if `maintain_deps` is True
-            for in_vertex in in_vertices:
-                for out_vertex in out_vertices:
+            for in_id in in_vertices:
+                in_vertex = self.id_to_vertex[in_id]
+                for out_id in out_vertices:
+                    out_vertex = self.id_to_vertex[out_id]
                     self.add_edge(in_vertex, out_vertex)
         # Removes vertex v from the adjacency list and the vertex set entirely
-        del self.adj_list[vertex]
-        assert(vertex in self.vertices)
-        self.vertices.remove(vertex)
+        del self.adj_list[vertex_id]
+        assert(vertex_id in self.vertices)
+        self.vertices.remove(vertex_id)
 
     def remove_subgraph(self, subgraph: EDag) -> None:
         """
         Removes all vertices that belong to the given subgraph in the eDAG
         """
-        for vertex_to_remove in subgraph.vertices:
+        for vertex_id in subgraph.vertices:
+            vertex_to_remove = self.id_to_vertex[vertex_id]
             self.remove_vertex(vertex_to_remove)
 
     def get_subgraph(self, vertex: Vertex) -> EDag:
@@ -391,10 +393,11 @@ class EDag:
         all vertices that have a valid path to v and all vertices to which
         v has a valid path.
         """
-        assert(vertex in self.vertices and vertex in self.adj_list)
+        vertex_id = vertex.id
+        assert(vertex_id in self.vertices and vertex_id in self.adj_list)
         sub_eDag = EDag()
 
-        curr = vertex
+        curr = vertex_id
         visited = set()
         to_visit = { curr }
 
@@ -413,7 +416,7 @@ class EDag:
         adj_list_copy = self.adj_list.copy()
         unvisited = self.vertices.difference(visited)
         for vertex in unvisited:
-            del id_to_vertex_copy[vertex.id]
+            del id_to_vertex_copy[vertex]
             del adj_list_copy[vertex]
         
         sub_eDag.vertices = visited
@@ -436,7 +439,8 @@ class EDag:
             changed = False
 
             tmp_vertices = self.vertices.copy()
-            for vertex in tmp_vertices:
+            for vertex_id in tmp_vertices:
+                vertex = self.id_to_vertex[vertex_id]
                 # If condition is not satisfied
                 if not cond(vertex):
                     self.remove_vertex(vertex)
@@ -456,12 +460,12 @@ class EDag:
         # Calculates the depth using an iterative and DP approach
         # to guarantee maximum efficiency and to avoid stack overflow
         dp = defaultdict(int)
-        adj_list = self.get_vertex_id_adj_list()
+        # adj_list = self.get_vertex_id_adj_list()
         # Computes the topologically sorted list of vertices
         topo_sorted = self.topological_sort(reverse=True)
 
         for vertex in tqdm(topo_sorted):
-            _, out_vertices = adj_list[vertex]
+            _, out_vertices = self.adj_list[vertex]
             for out_vertex in out_vertices:
                 new_val = dp[out_vertex] + 1
                 dp[vertex] = dp[vertex] if dp[vertex] > new_val else new_val
@@ -484,8 +488,8 @@ class EDag:
 
         # FIXME: Can probably use Python `filter()`
         work_count = 0
-        for vertex in self.vertices:
-            if cond(vertex):
+        for vertex_id in self.vertices:
+            if cond(self.id_to_vertex[vertex_id]):
                 work_count += 1
         return work_count
 
@@ -549,7 +553,8 @@ class EDag:
         # Uses sfdp as the layout engine for large graph
         engine = "sfdp" if len(self.vertices) > large_graph_thresh else None
         graph = Digraph(engine=engine, graph_attr={"overlap": "scale"})
-        for vertex in self.vertices:
+        for vertex_id in self.vertices:
+            vertex = self.id_to_vertex[vertex_id]
             if highlight_mem_acc and vertex.is_mem_acc:
                 if vertex.op_type == OpType.LOAD_MEM and vertex.cache_hit:
                     # The vertex color should be green if cache hit

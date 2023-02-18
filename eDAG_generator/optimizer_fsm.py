@@ -183,7 +183,7 @@ class ReductionFSM(OptimizerFSM):
             """
             # Base case:
             # If both `in_vertices` and `out_vertices` are empty
-            if len(in_vertices) == 0 and len(in_vertices) == 0:
+            if len(in_vertices) == 0 and len(out_vertices) == 0:
                 return
 
             if len(in_vertices) == 1 and \
@@ -209,8 +209,8 @@ class ReductionFSM(OptimizerFSM):
                     eDag.adj_list[out][EDag._out].difference(out_set)
                 next_in.append(out)
                 # Adds an dependency from v1 and v2 to one of the out-vertices
-                eDag.add_edge(v1, out)
-                eDag.add_edge(v2, out)
+                eDag.add_edge(eDag.id_to_vertex[v1], eDag.id_to_vertex[out])
+                eDag.add_edge(eDag.id_to_vertex[v2], eDag.id_to_vertex[out])
             if len(in_vertices) == 1 and leftover is None:
                 leftover = in_vertices.pop(0)
             assert(len(in_vertices) == 0)
