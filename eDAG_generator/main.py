@@ -109,12 +109,13 @@ if __name__ == "__main__":
     print(f"Work : {work}")
     print("[INFO] Calculating eDAG depth")
     # cProfile.run('depth = eDag.get_depth()')
-    start = time()
+
+    # start = time()
     depth = eDag.get_depth()
-    print(f"[DEBUG] Time taken: {time() - start}")
+    # print(f"[DEBUG] Time taken: {time() - start}")
     print(f"Depth: {depth}")
     print(f"Parallelism: {work / depth}")
-
+    # print(f"Sort: {eDag.topological_sort(reverse=True)}")
     if args.remove_single_vertices:
         eDag.remove_single_vertices()
 
