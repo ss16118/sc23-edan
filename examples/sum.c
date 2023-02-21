@@ -5,7 +5,7 @@
  * sum = arr[0] + arr[1] + arr[2] = 6
  */
 #include <stdio.h>
-#define N 4
+#define N 1024
 
 /**
  * Main computation kernel that calculates the sum
@@ -23,6 +23,8 @@ int __attribute__ ((noinline)) kernel(int *arr, int n)
 
 int main(int argc, char **argv)
 {
-  int arr[N] = {1, 2, 3, 4};
+  int arr[N];
+  for (int i = 0; i < N; ++i)
+    arr[i] = i;
   return kernel(arr, N);
 }
