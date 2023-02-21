@@ -69,8 +69,10 @@ class SingleLevelSetAssociativeCache(CacheModel):
                 k: int = 2,
                 strategy: EvictionStrategy = EvictionStrategy.LRU) -> None:
         """
-        @param cache_size: the total size of the cache in bytes.
-        @param k: the number of cache lines in a set. k-way associative cache.
+        @param cache_size: Total size of the cache in bytes.
+        @param addr_len: Number of bits of an address.
+        @param k: Number of cache lines in a set. k-way associative cache.
+        @param strategy: Cache eviction strategy.
         """
         super().__init__(cache_line_size, addr_len, strategy)
         # Ensures that the cache size is divisible by the cache line size

@@ -157,7 +157,7 @@ class ReductionFSM(OptimizerFSM):
         
         self.prev_state = self.curr_state
         self.curr_state = next
-        self.curr_state.vertices.append(vertex)
+        self.curr_state.vertices.append(vertex.id)
         # Resets the FSM if it has returned to START
     
         if next == self.start:
@@ -174,9 +174,9 @@ class ReductionFSM(OptimizerFSM):
         Restructures the sequential eDAG so that it has a depth of O(log(n))
         as opposed to O(n).
         """
-        def restructure(in_vertices: List[Vertex],
-                        out_vertices: List[Vertex],
-                        leftover: Optional[Vertex] = None) -> None:
+        def restructure(in_vertices: List[int],
+                        out_vertices: List[int],
+                        leftover: Optional[int] = None) -> None:
             """
             A helper function that recursively assigns every two in-vertices
             to an out-vertex.

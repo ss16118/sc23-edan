@@ -22,5 +22,6 @@ class InstructionParser(ABC):
     def generate_vertex(self, id: int, instruction: str,
                         operands: List[str],
                         cpu: Optional[int] = None,
-                        insn_addr: Optional[str] = None) -> Vertex:
+                        insn_addr: Optional[str] = None,
+                        data_addr: Optional[str] = None) -> Vertex:
         pass

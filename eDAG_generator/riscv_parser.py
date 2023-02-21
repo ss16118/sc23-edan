@@ -122,8 +122,6 @@ class RiscvParser(InstructionParser):
         res = dict.fromkeys(
             ["cpu", "insn_addr", "instruction", "operands", "data_addr"]
         )
-        # Strips the newline character on the right of a line
-        line = line.rstrip("\n")
         # Splits the line by the given delimiter
         tokens = line.split(";")
         if len(tokens) < 3:
@@ -171,8 +169,9 @@ class RiscvParser(InstructionParser):
             # it is not accessing memory
             if 'i' not in instruction:
                 # The addressing mode is register-offset
+                assert(data_addr is not None)
                 dependencies.add(self.__get_offset_reg(operands[1]))
-                dependencies.add(operands[1])
+                dependencies.add(data_addr)
                 data_size = self.get_insn_data_size(instruction)
                 op_type = OpType.LOAD_MEM
             else:
@@ -181,10 +180,12 @@ class RiscvParser(InstructionParser):
         elif instruction in RiscvParser.store_instructions:
             assert(len(operands) == 2)
             # Target of a `load` instruction is always the second operand
-            target = operands[1]
+            # target = operands[1]
+            assert(data_addr is not None)
+            target = data_addr
             dependencies.add(operands[0])
             dependencies.add(self.__get_offset_reg(operands[1]))
-            data_size = self.get_insn_data_size(instruction)
+            # data_size = self.get_insn_data_size(instruction)
             op_type = OpType.STORE_MEM
 
         elif instruction in RiscvParser.mv_instructions:
@@ -335,10 +336,6 @@ class RiscvParser(InstructionParser):
         else:
             # An unknown instruction has been encountered
             raise ValueError(f"[ERROR] Unknown instruction {instruction}")
-
-        # if target is not None:
-        #     # Adds the target as a dependency
-        #     dependencies.add(target)
 
         new_vertex = Vertex(id, instruction, operands,
                             target=target, dependencies=dependencies,

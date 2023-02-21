@@ -2,10 +2,12 @@ import os
 from tqdm import tqdm
 from typing import List, Optional, Dict
 from enum import Enum, auto
+from time import time
 from eDAG import EDag, Vertex, OpType
 from instruction_parser import InstructionParser
 from riscv_parser import RiscvParser
 from cache_model import CacheModel
+from cpu_model import CPUModel
 from edag_sanitizer import *
 
 class ISA(Enum):
@@ -33,8 +35,9 @@ class EDagGenerator:
 
     # =========== Constructor ===========
     def __init__(self, trace_file: str, isa: ISA, only_mem_acc: bool,
-                remove_single_vertices: bool = True, simplified: bool = False,
-                cache_model: Optional[CacheModel] = None)-> None:
+                remove_single_vertices: bool = True, sanitize: bool = False,
+                cache_model: Optional[CacheModel] = None,
+                cpu_model: Optional[CPUModel] = None)-> None:
         """
         @param trace_file: path to the trace file as input for the constructor.
         @isa: the ISA of the assembly instructions contained in the trace file.
@@ -42,13 +45,15 @@ class EDagGenerator:
         instructions will be included in the parsed execution DAG.
         @param remove_single_vertices: If set to True, vertices that have no
         dependencies will be removed from the eDAG.
-        @param simplified: If set to True, only the most essential vertices
+        @param sanitize: If set to True, only the most essential vertices
         and dependencies will be kept, while control dependencies and
         non-relevant vertices unrelated to the core of computation will be
         removed. This is used to for theoretical analysis of work and depth
         of parallel algorithms.
         @param cache_model: Specifies the cache model to use while generating
         the eDAG.
+        @param cpu_model: A CPU model that will be leveraged to estimate
+        the number of computation cycles needed by each vertex.
         """
         assert(os.path.exists(trace_file))
         self.trace_file = trace_file
@@ -56,9 +61,9 @@ class EDagGenerator:
         self.remove_single_vertices = remove_single_vertices
 
         # eDAG sanitizer initialization
-        self.simplified = simplified
+        self.sanitize = sanitize
         self.sanitizer = None
-        if self.simplified:
+        if sanitize:
             self.sanitizer = EDagGenerator.isa_to_sanitizer.get(isa)
             if self.sanitizer is None:
                 raise ValueError(f"[ERROR] ISA {isa.name} sanitizer is not yet supported")
@@ -74,6 +79,8 @@ class EDagGenerator:
         
         # Cache model initialization
         self.cache_model = cache_model
+        # CPU model initialization
+        self.cpu_model = cpu_model
 
     def generate(self) -> EDag:
         """
@@ -90,7 +97,14 @@ class EDagGenerator:
         vertex_id = 0
 
         # Iterates through every line in the trace file
-        for line in tqdm(trace):
+        prev_time = time()
+        for line in trace:
+            if vertex_id % 1000000 == 0 and vertex_id != 0:
+                curr_time = time()
+                print(f"[INFO] Progress: {vertex_id} [{int(1000000 / (curr_time - prev_time))} iter/s]")
+                prev_time = curr_time
+            # Strips the newline character on the right of a line
+            line = line.strip()
             parsed_line = self.parser.parse_line(line)
 
             if parsed_line is None:
@@ -100,35 +114,30 @@ class EDagGenerator:
             new_vertex: Vertex = \
                 self.parser.generate_vertex(id=vertex_id, **parsed_line)
 
-            if new_vertex.is_mem_acc:
-                # new_vertex.data_addr = addr
-                addr = new_vertex.data_addr
-                # Keeps track of the writes to memory addresses
-                if new_vertex.op_type == OpType.STORE_MEM:
-                    curr_vertex[addr] = new_vertex
-                elif new_vertex.op_type == OpType.LOAD_MEM:
-                    dep = curr_vertex.get(addr)
-                    if dep is not None:
-                        # Creates a dependency between the vertex that 
-                        # previously wrote to the same address and the 
-                        # new vertex
-                        new_vertex.dependencies.add(dep)
-
             # If a cache model is used
             if self.cache_model is not None and \
                 new_vertex.op_type == OpType.LOAD_MEM:
-                new_vertex.cache_hit = \
-                    self.cache_model.find(new_vertex.data_addr)
+                cache_hit = self.cache_model.find(new_vertex.data_addr)
+                new_vertex.cache_hit = cache_hit
+                if cache_hit:
+                    # If the data access is a cache hit, reduces the amount
+                    # of data movement to 0 since it does not need to
+                    # access the main memory
+                    new_vertex.data_size = 0
+            
+            # If a CPU model is used
+            if self.cpu_model is not None:
+                new_vertex.cycles = self.cpu_model.get_op_cycles(new_vertex)
 
             is_critical = True
-            # if self.simplified:
+            # if self.sanitize:
             #     # Only critical vertices are kept
             #     is_critical = self.sanitizer.is_critical_vertex(new_vertex)
 
             if is_critical:
                 eDag.add_vertex(new_vertex)
 
-                if not self.simplified and \
+                if not self.sanitize and \
                     new_vertex.target is not None:
                     # If `simplified` is True, only true dependencies
                     # will be kept
@@ -152,12 +161,10 @@ class EDagGenerator:
             vertex_id += 1
         trace.close()
 
-        # if self.simplified:
+        # if self.sanitize:
         #     self.sanitizer.sanitize_edag(eDag)
 
         if self.only_mem_acc:
             eDag.filter_vertices(lambda v: v.is_mem_acc)
 
-        if self.remove_single_vertices:
-            eDag.remove_single_vertices()
         return eDag

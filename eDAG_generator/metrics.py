@@ -2,8 +2,11 @@
 # of metrics based on either traces or eDAGs
 import os
 import math
+import networkx as nx
 import matplotlib.pyplot as plt
 from typing import List, Optional, Set, Dict, Tuple
+from array import array
+from tqdm import tqdm
 from collections import OrderedDict, defaultdict
 from instruction_parser import InstructionParser
 from eDAG import EDag, OpType
@@ -15,24 +18,21 @@ class ReuseDistance:
     An object that encapsulates all the functionalities related to
     reuse distance computation.
     """
-    def __init__(self, trace_file: str, parser: InstructionParser) -> None:
+    def __init__(self, eDag: EDag) -> None:
         """
-        @param trace_file: path to the trace file.
-        @param parser: an `InstructionParser` object
+        @param eDag: An execution DAG object which will be the
+        target of reuse distance analysis.
         """
-        assert(os.path.exists(trace_file))
-        self.trace_file = trace_file
-        self.reuse_distance = self.__compute_reuse_distance(parser)
+        self.eDag = eDag
+        # Keeps only the memory load vertices
+        # Note that this modifies the eDAG in place
+        self.eDag.filter_vertices(lambda v: v.op_type == OpType.LOAD_MEM)
 
-    def __compute_reuse_distance(self, parser: InstructionParser) -> Dict[int, int]:
+    def __compute_reuse_distance(self, addrs: List[str]) -> Dict[int, int]:
         """
         A private helper function that computes reuse distance 
-        of each unique data address by iterating through the give 
-        trace file. The reuse distance is calculated with the most naive
-        approach where both the time and space complexity is O(n).
-        In order for the function to work, an `InstructionParser`
-        needs to be passed in as an argument. It will be used to determine
-        the virtual addresses that are included in the 
+        of each unique data address by iterating through the list of
+        given virtual addresses that were accessed.
         
         FIXME: Since it is definitely not the most efficient way to do
         this, it might take a considerable amount of time to obtain
@@ -46,9 +46,9 @@ class ReuseDistance:
         distances and the values are numbers of occurrences.
         """
         res = defaultdict(int)
-        trace = open(self.trace_file, "r")
         
         dist = OrderedDict()
+
         def get_distance(addr: str) -> int:
             """
             A helper function that returns the reuse distance
@@ -73,28 +73,55 @@ class ReuseDistance:
             dist[addr] = None
             assert(distance >= 0)
             return distance
-
-        for line in trace:
-            # Parses each line in the trace file with the given parser
-            data_addr = parser.get_load_data_addr(line)
-            if data_addr is None:
-                continue
-            distance = get_distance(data_addr)
-            print(f"[DEBUG] addr: {data_addr}, dist: {distance}")
+        
+        for addr in addrs:
+            distance = get_distance(addr)
             res[distance] += 1
-        trace.close()
+
         return res
 
-    
-    def plot_histogram(self, save_fig_path: Optional[str] = None) -> None:
+    def get_sequential_reuse_histogram(self) -> Dict[int, int]:
         """
-        Plots the reuse histogram with matplotlib.
+        Returns the reuse distance histogram of the eDAG as if
+        it was executed in a sequential program.
+        """
+        sorted_vs = self.eDag.sorted_vertices
+        addrs = [v.data_addr for v in sorted_vs]
+        return self.__compute_reuse_distance(addrs)
+
+    def get_all_reuse_histograms(self) -> List[Dict[int, int]]:
+        """
+        Returns a list containing the reuse distance histograms
+        each corresponding with a specific topological ordering of the
+        memory load vertices in the eDAG.
+        """
+        # Uses networkx to obtain all the topological sorts
+        graph = nx.DiGraph(self.eDag.edges(False))
+        # Finds all the topological sorts with the help of
+        # the networkx library
+        topo_sorts = nx.all_topological_sorts(graph)
+        res = []
+        lim = 100
+        count = 0
+        for sort in tqdm(topo_sorts):
+            addrs = [self.eDag.id_to_vertex[v_id].data_addr for v_id in sort]
+            res.append(self.__compute_reuse_distance(addrs))
+            count += 1
+            if count == lim:
+                break
+        
+        return res
+
+    @staticmethod
+    def plot_histogram(reuse_distance: Dict[int, int],
+                       save_fig_path: Optional[str] = None) -> None:
+        """
+        Plots the given reuse histogram with matplotlib.
         If `save_fig_path` is not None, the generated histogram
         will be saved to the specified path.
         """
-        print(self.reuse_distance)
         # Unzips the key-value pairs in the dictionary into two lists
-        reuse_distance = sorted(list(self.reuse_distance.items()),
+        reuse_distance = sorted(list(reuse_distance.items()),
                                 key=lambda p: p[0])
         x, y = list(zip(*reuse_distance))
         x = list(map(lambda elem: str(elem), x))
@@ -113,6 +140,7 @@ class ReuseDistance:
             plt.savefig(save_fig_path, bbox_inches="tight")
         else:
             plt.show()
+        plt.close()
         
 
 class BandwidthUtilization:
@@ -126,52 +154,53 @@ class BandwidthUtilization:
         """
         self.eDag = eDag
 
-    def compute_bandwidth(self, insn_cycles: List[Tuple[Set[str], float]],
-                          frequency: int = 3.6 * 10 ** 9,
-                          use_cache_model: bool = False,
-                          cache_hit_cycles: int = 4) -> float:
+    def get_critical_path_cycles(self) -> float:
+        """
+        Computes the critical path of the eDAG based on the number of CPU
+        cycles associated with each vertex. In turn, the total number of
+        compute cycles in the critical path will be returned.
+        Note that this function should only be called if a CPU model
+        has been used to construct the eDAG and all the vertices have
+        their corresponding CPU cycles.
+        """
+        # The critical path is computed with a similar approach as
+        # the depth function
+        # Computes the topologically sorted list of vertices
+        topo_sorted = self.eDag.topological_sort(reverse=True)
+        dp = array('f', [0] * len(topo_sorted))
+        length = 0
+        print(topo_sorted)
+        for v_id in tqdm(topo_sorted):
+            _, out_vertices = self.eDag.adj_list[v_id]
+            vertex = self.eDag.id_to_vertex[v_id]
+            assert(vertex.cycles is not None)
+            if not out_vertices:
+                # If vertex is an end node whose out-degree is 0
+                dp[v_id] = vertex.cycles
+            else:
+                for out_vertex_id in out_vertices:
+                    new_val = dp[out_vertex_id] + vertex.cycles
+                    dp[v_id] = dp[v_id] if dp[v_id] > new_val else new_val
+            length = length if length > dp[v_id] else dp[v_id]
+                
+        return length
+        
+    def compute_bandwidth(self, cpu_frequency: int = 10 ** 9) -> float:
         """
         Computes the estimation of average memory bandwidth utilization in
-        bytes per second based on the list of given parameters.
-        @param insn_cycles: A list of tuples that maps a set of instructions to
-        their corresponding estimated compute cycles.
-        @param frequency: The frequency of the CPU, whose reciprocal, when
-        multiplied with the total number of cycles executed, will be used
-        to estimate the time.
-        @param use_cache_model: If set to True, memory load instructions
-        that are cache hits will not be considered.
-        @param cache_hit_cycles: The number of clock cycles that will take
-        for a memory load to complete if it is cache hit. Will only be
-        considered when `use_cache_model` is set to True.
+        bytes per second by first computing the total amount of data movement
+        in the eDAG and then divide it by the time it takes to traverse
+        the critical path in the eDAG.
         """
-        def get_op_cycles(opcode: str) -> float:
-            """
-            A helper function that retrieves the number of cycles
-            that will take the given opcode to complete based on
-            the information specified in `insn_cycles`.
-            Raises an error if the opcode is not included in `insn_cycles`.
-            """
-            for opcode_set, op_cycles in insn_cycles:
-                if vertex.opcode in opcode_set:
-                    return op_cycles
-            raise ValueError(f"[ERROR] Opcode '{opcode}' has unknown cycles")
-
-        # FIXME: The current approach treats the given eDAG as a sequential
-        # program, which needs to be changed
-        cycles = 0
-        # Amount of data moved between main memory and CPU
-        bytes_moved = 0
-        # Iterates through all the vertices in the eDAG
-        for vertex in self.eDag.vertices:
-            if use_cache_model and vertex.cache_hit:
-                cycles += cache_hit_cycles
-                continue
-            cycles += get_op_cycles(vertex.opcode)
-            if vertex.is_mem_acc:
-                # If instruction is memory access
-                assert(vertex.data_size > 0)
-                bytes_moved += vertex.data_size
+        # Calculates the critical path length in terms of the number
+        # of CPU cycles it takes
+        critical_path_length = self.get_critical_path_cycles()
+        print(f"[DEBUG] Critical path length: {critical_path_length} cycles")
+        # Calculates the total amount of data movement in bytes between
+        # the CPU and the main memory
+        data_movement = 0
+        for vertex_id in self.eDag.vertices:
+            vertex = self.eDag.id_to_vertex[vertex_id]
+            data_movement += vertex.data_size
         
-        time = cycles / frequency
-        return bytes_moved / time
-                
+        return data_movement * cpu_frequency / critical_path_length

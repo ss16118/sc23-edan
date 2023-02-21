@@ -2,11 +2,13 @@ from __future__ import annotations
 from enum import Enum, auto
 from tqdm import tqdm
 import numpy as np
+import bz2
 import networkx as nx
-import math
-import random
+from array import array
+import igraph
+import pickle
 from collections import defaultdict
-from multiprocessing import Pool, Process, Manager
+from multiprocessing import Pool, Process, Manager, JoinableQueue
 from typing import List, Dict, Optional, Set, Tuple, Callable, Union
 from graphviz import Digraph
 
@@ -27,32 +29,7 @@ class OpType(Enum):
     MOVE = auto()
     # Branch
     BRANCH = auto()
-
-def task(curr_level: Set[int], task_dp: Dict[int, int],
-        adj_list: Dict[int, List[Set[int]]], res: List) -> Dict[int, int]:
-    """
-    A helper function executed by each worker thread.
-    """
-    prev_level = set()
-    # Visits the eDAG from bottom to top
-    while curr_level:
-        # Collects vertices from the level above while
-        # traversing through the current level
-        for curr in curr_level:
-            in_vertices, out_vertices = adj_list[curr]
-            for out_vertex in out_vertices:
-                # Using `if` is faster than `max()`
-                new_val = 1 + task_dp[out_vertex]
-                task_dp[curr] = \
-                    task_dp[curr] if task_dp[curr] > new_val else new_val
-            # Adds all `in_vertices` to the level above since
-            # they will be visited in the next iteration
-            prev_level.update(in_vertices)
-        curr_level = prev_level
-        prev_level = set()
     
-    res.append(task_dp)
-
 
 class Vertex:
     """
@@ -65,9 +42,9 @@ class Vertex:
                 op_type: OpType, is_comm_assoc: bool = False,
                 # Optional attributes
                 cpu: Optional[int] = None,
-                insn_addr: Optional[None] = None,
+                insn_addr: Optional[str] = None,
                 data_addr: Optional[str] = None,
-                data_size: Optional[int] = 0) -> None:
+                data_size: int = 0) -> None:
         """
         @param id: a unique number given to each vertex by the parser.
         @param opcode: opcode of the assembly instruction, e.g. add, sub, mv.
@@ -106,6 +83,10 @@ class Vertex:
         self.insn_addr = insn_addr
         self.data_addr = data_addr
         self.data_size = data_size
+        # Estimated number of cycles that will take for the instruction
+        # contained in this vertex to finish based on the pre-defined
+        # CPU model. It is set to None at initialization time
+        self.cycles = None
         # Given that this vertex represents a memory access
         # instruction, this argument indicates whether the data stored in the
         # memory address is already in cache according to a predefined
@@ -181,6 +162,8 @@ class EDag:
         # constructing the eDAG. split_disjoint_subgraphs() have to
         # be invoked to retrieve them
         self.disjoint_subgraphs: List[EDag] = []
+        # Keeps track of all vertices that have been removed
+        self.removed_vertices = set()
 
     @property
     def sorted_vertices(self) -> List[Vertex]:
@@ -260,17 +243,22 @@ class EDag:
             adj_list[vertex.id] = [in_ids, out_ids]
         return adj_list
 
-    def edges(self) -> List[Tuple[str, str]]:
+    def edges(self, use_str: bool = True) \
+        -> Union[List[Tuple[str, str]], List[Tuple[int, int]]]:
         """
         Converts the adjacency list to a list of directed edges between 
         two vertices. Note that vertices are represented with their IDs.
         For instance, an edge of ('1', '2') denotes a directed edge from 
         vertex 1 to vertex 2.
+        @param use_str: If True, will return the vertex IDs as strings.
         """
         edges = []
         for source, (_, out_vertices) in self.adj_list.items():
             for target in out_vertices:
-                edges.append((f"{source}", f"{target}"))
+                if use_str:
+                    edges.append((f"{source}", f"{target}"))
+                else:
+                    edges.append((source, target))
         return edges
 
     def remove_single_vertices(self) -> None:
@@ -305,41 +293,26 @@ class EDag:
         containing their IDs.
         Implementation from
         https://www.geeksforgeeks.org/python-program-for-topological-sorting/
-
+        TODO Re-indexing of the Python library is annoying and it causes
+        an error in this function when vertices are removed.
         @param reverse: If True, all predecessors will be on the right as
         opposed to on the left.
         """
-        path = []
-        visited = set()
-        adj_list = self.adj_list.copy()
-        # adj_list = self.get_vertex_id_adj_list()
-        def sort(vertex: int) -> None:
-            """
-            A helper function that visits all the successors of
-            a given vertex.
-            FIXME: Can still be optimized
-            """
-            to_visit = [vertex]
-            while to_visit:
-                curr = to_visit[-1]
-                visited.add(curr)
-                _, out_vertices = adj_list[curr]
-                out_vertices.difference_update(visited)
-                if not out_vertices:
-                    # No children or all of them have already been visited
-                    path.append(curr)
-                    
-                    to_visit.pop()
-                else:
-                    to_visit.append(next(iter(out_vertices)))
-                    
-        for vertex in self.vertices:
-            if vertex not in visited:
-                sort(vertex)
-        
-        if not reverse:
-            path.reverse()
-
+        if len(self.removed_vertices) > 0:
+            raise RuntimeError("[ERROR] Topological sort can only be computed if no vertices have been removed")
+        # Uses the igraph library to get the topological sort
+        graph = igraph.Graph(edges=self.edges(False), directed=True)
+        # graph.add_vertices(map(str, self.vertices))
+        # graph.add_edges(self.edges())
+        # vertices_to_remove = [v.index for v in graph.vs if v.index not in self.vertices]
+        # graph.delete_vertices(vertices_to_remove)
+        # print(graph.vs["name"])
+        # print("[DEBUG] iGraph vertices")
+        # print(self.edges())
+        path = graph.topological_sorting(mode="in" if reverse else "out")
+        # print(len(self.vertices))
+        # path = list(map(lambda i: int(graph.vs[i]["name"]), path))
+        # print(f"[DEBUG] Topological sort: {len(path)}")
         assert(len(path) == len(self.vertices))
         return path
 
@@ -354,7 +327,7 @@ class EDag:
         vertex_id = vertex.id
         # Removes vertex v from the dictionary
         del self.id_to_vertex[vertex_id]
-
+        
         # Retrieves the set of vertices on which v depends
         # and the set of vertices that depends on v
         assert(vertex_id in self.adj_list)
@@ -377,6 +350,7 @@ class EDag:
         del self.adj_list[vertex_id]
         assert(vertex_id in self.vertices)
         self.vertices.remove(vertex_id)
+        self.removed_vertices.add(vertex_id)
 
     def remove_subgraph(self, subgraph: EDag) -> None:
         """
@@ -451,32 +425,34 @@ class EDag:
             if not changed:
                 break
 
-    def get_depth(self) -> int:
+    def get_depth(self) -> Union[int, float]:
         """
-        Calculates the depth, i.e. in this case diameter of the eDAG by 
+        Calculates the depth, i.e. in this case diameter of the eDAG, by 
         exploring the graph from each starting vertex to each end vertex
         and keeping track of the longest distance.
         """
         # Calculates the depth using an iterative and DP approach
         # to guarantee maximum efficiency and to avoid stack overflow
-        dp = defaultdict(int)
-        # adj_list = self.get_vertex_id_adj_list()
+        # dp = defaultdict(int)
+
         # Computes the topologically sorted list of vertices
         topo_sorted = self.topological_sort(reverse=True)
+        # dp = np.zeros(shape=len(topo_sorted), dtype=np.int32)
+        dp = array('L', [0] * len(topo_sorted))
+        depth = 0
 
         for vertex in tqdm(topo_sorted):
             _, out_vertices = self.adj_list[vertex]
             for out_vertex in out_vertices:
                 new_val = dp[out_vertex] + 1
                 dp[vertex] = dp[vertex] if dp[vertex] > new_val else new_val
+            depth = depth if depth > dp[vertex] else dp[vertex]
         
-        depth = 0
-        for start_vertex in self.get_starting_vertices(True):
-            depth = max(depth, dp[start_vertex])
-            # for dp_tmp in res:
-            #     depth = max(depth, dp_tmp[start_vertex])
+        # depth = 0
+        # for start_vertex in self.get_starting_vertices(True):
+        #     depth = depth if depth > dp[start_vertex] else dp[start_vertex]
         return depth + 1
-    
+
     def get_work(self, cond: Optional[Callable[[Vertex], bool]] = None) -> int:
         """
         Counts the number of vertices which satisfy the given condition. If
@@ -540,7 +516,7 @@ class EDag:
         return asm
 
     def visualize(self, highlight_mem_acc: bool = True, 
-                large_graph_thresh: int = 1000) -> Digraph:
+                large_graph_thresh: int = 5000) -> Digraph:
         """
         Converts the eDAG to an graphviz.Digraph, which can then be
         rendered and saved as a PDF file.
@@ -568,3 +544,30 @@ class EDag:
                 graph.node(f"{vertex.id}", str(vertex))
         graph.edges(self.edges())
         return graph
+    
+
+    def save(self, save_path: str, use_compression: bool = False) -> None:
+        """
+        Persists the current eDAG object to the given path
+        through serialization.
+        """
+        if not use_compression:
+            # Saves the eDAG to a pickle file
+            with open(save_path, "wb") as pickle_file:
+                pickle.dump(self, pickle_file)
+        else:
+            # Uses bz2 to compress the data file
+            with bz2.BZ2File(save_path, "wb") as compressed_file:
+                pickle.dump(self, compressed_file)
+
+    @staticmethod
+    def load(save_path: str, use_compression: bool = False) -> EDag:
+        """
+        Loads the persisted eDAG object from the given path.
+        """
+        if not use_compression:
+            with open(save_path, "rb") as pickle_file:
+                return pickle.load(pickle_file)
+        else:
+            with bz2.BZ2File(save_path, "rb") as compressed_file:
+                return pickle.load(compressed_file)
