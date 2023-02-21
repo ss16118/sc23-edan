@@ -8,6 +8,7 @@ from cache_model import SingleLevelSetAssociativeCache
 from cpu_model import CPUModel
 from riscv_parser import RiscvParser
 from metrics import *
+from utils import *
 from riscv_subgraph_optimizer import RiscvSubgraphOptimizer
 
 M = 10 ** 6
@@ -53,9 +54,9 @@ if __name__ == "__main__":
     parser.add_argument("--highlight-mem-acc", dest="highlight_mem_acc",
                         default=False, action="store_true",
                         help="If set, memory access vertices will be highlighted as red")
-    parser.add_argument("-r", "--remove-single-vertices", dest="remove_single_vertices",
+    parser.add_argument("-r", "--remove-unconnected-vertices", dest="remove_unconnected_vertices",
                         default=False, action="store_true",
-                        help="If set, single vertices without any connections will be removed")
+                        help="If set, unconnected vertices without any connections will be removed")
     parser.add_argument("-s", "--save", dest="save_path", default=None,
                         help="If set, will save the original generated eDAG to the given path")
     parser.add_argument("--sanitize", dest="sanitize", 
@@ -79,6 +80,9 @@ if __name__ == "__main__":
     parser.add_argument("--work-depth", dest="calc_work_depth",
                         default=False, action="store_true",
                         help="If set, will calculate the work and depth of the eDAG")
+    parser.add_argument("--para-histogram", dest="para-histograms",
+                        default=False, action="store_true",
+                        help="If set, will generate the parallelism histogram")
     args = parser.parse_args()
 
     if args.trace_file_path is None and args.load_path is None:
@@ -110,12 +114,11 @@ if __name__ == "__main__":
         # Initializes eDAG generator
         print("[INFO] Generating eDAG")
         generator = EDagGenerator(args.trace_file_path, ISA.RISC_V,
-                    args.only_mem_acc,
-                    args.remove_single_vertices, args.sanitize,
+                    args.only_mem_acc, args.sanitize,
                     cache_model=cache, cpu_model=cpu_model)
         eDag = generator.generate()
 
-    if args.save_path is not None:
+    if args.save_path:
         save_path = args.save_path
         eDag.save(save_path, compress)
         print(f"[INFO] Saved generated eDAG to {save_path}")
@@ -129,6 +132,7 @@ if __name__ == "__main__":
         bandwidth = bandwidth_metric.compute_bandwidth(cpu_model.frequency)
         print(f"Bandwidth utilization: {bandwidth / M:.2f} MB/s")
 
+    longest_path = None
     if args.calc_work_depth:
         print("[INFO] Calculating eDAG work")
         work = eDag.get_work()
@@ -136,7 +140,8 @@ if __name__ == "__main__":
         print("[INFO] Calculating eDAG depth")
         # cProfile.run('depth = eDag.get_depth()')
         start = time()
-        depth = eDag.get_depth()
+        longest_path = eDag.get_longest_path(True)
+        depth = len(longest_path)
         print(f"[DEBUG] Time taken: {time() - start}")
         print(f"Depth: {depth}")
         print(f"Parallelism: {work / depth:.2f}")
@@ -147,11 +152,17 @@ if __name__ == "__main__":
         optimizer.optimize(eDag)
 
     # print(f"Sort: {eDag.topological_sort(reverse=True)}")
-    if args.remove_single_vertices:
-        eDag.remove_single_vertices()
-
+    if args.remove_unconnected_vertices:
+        eDag.remove_unconnected_vertices()
+    
     if args.graph_file is not None:
-        graph = eDag.visualize(args.highlight_mem_acc)
+        vertex_rank = eDag.get_vertex_rank()
+        graph = visualize_eDAG(eDag, args.highlight_mem_acc,
+                               vertex_rank=vertex_rank)
+        # Highlights the longest path if it exists
+        if longest_path:
+            visualize_longest_path(eDag, graph,
+                                   args.highlight_mem_acc, longest_path)
         graph.render(args.graph_file, view=True)
 
     if args.reuse_histogram:

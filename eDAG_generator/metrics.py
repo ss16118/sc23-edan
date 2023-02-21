@@ -100,6 +100,7 @@ class ReuseDistance:
         # Finds all the topological sorts with the help of
         # the networkx library
         topo_sorts = nx.all_topological_sorts(graph)
+        print(len(list(topo_sorts)))
         res = []
         lim = 100
         count = 0

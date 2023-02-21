@@ -261,11 +261,12 @@ class EDag:
                     edges.append((source, target))
         return edges
 
-    def remove_single_vertices(self) -> None:
+    def remove_unconnected_vertices(self) -> None:
         """
-        Removes all the vertices that have no dependencies from the eDAG.
-        "No dependencies" means that a vertex does not have any edges
-        connected to it, i.e. both in and out degrees of the vertex are 0.
+        Removes all the unconnected vertices that have no dependencies
+        from the eDAG. "No dependencies" means that a vertex does not
+        have any edges connected to it, i.e. both in and out degrees of the
+        vertex are 0.
         """
         in_out_degrees = self.get_in_out_degrees()
         for vertex_id, (in_degree, out_degree) in in_out_degrees.items():
@@ -306,13 +307,7 @@ class EDag:
         # graph.add_edges(self.edges())
         # vertices_to_remove = [v.index for v in graph.vs if v.index not in self.vertices]
         # graph.delete_vertices(vertices_to_remove)
-        # print(graph.vs["name"])
-        # print("[DEBUG] iGraph vertices")
-        # print(self.edges())
         path = graph.topological_sorting(mode="in" if reverse else "out")
-        # print(len(self.vertices))
-        # path = list(map(lambda i: int(graph.vs[i]["name"]), path))
-        # print(f"[DEBUG] Topological sort: {len(path)}")
         assert(len(path) == len(self.vertices))
         return path
 
@@ -424,12 +419,80 @@ class EDag:
             # in this iteration
             if not changed:
                 break
+    
+    def get_longest_path(self, id_only: bool = True) -> List[int]:
+        """
+        Computes the longest path in the eDAG in a list of consecutive vertices
+        that should be followed.
+        @param id_only: If True, only IDs of the vertices will be returned.
+        """
+        depth, dp = self.get_depth(True)
+        path = []
+        curr = None
+        curr_depth = 0
+        # Finds the vertex that starts the longest path
+        for vertex in self.get_starting_vertices(True):
+            if dp[vertex] > curr_depth:
+                curr = vertex
+                curr_depth = dp[vertex]
+        assert curr is not None
+        path.append(curr)
+        # Follows the starting node until the end is reached
+        while True:
+            _, out_vertices = self.adj_list[curr]
+            curr_depth = -1
+            for out_vertex in out_vertices:
+                if dp[out_vertex] > curr_depth:
+                    curr = out_vertex
+                    curr_depth = dp[out_vertex]
+            if curr_depth == -1:
+                # Reached the end
+                break
+            else:
+                # Appends the current vertex to the path
+                path.append(curr if id_only else self.id_to_vertex[curr])
+        assert depth == len(path)
+        return path
+    
+    def get_vertex_rank(self) -> Dict[int, Set[int]]:
+        """
+        Calculates the maximum distance between every vertex and an
+        arbitrary starting vertex in the eDAG, which is called its rank,
+        i.e. the depth of the vertex.
+        Returns a dictionary that maps each rank to a set of vertices
+        which belong to that rank. Note that only the IDs of the
+        vertices will be contained in the dictionary.
+        FIXME The term rank comes from how layout engines are implemented and 
+        is probably not the best term in this case.
+        """
+        # Computes the topological sort of the vertices
+        topo_sorted = self.topological_sort(reverse=False)
+        # Uses an array to keep track of the rank of each vertex
+        dp = array('L', [0] * len(topo_sorted))
+        for vertex in topo_sorted:
+            _, out_vertices = self.adj_list[vertex]
+            for out in out_vertices:
+                new_val = dp[vertex] + 1
+                dp[out] = dp[out] if dp[out] > new_val else new_val
+        
+        res = defaultdict(set)
+        # Iterates through the dp array to construct the sets
+        # containing vertices belonging to a specific rank
+        for vertex, rank in enumerate(dp):
+            res[rank].add(vertex)
+        
+        return res
 
-    def get_depth(self) -> Union[int, float]:
+
+    def get_depth(self, return_dp: bool = False) \
+         -> Union[int, Tuple[int, array]]:
         """
         Calculates the depth, i.e. in this case diameter of the eDAG, by 
         exploring the graph from each starting vertex to each end vertex
         and keeping track of the longest distance.
+        @param return_dp: If True, the array that is used to store the
+        intermediate values during the depth computation will also be
+        returned in a tuple along with the depth itself.
         """
         # Calculates the depth using an iterative and DP approach
         # to guarantee maximum efficiency and to avoid stack overflow
@@ -437,7 +500,7 @@ class EDag:
 
         # Computes the topologically sorted list of vertices
         topo_sorted = self.topological_sort(reverse=True)
-        # dp = np.zeros(shape=len(topo_sorted), dtype=np.int32)
+        # array.array is faster than np.array
         dp = array('L', [0] * len(topo_sorted))
         depth = 0
 
@@ -445,12 +508,13 @@ class EDag:
             _, out_vertices = self.adj_list[vertex]
             for out_vertex in out_vertices:
                 new_val = dp[out_vertex] + 1
+                # `if` statement is faster than `max()`
                 dp[vertex] = dp[vertex] if dp[vertex] > new_val else new_val
             depth = depth if depth > dp[vertex] else dp[vertex]
         
-        # depth = 0
-        # for start_vertex in self.get_starting_vertices(True):
-        #     depth = depth if depth > dp[start_vertex] else dp[start_vertex]
+        if return_dp:
+            return (depth + 1, dp)
+        
         return depth + 1
 
     def get_work(self, cond: Optional[Callable[[Vertex], bool]] = None) -> int:
@@ -514,37 +578,6 @@ class EDag:
         else:
             asm = [vertex.asm for vertex in sorted_vertices]
         return asm
-
-    def visualize(self, highlight_mem_acc: bool = True, 
-                large_graph_thresh: int = 5000) -> Digraph:
-        """
-        Converts the eDAG to an graphviz.Digraph, which can then be
-        rendered and saved as a PDF file.
-        @param highlight_mem_acc: If set to True, vertices that perform memory
-        accesses will be highlighted.
-        @param large_graph_thresh: An integer which marks the threshold above
-        which a graph will be considered large and the layout engine used for
-        graphviz will be changed to sfdp instead of dot
-        """
-        # Uses sfdp as the layout engine for large graph
-        engine = "sfdp" if len(self.vertices) > large_graph_thresh else None
-        graph = Digraph(engine=engine, graph_attr={"overlap": "scale"})
-        for vertex_id in self.vertices:
-            vertex = self.id_to_vertex[vertex_id]
-            if highlight_mem_acc and vertex.is_mem_acc:
-                if vertex.op_type == OpType.LOAD_MEM and vertex.cache_hit:
-                    # The vertex color should be green if cache hit
-                    color = "green"
-                else:
-                    color = "red"
-                
-                graph.node(f"{vertex.id}", str(vertex),
-                            style="filled", color=color)
-            else:
-                graph.node(f"{vertex.id}", str(vertex))
-        graph.edges(self.edges())
-        return graph
-    
 
     def save(self, save_path: str, use_compression: bool = False) -> None:
         """

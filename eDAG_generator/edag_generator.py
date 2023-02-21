@@ -34,8 +34,8 @@ class EDagGenerator:
     
 
     # =========== Constructor ===========
-    def __init__(self, trace_file: str, isa: ISA, only_mem_acc: bool,
-                remove_single_vertices: bool = True, sanitize: bool = False,
+    def __init__(self, trace_file: str, isa: ISA, 
+                only_mem_acc: bool, sanitize: bool = False,
                 cache_model: Optional[CacheModel] = None,
                 cpu_model: Optional[CPUModel] = None)-> None:
         """
@@ -43,8 +43,6 @@ class EDagGenerator:
         @isa: the ISA of the assembly instructions contained in the trace file.
         @param only_mem_acc: If set to True, only memory access related
         instructions will be included in the parsed execution DAG.
-        @param remove_single_vertices: If set to True, vertices that have no
-        dependencies will be removed from the eDAG.
         @param sanitize: If set to True, only the most essential vertices
         and dependencies will be kept, while control dependencies and
         non-relevant vertices unrelated to the core of computation will be
@@ -58,7 +56,6 @@ class EDagGenerator:
         assert(os.path.exists(trace_file))
         self.trace_file = trace_file
         self.only_mem_acc = only_mem_acc
-        self.remove_single_vertices = remove_single_vertices
 
         # eDAG sanitizer initialization
         self.sanitize = sanitize
