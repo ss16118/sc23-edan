@@ -7,6 +7,7 @@ import networkx as nx
 from array import array
 import igraph
 import pickle
+from functools import lru_cache
 from collections import defaultdict
 from multiprocessing import Pool, Process, Manager, JoinableQueue
 from typing import List, Dict, Optional, Set, Tuple, Callable, Union
@@ -288,6 +289,9 @@ class EDag:
             res[vertex] = [len(in_vertices), len(out_vertices)]
         return res
     
+    # Uses caching to make sure that consecutive calls to this
+    # function can be executed quickly
+    @lru_cache(maxsize=1)
     def topological_sort(self, reverse: bool = False) -> List[int]:
         """
         Returns one topological sort of the vertices of an eDAG in a list
@@ -431,6 +435,7 @@ class EDag:
         curr = None
         curr_depth = 0
         # Finds the vertex that starts the longest path
+        # FIXME Can probably use reduce
         for vertex in self.get_starting_vertices(True):
             if dp[vertex] > curr_depth:
                 curr = vertex
@@ -482,7 +487,6 @@ class EDag:
             res[rank].add(vertex)
         
         return res
-
 
     def get_depth(self, return_dp: bool = False) \
          -> Union[int, Tuple[int, array]]:

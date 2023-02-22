@@ -115,6 +115,7 @@ class EDagGenerator:
             if self.cache_model is not None and \
                 new_vertex.op_type == OpType.LOAD_MEM:
                 cache_hit = self.cache_model.find(new_vertex.data_addr)
+
                 new_vertex.cache_hit = cache_hit
                 if cache_hit:
                     # If the data access is a cache hit, reduces the amount

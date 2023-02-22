@@ -1,10 +1,12 @@
 # All classes related to calculating different types
-# of metrics based on either traces or eDAGs
+# of metrics based on eDAGs
 import os
 import math
+import bisect
+import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
-from typing import List, Optional, Set, Dict, Tuple
+from typing import List, Optional, Set, Dict, Tuple, Union
 from array import array
 from tqdm import tqdm
 from collections import OrderedDict, defaultdict
@@ -100,8 +102,9 @@ class ReuseDistance:
         # Finds all the topological sorts with the help of
         # the networkx library
         topo_sorts = nx.all_topological_sorts(graph)
-        print(len(list(topo_sorts)))
         res = []
+        # Currently the limit is 100 since otherwise it will produce way
+        # too many plots
         lim = 100
         count = 0
         for sort in tqdm(topo_sorts):
@@ -112,50 +115,25 @@ class ReuseDistance:
                 break
         
         return res
-
-    @staticmethod
-    def plot_histogram(reuse_distance: Dict[int, int],
-                       save_fig_path: Optional[str] = None) -> None:
-        """
-        Plots the given reuse histogram with matplotlib.
-        If `save_fig_path` is not None, the generated histogram
-        will be saved to the specified path.
-        """
-        # Unzips the key-value pairs in the dictionary into two lists
-        reuse_distance = sorted(list(reuse_distance.items()),
-                                key=lambda p: p[0])
-        x, y = list(zip(*reuse_distance))
-        x = list(map(lambda elem: str(elem), x))
-        plt.figure(figsize=(10, 5))
-        plt.bar(x, y)
-
-        # Sets the axis labels
-        plt.xlabel("Reuse distance")
-        # plt.yscale("log")
-        plt.ylabel("Number of references")
-
-        _, labels = plt.xticks()
-        plt.setp(labels, rotation=90)
-
-        if save_fig_path is not None:
-            plt.savefig(save_fig_path, bbox_inches="tight")
-        else:
-            plt.show()
-        plt.close()
         
 
 class BandwidthUtilization:
     """
     A object that computes the bandwidth utilization
     """
-    def __init__(self, eDag: EDag) -> None:
+    def __init__(self, eDag: EDag, cpu_frequency: int = 10 ** 9) -> None:
         """
         @param eDag: An execution DAG object which will be the
         target of bandwidth utilization analysis.
+        @param cpu_frequency: Frequency of CPU which will be used
+        for various bandwidth estimation based on the number
+        of CPU cycles.
         """
         self.eDag = eDag
+        self.cpu_frequency = cpu_frequency
 
-    def get_critical_path_cycles(self) -> float:
+    def get_critical_path_cycles(self, return_dp: bool = False) \
+        -> Union[float, Tuple[float, array]]:
         """
         Computes the critical path of the eDAG based on the number of CPU
         cycles associated with each vertex. In turn, the total number of
@@ -163,6 +141,9 @@ class BandwidthUtilization:
         Note that this function should only be called if a CPU model
         has been used to construct the eDAG and all the vertices have
         their corresponding CPU cycles.
+        @param return_dp: If True, the array that is used to the store
+        the intermediate values during the computation will also
+        be returned in a tuple along with the number of cycles.
         """
         # The critical path is computed with a similar approach as
         # the depth function
@@ -170,11 +151,10 @@ class BandwidthUtilization:
         topo_sorted = self.eDag.topological_sort(reverse=True)
         dp = array('f', [0] * len(topo_sorted))
         length = 0
-        print(topo_sorted)
         for v_id in tqdm(topo_sorted):
             _, out_vertices = self.eDag.adj_list[v_id]
             vertex = self.eDag.id_to_vertex[v_id]
-            assert(vertex.cycles is not None)
+            assert vertex.cycles is not None
             if not out_vertices:
                 # If vertex is an end node whose out-degree is 0
                 dp[v_id] = vertex.cycles
@@ -183,20 +163,68 @@ class BandwidthUtilization:
                     new_val = dp[out_vertex_id] + vertex.cycles
                     dp[v_id] = dp[v_id] if dp[v_id] > new_val else new_val
             length = length if length > dp[v_id] else dp[v_id]
-                
-        return length
         
-    def compute_bandwidth(self, cpu_frequency: int = 10 ** 9) -> float:
+        if return_dp:
+            return (length, dp)
+
+        return length
+    
+    def get_critical_path(self, dp: Optional[array] = None) -> List[int]:
+        """
+        Computes the critical path in the eDAG as a sequence of vertices
+        in based on the number of CPU cycles assigned to each vertex.
+        
+        See the similar function `EDag.get_longest_path()` for more details.
+        FIXME Duplicate code as `EDag.get_longest_path()`
+        @param dp: If provided, will forgo invoking `get_critical_path_cycles()`
+        """
+        if dp is None:
+            _, dp = self.get_critical_path_cycles(True)
+        
+        path = []
+        curr = None
+        curr_cycles = 0
+        # Finds the vertex that starts the critical path
+        # FIXME Can probably use reduce
+        for vertex in self.eDag.get_starting_vertices(True):
+            if dp[vertex] > curr_cycles:
+                curr = vertex
+                curr_cycles = dp[vertex]
+        assert curr is not None
+        path.append(curr)
+        # Follows the staring node until the end is reached
+        while True:
+            _, out_vertices = self.eDag.adj_list[curr]
+            curr_cycles = -1
+            for out_vertex in out_vertices:
+                if dp[out_vertex] > curr_cycles:
+                    curr = out_vertex
+                    curr_cycles = dp[out_vertex]
+            
+            if curr_cycles == -1:
+                break
+            else:
+                path.append(curr)
+
+        return path
+
+    def get_avg_bandwidth(self,
+                          critical_path_cycles: Optional[float] = None) \
+                            -> float:
         """
         Computes the estimation of average memory bandwidth utilization in
         bytes per second by first computing the total amount of data movement
         in the eDAG and then divide it by the time it takes to traverse
         the critical path in the eDAG.
+        @param critical_path_cycles: If provided, will forgo invoking
+        `get_critical_path_cycles()`.
         """
-        # Calculates the critical path length in terms of the number
-        # of CPU cycles it takes
-        critical_path_length = self.get_critical_path_cycles()
-        print(f"[DEBUG] Critical path length: {critical_path_length} cycles")
+        if critical_path_cycles is None:
+            # Calculates the critical path length in terms of the number
+            # of CPU cycles it takes
+            critical_path_cycles = self.get_critical_path_cycles()
+        
+        print(f"[DEBUG] Critical path length: {critical_path_cycles} cycles")
         # Calculates the total amount of data movement in bytes between
         # the CPU and the main memory
         data_movement = 0
@@ -204,4 +232,66 @@ class BandwidthUtilization:
             vertex = self.eDag.id_to_vertex[vertex_id]
             data_movement += vertex.data_size
         
-        return data_movement * cpu_frequency / critical_path_length
+        return data_movement * self.cpu_frequency / critical_path_cycles
+
+    def get_data_movement_over_time(self, cycles: float = 10.0,
+                                        use_bandwidth: bool = True) \
+                                            -> Tuple[List, np.array]:
+        """
+        Estimates how the amount of data movement, i.e. number of
+        bytes transferred between CPU and the main memory, in an application
+        changes based on the given time interval expressed in the number of
+        cycles as well as the critical path through the eDAG.
+        This is a metric, like parallelism histogram, mainly used
+        to discover potential bursts in a program.
+
+        @param cycles: Determines the granularity of time at which the
+        data movement will be computed. Can also be viewed as the span of
+        a single bin in a histogram. For instance, if the critical path
+        is 200 cycles, `cycles` is 20, instructions / vertices will be
+        split into 200 / 20 = 10 bins, and data movement will be
+        computed separately for each bin.
+
+        @return A tuple containing a two items. The first item will be
+        the bins or time intervals while the second item is a numpy array 
+        containing the amount of data movement for each time interval, either
+        in bytes or in bytes/s, as per the value of `use_bandwidth`.
+        """
+        topo_sorted = self.eDag.topological_sort(reverse=False)
+        dp = array('f', [0] * len(topo_sorted))
+        # Computes the maximum number of cycles it takes to
+        # reach each vertex from any starting node
+        # The algorithm is similar to the one used in `EDag.get_vertex_ran()`
+        max_cycles = 0
+        for v_id in topo_sorted:
+            _, out_vertices = self.eDag.adj_list[v_id]
+            vertex = self.eDag.id_to_vertex[v_id]
+            assert vertex.cycles is not None
+            new_val = dp[v_id] + vertex.cycles
+            for out in out_vertices:
+                dp[out] = dp[out] if dp[out] > new_val else new_val
+            max_cycles = max_cycles if max_cycles > new_val else new_val
+        # `max_cycles` should equal to `critical_path_cycles`
+        # Splits the time between 0 and `max_cycles` into bins
+        # each of size `cycles`
+        num_bins = math.ceil(max_cycles / cycles) + 1
+        bins = list(range(0, int(max_cycles + cycles), int(cycles)))
+        assert len(bins) == num_bins
+        res = np.zeros(shape=num_bins,
+                        dtype=np.float32 if use_bandwidth else np.int32)
+        
+        for v_id, v_cycles in enumerate(dp):
+            # `v_cycles` is the number of CPU cycles it takes
+            # to reach `vertex`, i.e. at which time the
+            # vertex will be executed
+            vertex = self.eDag.id_to_vertex[v_id]
+            # Ignores vertices that do not access memory
+            if vertex.data_size > 0:
+                # Computes how many buckets the 
+                start_bin = bisect.bisect_left(bins, v_cycles)
+                end_bin = bisect.bisect_left(bins, v_cycles + vertex.cycles)
+                res[start_bin:end_bin] += vertex.data_size
+        if use_bandwidth:
+            # Converts bytes to bytes/s
+            res = res * self.cpu_frequency / cycles
+        return bins, res

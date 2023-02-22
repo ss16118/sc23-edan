@@ -11,8 +11,7 @@ from metrics import *
 from utils import *
 from riscv_subgraph_optimizer import RiscvSubgraphOptimizer
 
-M = 10 ** 6
-K = 10 ** 3
+
 
 compress = True
 
@@ -70,7 +69,7 @@ if __name__ == "__main__":
                         help="If set, will generate the reuse distance histogram based on the given trace")
     parser.add_argument("--bandwidth", dest="calc_bandwidth",
                         default=False, action="store_true",
-                        help="If set, will estimate the average bandwidth utilization")
+                        help="If set, bandwidth related metrics will be computed")
     parser.add_argument("--cpu", dest="use_cpu_model",
                         default=False, action="store_true",
                         help="If set, a predefined CPU model will be used")
@@ -80,9 +79,6 @@ if __name__ == "__main__":
     parser.add_argument("--work-depth", dest="calc_work_depth",
                         default=False, action="store_true",
                         help="If set, will calculate the work and depth of the eDAG")
-    parser.add_argument("--para-histogram", dest="para-histograms",
-                        default=False, action="store_true",
-                        help="If set, will generate the parallelism histogram")
     args = parser.parse_args()
 
     if args.trace_file_path is None and args.load_path is None:
@@ -98,7 +94,7 @@ if __name__ == "__main__":
 
     if args.use_cpu_model:
         print("[INFO] Using default CPU model")
-        cpu_model = CPUModel(insn_cycles)
+        cpu_model = CPUModel(insn_cycles, frequency=3 * G)
     else:
         cpu_model = None
 
@@ -125,13 +121,6 @@ if __name__ == "__main__":
         file_size = os.path.getsize(save_path)
         print(f"[INFO] File size of {save_path}: {file_size / K:.2f} KB")
 
-    if args.calc_bandwidth:
-        print("[INFO] Calculating the average bandwidth utilization")
-        assert cpu_model is not None
-        bandwidth_metric = BandwidthUtilization(eDag)
-        bandwidth = bandwidth_metric.compute_bandwidth(cpu_model.frequency)
-        print(f"Bandwidth utilization: {bandwidth / M:.2f} MB/s")
-
     longest_path = None
     if args.calc_work_depth:
         print("[INFO] Calculating eDAG work")
@@ -146,23 +135,48 @@ if __name__ == "__main__":
         print(f"Depth: {depth}")
         print(f"Parallelism: {work / depth:.2f}")
 
+
+    critical_path = None
+    if args.calc_bandwidth:
+        print("[INFO] Calculating the average bandwidth utilization")
+        assert cpu_model is not None
+        bandwidth_metric = BandwidthUtilization(eDag, cpu_model.frequency)
+        # Obtains some intermediate values that will help with
+        # the calculation of other metrics
+        critical_path_cycles, dp = \
+            bandwidth_metric.get_critical_path_cycles(True)
+        # Computes the average bandwidth
+        avg_bandwidth = bandwidth_metric.get_avg_bandwidth(critical_path_cycles)
+        print(f"Average bandwidth utilization: {avg_bandwidth / M:.2f} MB/s")
+
+        # Retrieves the critical path itself
+        critical_path = bandwidth_metric.get_critical_path(dp)
+
+        # Computes the data movement over time
+        bins, data_movement = \
+            bandwidth_metric.get_data_movement_over_time(1, False)
+        # fig_path = f"../tmp/{filename_root}_dm.png"
+        visualize_data_movement_over_time(bins, data_movement, False)
+
     if args.optimize_subgraph:
         print("[INFO] Optimizing subgraph")
         optimizer = RiscvSubgraphOptimizer()
         optimizer.optimize(eDag)
 
-    # print(f"Sort: {eDag.topological_sort(reverse=True)}")
     if args.remove_unconnected_vertices:
         eDag.remove_unconnected_vertices()
-    
+
     if args.graph_file is not None:
+        highlight = args.highlight_mem_acc
+        print("[INFO] Generating graph")
         vertex_rank = eDag.get_vertex_rank()
-        graph = visualize_eDAG(eDag, args.highlight_mem_acc,
-                               vertex_rank=vertex_rank)
+        # vertex_rank = None
+        graph = visualize_eDAG(eDag, highlight, vertex_rank=vertex_rank)
         # Highlights the longest path if it exists
         if longest_path:
-            visualize_longest_path(eDag, graph,
-                                   args.highlight_mem_acc, longest_path)
+            visualize_path(eDag, graph, highlight, longest_path, "blue")
+        if critical_path:
+            visualize_path(eDag, graph, highlight, critical_path)
         graph.render(args.graph_file, view=True)
 
     if args.reuse_histogram:
@@ -173,5 +187,5 @@ if __name__ == "__main__":
             reuse_distance_metric.get_all_reuse_histograms()
         for i, reuse_histogram in enumerate(reuse_histograms):
             save_filename = f"../histos/{filename_root}_histo_{i}.png"
-            ReuseDistance.plot_histogram(reuse_histogram, save_filename)
+            visualize_reuse_histogram(reuse_histogram, save_filename)
 

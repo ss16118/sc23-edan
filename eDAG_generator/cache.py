@@ -56,7 +56,7 @@ class LRUCache(Cache):
         
         if len(self.lru_cache) == self.size:
             # If the cache is full evicts the last item
-            self.lru_cache.popitem(tag)
+            self.lru_cache.popitem(last=False)
         self.lru_cache[tag] = val
     
     def to_list(self) -> List[Optional[int]]:

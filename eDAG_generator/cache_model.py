@@ -148,6 +148,7 @@ class SingleLevelSetAssociativeCache(CacheModel):
         """
         Determines if the given address is in the cache. Returns True if it is
         a cache hit, False otherwise. Inserts the cache line into the cache.
+
         @param addr: the address of the data to be fetched.
         @param addr_format: an integer indicating number format of the address
         string. The default is 16, which means that by default that the given
