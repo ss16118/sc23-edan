@@ -135,11 +135,11 @@ class EDagGenerator:
             if is_critical:
                 eDag.add_vertex(new_vertex)
 
-                if not self.sanitize and \
-                    new_vertex.target is not None:
-                    # If `simplified` is True, only true dependencies
-                    # will be kept
-                    new_vertex.dependencies.add(new_vertex.target)
+                # if not self.sanitize and \
+                #     new_vertex.target is not None:
+                #     # If `simplified` is True, only true dependencies
+                #     # will be kept
+                #     new_vertex.dependencies.add(new_vertex.target)
 
                 # Creates dependency edges
                 for dep in new_vertex.dependencies:

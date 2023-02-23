@@ -46,21 +46,21 @@ if __name__ == "__main__":
     parser.add_argument("-l", "--load-file", dest="load_path", default=None,
                         help="If set, will try to load the eDAG object directly from the given file")
     parser.add_argument("-g", "--graph-file", dest="graph_file", default=None,
-                        help="Path to the visualization of the eDAG")
+                        help="Path to which the visualization of the eDAG will be saved")
     parser.add_argument("-m", "--only-mem-acc", dest="only_mem_acc",
                         default=False, action='store_true',
                         help="If set, only vertices with memory accesses will be displayed")
     parser.add_argument("--highlight-mem-acc", dest="highlight_mem_acc",
                         default=False, action="store_true",
-                        help="If set, memory access vertices will be highlighted as red")
+                        help="If set, memory access vertices will be highlighted")
     parser.add_argument("-r", "--remove-unconnected-vertices", dest="remove_unconnected_vertices",
                         default=False, action="store_true",
                         help="If set, unconnected vertices without any connections will be removed")
-    parser.add_argument("-s", "--save", dest="save_path", default=None,
+    parser.add_argument("-s", "--save-path", dest="save_path", default=None,
                         help="If set, will save the original generated eDAG to the given path")
     parser.add_argument("--sanitize", dest="sanitize", 
                         default=False, action="store_true",
-                        help="Simplifies the eDAG to the bare minimum for theoretical work-depth analysis")
+                        help="If set, will try to simplify the eDAG")
     parser.add_argument("-o", "--optimize", dest="optimize_subgraph",
                         default=False, action="store_true",
                         help="If set, will attempt optimize the eDAG in terms of work and depth according to pre-defined heuristics")

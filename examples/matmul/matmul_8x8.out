@@ -1,0 +1,4552 @@
+0;0x105bc;addi sp,sp,-16
+0;0x105be;sd s0,8(sp);0x40007fff18
+0;0x105c0;mv s0,a3
+0;0x105c2;blez a0,76 # 0x1060e
+0;0x105c6;slli a6,a0,2
+0;0x105ca;mv t2,a0
+0;0x105cc;mv t0,a2
+0;0x105ce;mv t3,a1
+0;0x105d0;add a7,a1,a6
+0;0x105d4;mv t5,a3
+0;0x105d6;add t4,a2,a6
+0;0x105da;mv t6,zero
+0;0x105dc;mv t1,t0
+0;0x105de;mv a0,t5
+0;0x105e0;lw a5,0(a0);0x4000800120
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff20
+0;0x105e8;lw a3,0(a2);0x4000800020
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800120
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff24
+0;0x105e8;lw a3,0(a2);0x4000800040
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800120
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff28
+0;0x105e8;lw a3,0(a2);0x4000800060
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800120
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff2c
+0;0x105e8;lw a3,0(a2);0x4000800080
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800120
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff30
+0;0x105e8;lw a3,0(a2);0x40008000a0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800120
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff34
+0;0x105e8;lw a3,0(a2);0x40008000c0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800120
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff38
+0;0x105e8;lw a3,0(a2);0x40008000e0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800120
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff3c
+0;0x105e8;lw a3,0(a2);0x4000800100
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800120
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800124
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff20
+0;0x105e8;lw a3,0(a2);0x4000800024
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800124
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff24
+0;0x105e8;lw a3,0(a2);0x4000800044
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800124
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff28
+0;0x105e8;lw a3,0(a2);0x4000800064
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800124
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff2c
+0;0x105e8;lw a3,0(a2);0x4000800084
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800124
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff30
+0;0x105e8;lw a3,0(a2);0x40008000a4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800124
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff34
+0;0x105e8;lw a3,0(a2);0x40008000c4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800124
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff38
+0;0x105e8;lw a3,0(a2);0x40008000e4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800124
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff3c
+0;0x105e8;lw a3,0(a2);0x4000800104
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800124
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800128
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff20
+0;0x105e8;lw a3,0(a2);0x4000800028
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800128
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff24
+0;0x105e8;lw a3,0(a2);0x4000800048
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800128
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff28
+0;0x105e8;lw a3,0(a2);0x4000800068
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800128
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff2c
+0;0x105e8;lw a3,0(a2);0x4000800088
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800128
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff30
+0;0x105e8;lw a3,0(a2);0x40008000a8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800128
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff34
+0;0x105e8;lw a3,0(a2);0x40008000c8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800128
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff38
+0;0x105e8;lw a3,0(a2);0x40008000e8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800128
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff3c
+0;0x105e8;lw a3,0(a2);0x4000800108
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800128
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x400080012c
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff20
+0;0x105e8;lw a3,0(a2);0x400080002c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080012c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff24
+0;0x105e8;lw a3,0(a2);0x400080004c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080012c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff28
+0;0x105e8;lw a3,0(a2);0x400080006c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080012c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff2c
+0;0x105e8;lw a3,0(a2);0x400080008c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080012c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff30
+0;0x105e8;lw a3,0(a2);0x40008000ac
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080012c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff34
+0;0x105e8;lw a3,0(a2);0x40008000cc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080012c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff38
+0;0x105e8;lw a3,0(a2);0x40008000ec
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080012c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff3c
+0;0x105e8;lw a3,0(a2);0x400080010c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080012c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800130
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff20
+0;0x105e8;lw a3,0(a2);0x4000800030
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800130
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff24
+0;0x105e8;lw a3,0(a2);0x4000800050
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800130
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff28
+0;0x105e8;lw a3,0(a2);0x4000800070
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800130
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff2c
+0;0x105e8;lw a3,0(a2);0x4000800090
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800130
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff30
+0;0x105e8;lw a3,0(a2);0x40008000b0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800130
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff34
+0;0x105e8;lw a3,0(a2);0x40008000d0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800130
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff38
+0;0x105e8;lw a3,0(a2);0x40008000f0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800130
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff3c
+0;0x105e8;lw a3,0(a2);0x4000800110
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800130
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800134
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff20
+0;0x105e8;lw a3,0(a2);0x4000800034
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800134
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff24
+0;0x105e8;lw a3,0(a2);0x4000800054
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800134
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff28
+0;0x105e8;lw a3,0(a2);0x4000800074
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800134
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff2c
+0;0x105e8;lw a3,0(a2);0x4000800094
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800134
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff30
+0;0x105e8;lw a3,0(a2);0x40008000b4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800134
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff34
+0;0x105e8;lw a3,0(a2);0x40008000d4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800134
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff38
+0;0x105e8;lw a3,0(a2);0x40008000f4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800134
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff3c
+0;0x105e8;lw a3,0(a2);0x4000800114
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800134
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800138
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff20
+0;0x105e8;lw a3,0(a2);0x4000800038
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800138
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff24
+0;0x105e8;lw a3,0(a2);0x4000800058
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800138
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff28
+0;0x105e8;lw a3,0(a2);0x4000800078
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800138
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff2c
+0;0x105e8;lw a3,0(a2);0x4000800098
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800138
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff30
+0;0x105e8;lw a3,0(a2);0x40008000b8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800138
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff34
+0;0x105e8;lw a3,0(a2);0x40008000d8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800138
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff38
+0;0x105e8;lw a3,0(a2);0x40008000f8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800138
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff3c
+0;0x105e8;lw a3,0(a2);0x4000800118
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800138
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x400080013c
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff20
+0;0x105e8;lw a3,0(a2);0x400080003c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080013c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff24
+0;0x105e8;lw a3,0(a2);0x400080005c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080013c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff28
+0;0x105e8;lw a3,0(a2);0x400080007c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080013c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff2c
+0;0x105e8;lw a3,0(a2);0x400080009c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080013c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff30
+0;0x105e8;lw a3,0(a2);0x40008000bc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080013c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff34
+0;0x105e8;lw a3,0(a2);0x40008000dc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080013c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff38
+0;0x105e8;lw a3,0(a2);0x40008000fc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080013c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff3c
+0;0x105e8;lw a3,0(a2);0x400080011c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080013c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x10602;addiw t6,t6,1
+0;0x10604;add t3,t3,a6
+0;0x10606;add a7,a7,a6
+0;0x10608;add t5,t5,a6
+0;0x1060a;bne t2,t6,-46 # 0x105dc
+0;0x105dc;mv t1,t0
+0;0x105de;mv a0,t5
+0;0x105e0;lw a5,0(a0);0x4000800140
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff40
+0;0x105e8;lw a3,0(a2);0x4000800020
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800140
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff44
+0;0x105e8;lw a3,0(a2);0x4000800040
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800140
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff48
+0;0x105e8;lw a3,0(a2);0x4000800060
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800140
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff4c
+0;0x105e8;lw a3,0(a2);0x4000800080
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800140
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff50
+0;0x105e8;lw a3,0(a2);0x40008000a0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800140
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff54
+0;0x105e8;lw a3,0(a2);0x40008000c0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800140
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff58
+0;0x105e8;lw a3,0(a2);0x40008000e0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800140
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff5c
+0;0x105e8;lw a3,0(a2);0x4000800100
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800140
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800144
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff40
+0;0x105e8;lw a3,0(a2);0x4000800024
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800144
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff44
+0;0x105e8;lw a3,0(a2);0x4000800044
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800144
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff48
+0;0x105e8;lw a3,0(a2);0x4000800064
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800144
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff4c
+0;0x105e8;lw a3,0(a2);0x4000800084
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800144
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff50
+0;0x105e8;lw a3,0(a2);0x40008000a4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800144
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff54
+0;0x105e8;lw a3,0(a2);0x40008000c4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800144
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff58
+0;0x105e8;lw a3,0(a2);0x40008000e4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800144
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff5c
+0;0x105e8;lw a3,0(a2);0x4000800104
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800144
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800148
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff40
+0;0x105e8;lw a3,0(a2);0x4000800028
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800148
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff44
+0;0x105e8;lw a3,0(a2);0x4000800048
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800148
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff48
+0;0x105e8;lw a3,0(a2);0x4000800068
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800148
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff4c
+0;0x105e8;lw a3,0(a2);0x4000800088
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800148
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff50
+0;0x105e8;lw a3,0(a2);0x40008000a8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800148
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff54
+0;0x105e8;lw a3,0(a2);0x40008000c8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800148
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff58
+0;0x105e8;lw a3,0(a2);0x40008000e8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800148
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff5c
+0;0x105e8;lw a3,0(a2);0x4000800108
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800148
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x400080014c
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff40
+0;0x105e8;lw a3,0(a2);0x400080002c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080014c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff44
+0;0x105e8;lw a3,0(a2);0x400080004c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080014c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff48
+0;0x105e8;lw a3,0(a2);0x400080006c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080014c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff4c
+0;0x105e8;lw a3,0(a2);0x400080008c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080014c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff50
+0;0x105e8;lw a3,0(a2);0x40008000ac
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080014c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff54
+0;0x105e8;lw a3,0(a2);0x40008000cc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080014c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff58
+0;0x105e8;lw a3,0(a2);0x40008000ec
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080014c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff5c
+0;0x105e8;lw a3,0(a2);0x400080010c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080014c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800150
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff40
+0;0x105e8;lw a3,0(a2);0x4000800030
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800150
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff44
+0;0x105e8;lw a3,0(a2);0x4000800050
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800150
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff48
+0;0x105e8;lw a3,0(a2);0x4000800070
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800150
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff4c
+0;0x105e8;lw a3,0(a2);0x4000800090
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800150
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff50
+0;0x105e8;lw a3,0(a2);0x40008000b0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800150
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff54
+0;0x105e8;lw a3,0(a2);0x40008000d0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800150
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff58
+0;0x105e8;lw a3,0(a2);0x40008000f0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800150
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff5c
+0;0x105e8;lw a3,0(a2);0x4000800110
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800150
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800154
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff40
+0;0x105e8;lw a3,0(a2);0x4000800034
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800154
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff44
+0;0x105e8;lw a3,0(a2);0x4000800054
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800154
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff48
+0;0x105e8;lw a3,0(a2);0x4000800074
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800154
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff4c
+0;0x105e8;lw a3,0(a2);0x4000800094
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800154
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff50
+0;0x105e8;lw a3,0(a2);0x40008000b4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800154
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff54
+0;0x105e8;lw a3,0(a2);0x40008000d4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800154
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff58
+0;0x105e8;lw a3,0(a2);0x40008000f4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800154
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff5c
+0;0x105e8;lw a3,0(a2);0x4000800114
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800154
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800158
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff40
+0;0x105e8;lw a3,0(a2);0x4000800038
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800158
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff44
+0;0x105e8;lw a3,0(a2);0x4000800058
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800158
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff48
+0;0x105e8;lw a3,0(a2);0x4000800078
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800158
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff4c
+0;0x105e8;lw a3,0(a2);0x4000800098
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800158
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff50
+0;0x105e8;lw a3,0(a2);0x40008000b8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800158
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff54
+0;0x105e8;lw a3,0(a2);0x40008000d8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800158
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff58
+0;0x105e8;lw a3,0(a2);0x40008000f8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800158
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff5c
+0;0x105e8;lw a3,0(a2);0x4000800118
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800158
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x400080015c
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff40
+0;0x105e8;lw a3,0(a2);0x400080003c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080015c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff44
+0;0x105e8;lw a3,0(a2);0x400080005c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080015c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff48
+0;0x105e8;lw a3,0(a2);0x400080007c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080015c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff4c
+0;0x105e8;lw a3,0(a2);0x400080009c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080015c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff50
+0;0x105e8;lw a3,0(a2);0x40008000bc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080015c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff54
+0;0x105e8;lw a3,0(a2);0x40008000dc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080015c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff58
+0;0x105e8;lw a3,0(a2);0x40008000fc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080015c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff5c
+0;0x105e8;lw a3,0(a2);0x400080011c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080015c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x10602;addiw t6,t6,1
+0;0x10604;add t3,t3,a6
+0;0x10606;add a7,a7,a6
+0;0x10608;add t5,t5,a6
+0;0x1060a;bne t2,t6,-46 # 0x105dc
+0;0x105dc;mv t1,t0
+0;0x105de;mv a0,t5
+0;0x105e0;lw a5,0(a0);0x4000800160
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff60
+0;0x105e8;lw a3,0(a2);0x4000800020
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800160
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff64
+0;0x105e8;lw a3,0(a2);0x4000800040
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800160
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff68
+0;0x105e8;lw a3,0(a2);0x4000800060
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800160
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff6c
+0;0x105e8;lw a3,0(a2);0x4000800080
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800160
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff70
+0;0x105e8;lw a3,0(a2);0x40008000a0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800160
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff74
+0;0x105e8;lw a3,0(a2);0x40008000c0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800160
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff78
+0;0x105e8;lw a3,0(a2);0x40008000e0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800160
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff7c
+0;0x105e8;lw a3,0(a2);0x4000800100
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800160
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800164
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff60
+0;0x105e8;lw a3,0(a2);0x4000800024
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800164
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff64
+0;0x105e8;lw a3,0(a2);0x4000800044
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800164
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff68
+0;0x105e8;lw a3,0(a2);0x4000800064
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800164
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff6c
+0;0x105e8;lw a3,0(a2);0x4000800084
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800164
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff70
+0;0x105e8;lw a3,0(a2);0x40008000a4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800164
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff74
+0;0x105e8;lw a3,0(a2);0x40008000c4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800164
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff78
+0;0x105e8;lw a3,0(a2);0x40008000e4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800164
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff7c
+0;0x105e8;lw a3,0(a2);0x4000800104
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800164
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800168
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff60
+0;0x105e8;lw a3,0(a2);0x4000800028
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800168
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff64
+0;0x105e8;lw a3,0(a2);0x4000800048
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800168
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff68
+0;0x105e8;lw a3,0(a2);0x4000800068
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800168
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff6c
+0;0x105e8;lw a3,0(a2);0x4000800088
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800168
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff70
+0;0x105e8;lw a3,0(a2);0x40008000a8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800168
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff74
+0;0x105e8;lw a3,0(a2);0x40008000c8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800168
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff78
+0;0x105e8;lw a3,0(a2);0x40008000e8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800168
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff7c
+0;0x105e8;lw a3,0(a2);0x4000800108
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800168
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x400080016c
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff60
+0;0x105e8;lw a3,0(a2);0x400080002c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080016c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff64
+0;0x105e8;lw a3,0(a2);0x400080004c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080016c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff68
+0;0x105e8;lw a3,0(a2);0x400080006c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080016c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff6c
+0;0x105e8;lw a3,0(a2);0x400080008c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080016c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff70
+0;0x105e8;lw a3,0(a2);0x40008000ac
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080016c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff74
+0;0x105e8;lw a3,0(a2);0x40008000cc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080016c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff78
+0;0x105e8;lw a3,0(a2);0x40008000ec
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080016c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff7c
+0;0x105e8;lw a3,0(a2);0x400080010c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080016c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800170
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff60
+0;0x105e8;lw a3,0(a2);0x4000800030
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800170
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff64
+0;0x105e8;lw a3,0(a2);0x4000800050
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800170
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff68
+0;0x105e8;lw a3,0(a2);0x4000800070
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800170
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff6c
+0;0x105e8;lw a3,0(a2);0x4000800090
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800170
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff70
+0;0x105e8;lw a3,0(a2);0x40008000b0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800170
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff74
+0;0x105e8;lw a3,0(a2);0x40008000d0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800170
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff78
+0;0x105e8;lw a3,0(a2);0x40008000f0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800170
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff7c
+0;0x105e8;lw a3,0(a2);0x4000800110
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800170
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800174
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff60
+0;0x105e8;lw a3,0(a2);0x4000800034
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800174
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff64
+0;0x105e8;lw a3,0(a2);0x4000800054
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800174
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff68
+0;0x105e8;lw a3,0(a2);0x4000800074
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800174
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff6c
+0;0x105e8;lw a3,0(a2);0x4000800094
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800174
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff70
+0;0x105e8;lw a3,0(a2);0x40008000b4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800174
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff74
+0;0x105e8;lw a3,0(a2);0x40008000d4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800174
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff78
+0;0x105e8;lw a3,0(a2);0x40008000f4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800174
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff7c
+0;0x105e8;lw a3,0(a2);0x4000800114
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800174
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800178
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff60
+0;0x105e8;lw a3,0(a2);0x4000800038
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800178
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff64
+0;0x105e8;lw a3,0(a2);0x4000800058
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800178
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff68
+0;0x105e8;lw a3,0(a2);0x4000800078
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800178
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff6c
+0;0x105e8;lw a3,0(a2);0x4000800098
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800178
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff70
+0;0x105e8;lw a3,0(a2);0x40008000b8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800178
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff74
+0;0x105e8;lw a3,0(a2);0x40008000d8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800178
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff78
+0;0x105e8;lw a3,0(a2);0x40008000f8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800178
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff7c
+0;0x105e8;lw a3,0(a2);0x4000800118
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800178
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x400080017c
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff60
+0;0x105e8;lw a3,0(a2);0x400080003c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080017c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff64
+0;0x105e8;lw a3,0(a2);0x400080005c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080017c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff68
+0;0x105e8;lw a3,0(a2);0x400080007c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080017c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff6c
+0;0x105e8;lw a3,0(a2);0x400080009c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080017c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff70
+0;0x105e8;lw a3,0(a2);0x40008000bc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080017c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff74
+0;0x105e8;lw a3,0(a2);0x40008000dc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080017c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff78
+0;0x105e8;lw a3,0(a2);0x40008000fc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080017c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff7c
+0;0x105e8;lw a3,0(a2);0x400080011c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080017c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x10602;addiw t6,t6,1
+0;0x10604;add t3,t3,a6
+0;0x10606;add a7,a7,a6
+0;0x10608;add t5,t5,a6
+0;0x1060a;bne t2,t6,-46 # 0x105dc
+0;0x105dc;mv t1,t0
+0;0x105de;mv a0,t5
+0;0x105e0;lw a5,0(a0);0x4000800180
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff80
+0;0x105e8;lw a3,0(a2);0x4000800020
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800180
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff84
+0;0x105e8;lw a3,0(a2);0x4000800040
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800180
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff88
+0;0x105e8;lw a3,0(a2);0x4000800060
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800180
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff8c
+0;0x105e8;lw a3,0(a2);0x4000800080
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800180
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff90
+0;0x105e8;lw a3,0(a2);0x40008000a0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800180
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff94
+0;0x105e8;lw a3,0(a2);0x40008000c0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800180
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff98
+0;0x105e8;lw a3,0(a2);0x40008000e0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800180
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff9c
+0;0x105e8;lw a3,0(a2);0x4000800100
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800180
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800184
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff80
+0;0x105e8;lw a3,0(a2);0x4000800024
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800184
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff84
+0;0x105e8;lw a3,0(a2);0x4000800044
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800184
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff88
+0;0x105e8;lw a3,0(a2);0x4000800064
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800184
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff8c
+0;0x105e8;lw a3,0(a2);0x4000800084
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800184
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff90
+0;0x105e8;lw a3,0(a2);0x40008000a4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800184
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff94
+0;0x105e8;lw a3,0(a2);0x40008000c4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800184
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff98
+0;0x105e8;lw a3,0(a2);0x40008000e4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800184
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff9c
+0;0x105e8;lw a3,0(a2);0x4000800104
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800184
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800188
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff80
+0;0x105e8;lw a3,0(a2);0x4000800028
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800188
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff84
+0;0x105e8;lw a3,0(a2);0x4000800048
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800188
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff88
+0;0x105e8;lw a3,0(a2);0x4000800068
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800188
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff8c
+0;0x105e8;lw a3,0(a2);0x4000800088
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800188
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff90
+0;0x105e8;lw a3,0(a2);0x40008000a8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800188
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff94
+0;0x105e8;lw a3,0(a2);0x40008000c8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800188
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff98
+0;0x105e8;lw a3,0(a2);0x40008000e8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800188
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff9c
+0;0x105e8;lw a3,0(a2);0x4000800108
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800188
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x400080018c
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff80
+0;0x105e8;lw a3,0(a2);0x400080002c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080018c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff84
+0;0x105e8;lw a3,0(a2);0x400080004c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080018c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff88
+0;0x105e8;lw a3,0(a2);0x400080006c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080018c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff8c
+0;0x105e8;lw a3,0(a2);0x400080008c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080018c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff90
+0;0x105e8;lw a3,0(a2);0x40008000ac
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080018c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff94
+0;0x105e8;lw a3,0(a2);0x40008000cc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080018c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff98
+0;0x105e8;lw a3,0(a2);0x40008000ec
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080018c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff9c
+0;0x105e8;lw a3,0(a2);0x400080010c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080018c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800190
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff80
+0;0x105e8;lw a3,0(a2);0x4000800030
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800190
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff84
+0;0x105e8;lw a3,0(a2);0x4000800050
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800190
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff88
+0;0x105e8;lw a3,0(a2);0x4000800070
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800190
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff8c
+0;0x105e8;lw a3,0(a2);0x4000800090
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800190
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff90
+0;0x105e8;lw a3,0(a2);0x40008000b0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800190
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff94
+0;0x105e8;lw a3,0(a2);0x40008000d0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800190
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff98
+0;0x105e8;lw a3,0(a2);0x40008000f0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800190
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff9c
+0;0x105e8;lw a3,0(a2);0x4000800110
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800190
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800194
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff80
+0;0x105e8;lw a3,0(a2);0x4000800034
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800194
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff84
+0;0x105e8;lw a3,0(a2);0x4000800054
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800194
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff88
+0;0x105e8;lw a3,0(a2);0x4000800074
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800194
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff8c
+0;0x105e8;lw a3,0(a2);0x4000800094
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800194
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff90
+0;0x105e8;lw a3,0(a2);0x40008000b4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800194
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff94
+0;0x105e8;lw a3,0(a2);0x40008000d4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800194
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff98
+0;0x105e8;lw a3,0(a2);0x40008000f4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800194
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff9c
+0;0x105e8;lw a3,0(a2);0x4000800114
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800194
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800198
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff80
+0;0x105e8;lw a3,0(a2);0x4000800038
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800198
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff84
+0;0x105e8;lw a3,0(a2);0x4000800058
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800198
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff88
+0;0x105e8;lw a3,0(a2);0x4000800078
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800198
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff8c
+0;0x105e8;lw a3,0(a2);0x4000800098
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800198
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff90
+0;0x105e8;lw a3,0(a2);0x40008000b8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800198
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff94
+0;0x105e8;lw a3,0(a2);0x40008000d8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800198
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff98
+0;0x105e8;lw a3,0(a2);0x40008000f8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800198
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff9c
+0;0x105e8;lw a3,0(a2);0x4000800118
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800198
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x400080019c
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fff80
+0;0x105e8;lw a3,0(a2);0x400080003c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080019c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff84
+0;0x105e8;lw a3,0(a2);0x400080005c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080019c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff88
+0;0x105e8;lw a3,0(a2);0x400080007c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080019c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff8c
+0;0x105e8;lw a3,0(a2);0x400080009c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080019c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff90
+0;0x105e8;lw a3,0(a2);0x40008000bc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080019c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff94
+0;0x105e8;lw a3,0(a2);0x40008000dc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080019c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff98
+0;0x105e8;lw a3,0(a2);0x40008000fc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080019c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fff9c
+0;0x105e8;lw a3,0(a2);0x400080011c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080019c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x10602;addiw t6,t6,1
+0;0x10604;add t3,t3,a6
+0;0x10606;add a7,a7,a6
+0;0x10608;add t5,t5,a6
+0;0x1060a;bne t2,t6,-46 # 0x105dc
+0;0x105dc;mv t1,t0
+0;0x105de;mv a0,t5
+0;0x105e0;lw a5,0(a0);0x40008001a0
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fffa0
+0;0x105e8;lw a3,0(a2);0x4000800020
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001a0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffa4
+0;0x105e8;lw a3,0(a2);0x4000800040
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001a0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffa8
+0;0x105e8;lw a3,0(a2);0x4000800060
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001a0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffac
+0;0x105e8;lw a3,0(a2);0x4000800080
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001a0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffb0
+0;0x105e8;lw a3,0(a2);0x40008000a0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001a0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffb4
+0;0x105e8;lw a3,0(a2);0x40008000c0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001a0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffb8
+0;0x105e8;lw a3,0(a2);0x40008000e0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001a0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffbc
+0;0x105e8;lw a3,0(a2);0x4000800100
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001a0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x40008001a4
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fffa0
+0;0x105e8;lw a3,0(a2);0x4000800024
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001a4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffa4
+0;0x105e8;lw a3,0(a2);0x4000800044
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001a4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffa8
+0;0x105e8;lw a3,0(a2);0x4000800064
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001a4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffac
+0;0x105e8;lw a3,0(a2);0x4000800084
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001a4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffb0
+0;0x105e8;lw a3,0(a2);0x40008000a4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001a4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffb4
+0;0x105e8;lw a3,0(a2);0x40008000c4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001a4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffb8
+0;0x105e8;lw a3,0(a2);0x40008000e4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001a4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffbc
+0;0x105e8;lw a3,0(a2);0x4000800104
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001a4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x40008001a8
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fffa0
+0;0x105e8;lw a3,0(a2);0x4000800028
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001a8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffa4
+0;0x105e8;lw a3,0(a2);0x4000800048
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001a8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffa8
+0;0x105e8;lw a3,0(a2);0x4000800068
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001a8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffac
+0;0x105e8;lw a3,0(a2);0x4000800088
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001a8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffb0
+0;0x105e8;lw a3,0(a2);0x40008000a8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001a8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffb4
+0;0x105e8;lw a3,0(a2);0x40008000c8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001a8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffb8
+0;0x105e8;lw a3,0(a2);0x40008000e8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001a8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffbc
+0;0x105e8;lw a3,0(a2);0x4000800108
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001a8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x40008001ac
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fffa0
+0;0x105e8;lw a3,0(a2);0x400080002c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001ac
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffa4
+0;0x105e8;lw a3,0(a2);0x400080004c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001ac
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffa8
+0;0x105e8;lw a3,0(a2);0x400080006c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001ac
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffac
+0;0x105e8;lw a3,0(a2);0x400080008c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001ac
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffb0
+0;0x105e8;lw a3,0(a2);0x40008000ac
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001ac
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffb4
+0;0x105e8;lw a3,0(a2);0x40008000cc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001ac
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffb8
+0;0x105e8;lw a3,0(a2);0x40008000ec
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001ac
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffbc
+0;0x105e8;lw a3,0(a2);0x400080010c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001ac
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x40008001b0
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fffa0
+0;0x105e8;lw a3,0(a2);0x4000800030
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001b0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffa4
+0;0x105e8;lw a3,0(a2);0x4000800050
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001b0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffa8
+0;0x105e8;lw a3,0(a2);0x4000800070
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001b0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffac
+0;0x105e8;lw a3,0(a2);0x4000800090
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001b0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffb0
+0;0x105e8;lw a3,0(a2);0x40008000b0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001b0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffb4
+0;0x105e8;lw a3,0(a2);0x40008000d0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001b0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffb8
+0;0x105e8;lw a3,0(a2);0x40008000f0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001b0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffbc
+0;0x105e8;lw a3,0(a2);0x4000800110
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001b0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x40008001b4
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fffa0
+0;0x105e8;lw a3,0(a2);0x4000800034
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001b4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffa4
+0;0x105e8;lw a3,0(a2);0x4000800054
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001b4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffa8
+0;0x105e8;lw a3,0(a2);0x4000800074
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001b4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffac
+0;0x105e8;lw a3,0(a2);0x4000800094
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001b4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffb0
+0;0x105e8;lw a3,0(a2);0x40008000b4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001b4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffb4
+0;0x105e8;lw a3,0(a2);0x40008000d4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001b4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffb8
+0;0x105e8;lw a3,0(a2);0x40008000f4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001b4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffbc
+0;0x105e8;lw a3,0(a2);0x4000800114
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001b4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x40008001b8
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fffa0
+0;0x105e8;lw a3,0(a2);0x4000800038
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001b8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffa4
+0;0x105e8;lw a3,0(a2);0x4000800058
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001b8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffa8
+0;0x105e8;lw a3,0(a2);0x4000800078
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001b8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffac
+0;0x105e8;lw a3,0(a2);0x4000800098
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001b8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffb0
+0;0x105e8;lw a3,0(a2);0x40008000b8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001b8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffb4
+0;0x105e8;lw a3,0(a2);0x40008000d8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001b8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffb8
+0;0x105e8;lw a3,0(a2);0x40008000f8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001b8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffbc
+0;0x105e8;lw a3,0(a2);0x4000800118
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001b8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x40008001bc
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fffa0
+0;0x105e8;lw a3,0(a2);0x400080003c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001bc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffa4
+0;0x105e8;lw a3,0(a2);0x400080005c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001bc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffa8
+0;0x105e8;lw a3,0(a2);0x400080007c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001bc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffac
+0;0x105e8;lw a3,0(a2);0x400080009c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001bc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffb0
+0;0x105e8;lw a3,0(a2);0x40008000bc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001bc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffb4
+0;0x105e8;lw a3,0(a2);0x40008000dc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001bc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffb8
+0;0x105e8;lw a3,0(a2);0x40008000fc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001bc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffbc
+0;0x105e8;lw a3,0(a2);0x400080011c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001bc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x10602;addiw t6,t6,1
+0;0x10604;add t3,t3,a6
+0;0x10606;add a7,a7,a6
+0;0x10608;add t5,t5,a6
+0;0x1060a;bne t2,t6,-46 # 0x105dc
+0;0x105dc;mv t1,t0
+0;0x105de;mv a0,t5
+0;0x105e0;lw a5,0(a0);0x40008001c0
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fffc0
+0;0x105e8;lw a3,0(a2);0x4000800020
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001c0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffc4
+0;0x105e8;lw a3,0(a2);0x4000800040
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001c0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffc8
+0;0x105e8;lw a3,0(a2);0x4000800060
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001c0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffcc
+0;0x105e8;lw a3,0(a2);0x4000800080
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001c0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffd0
+0;0x105e8;lw a3,0(a2);0x40008000a0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001c0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffd4
+0;0x105e8;lw a3,0(a2);0x40008000c0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001c0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffd8
+0;0x105e8;lw a3,0(a2);0x40008000e0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001c0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffdc
+0;0x105e8;lw a3,0(a2);0x4000800100
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001c0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x40008001c4
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fffc0
+0;0x105e8;lw a3,0(a2);0x4000800024
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001c4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffc4
+0;0x105e8;lw a3,0(a2);0x4000800044
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001c4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffc8
+0;0x105e8;lw a3,0(a2);0x4000800064
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001c4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffcc
+0;0x105e8;lw a3,0(a2);0x4000800084
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001c4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffd0
+0;0x105e8;lw a3,0(a2);0x40008000a4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001c4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffd4
+0;0x105e8;lw a3,0(a2);0x40008000c4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001c4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffd8
+0;0x105e8;lw a3,0(a2);0x40008000e4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001c4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffdc
+0;0x105e8;lw a3,0(a2);0x4000800104
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001c4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x40008001c8
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fffc0
+0;0x105e8;lw a3,0(a2);0x4000800028
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001c8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffc4
+0;0x105e8;lw a3,0(a2);0x4000800048
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001c8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffc8
+0;0x105e8;lw a3,0(a2);0x4000800068
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001c8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffcc
+0;0x105e8;lw a3,0(a2);0x4000800088
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001c8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffd0
+0;0x105e8;lw a3,0(a2);0x40008000a8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001c8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffd4
+0;0x105e8;lw a3,0(a2);0x40008000c8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001c8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffd8
+0;0x105e8;lw a3,0(a2);0x40008000e8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001c8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffdc
+0;0x105e8;lw a3,0(a2);0x4000800108
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001c8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x40008001cc
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fffc0
+0;0x105e8;lw a3,0(a2);0x400080002c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001cc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffc4
+0;0x105e8;lw a3,0(a2);0x400080004c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001cc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffc8
+0;0x105e8;lw a3,0(a2);0x400080006c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001cc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffcc
+0;0x105e8;lw a3,0(a2);0x400080008c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001cc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffd0
+0;0x105e8;lw a3,0(a2);0x40008000ac
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001cc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffd4
+0;0x105e8;lw a3,0(a2);0x40008000cc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001cc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffd8
+0;0x105e8;lw a3,0(a2);0x40008000ec
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001cc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffdc
+0;0x105e8;lw a3,0(a2);0x400080010c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001cc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x40008001d0
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fffc0
+0;0x105e8;lw a3,0(a2);0x4000800030
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001d0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffc4
+0;0x105e8;lw a3,0(a2);0x4000800050
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001d0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffc8
+0;0x105e8;lw a3,0(a2);0x4000800070
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001d0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffcc
+0;0x105e8;lw a3,0(a2);0x4000800090
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001d0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffd0
+0;0x105e8;lw a3,0(a2);0x40008000b0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001d0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffd4
+0;0x105e8;lw a3,0(a2);0x40008000d0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001d0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffd8
+0;0x105e8;lw a3,0(a2);0x40008000f0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001d0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffdc
+0;0x105e8;lw a3,0(a2);0x4000800110
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001d0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x40008001d4
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fffc0
+0;0x105e8;lw a3,0(a2);0x4000800034
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001d4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffc4
+0;0x105e8;lw a3,0(a2);0x4000800054
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001d4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffc8
+0;0x105e8;lw a3,0(a2);0x4000800074
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001d4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffcc
+0;0x105e8;lw a3,0(a2);0x4000800094
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001d4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffd0
+0;0x105e8;lw a3,0(a2);0x40008000b4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001d4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffd4
+0;0x105e8;lw a3,0(a2);0x40008000d4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001d4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffd8
+0;0x105e8;lw a3,0(a2);0x40008000f4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001d4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffdc
+0;0x105e8;lw a3,0(a2);0x4000800114
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001d4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x40008001d8
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fffc0
+0;0x105e8;lw a3,0(a2);0x4000800038
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001d8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffc4
+0;0x105e8;lw a3,0(a2);0x4000800058
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001d8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffc8
+0;0x105e8;lw a3,0(a2);0x4000800078
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001d8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffcc
+0;0x105e8;lw a3,0(a2);0x4000800098
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001d8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffd0
+0;0x105e8;lw a3,0(a2);0x40008000b8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001d8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffd4
+0;0x105e8;lw a3,0(a2);0x40008000d8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001d8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffd8
+0;0x105e8;lw a3,0(a2);0x40008000f8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001d8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffdc
+0;0x105e8;lw a3,0(a2);0x4000800118
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001d8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x40008001dc
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fffc0
+0;0x105e8;lw a3,0(a2);0x400080003c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001dc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffc4
+0;0x105e8;lw a3,0(a2);0x400080005c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001dc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffc8
+0;0x105e8;lw a3,0(a2);0x400080007c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001dc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffcc
+0;0x105e8;lw a3,0(a2);0x400080009c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001dc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffd0
+0;0x105e8;lw a3,0(a2);0x40008000bc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001dc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffd4
+0;0x105e8;lw a3,0(a2);0x40008000dc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001dc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffd8
+0;0x105e8;lw a3,0(a2);0x40008000fc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001dc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffdc
+0;0x105e8;lw a3,0(a2);0x400080011c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001dc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x10602;addiw t6,t6,1
+0;0x10604;add t3,t3,a6
+0;0x10606;add a7,a7,a6
+0;0x10608;add t5,t5,a6
+0;0x1060a;bne t2,t6,-46 # 0x105dc
+0;0x105dc;mv t1,t0
+0;0x105de;mv a0,t5
+0;0x105e0;lw a5,0(a0);0x40008001e0
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fffe0
+0;0x105e8;lw a3,0(a2);0x4000800020
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001e0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffe4
+0;0x105e8;lw a3,0(a2);0x4000800040
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001e0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffe8
+0;0x105e8;lw a3,0(a2);0x4000800060
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001e0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffec
+0;0x105e8;lw a3,0(a2);0x4000800080
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001e0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffff0
+0;0x105e8;lw a3,0(a2);0x40008000a0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001e0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffff4
+0;0x105e8;lw a3,0(a2);0x40008000c0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001e0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffff8
+0;0x105e8;lw a3,0(a2);0x40008000e0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001e0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffffc
+0;0x105e8;lw a3,0(a2);0x4000800100
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001e0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x40008001e4
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fffe0
+0;0x105e8;lw a3,0(a2);0x4000800024
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001e4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffe4
+0;0x105e8;lw a3,0(a2);0x4000800044
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001e4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffe8
+0;0x105e8;lw a3,0(a2);0x4000800064
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001e4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffec
+0;0x105e8;lw a3,0(a2);0x4000800084
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001e4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffff0
+0;0x105e8;lw a3,0(a2);0x40008000a4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001e4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffff4
+0;0x105e8;lw a3,0(a2);0x40008000c4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001e4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffff8
+0;0x105e8;lw a3,0(a2);0x40008000e4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001e4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffffc
+0;0x105e8;lw a3,0(a2);0x4000800104
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001e4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x40008001e8
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fffe0
+0;0x105e8;lw a3,0(a2);0x4000800028
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001e8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffe4
+0;0x105e8;lw a3,0(a2);0x4000800048
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001e8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffe8
+0;0x105e8;lw a3,0(a2);0x4000800068
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001e8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffec
+0;0x105e8;lw a3,0(a2);0x4000800088
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001e8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffff0
+0;0x105e8;lw a3,0(a2);0x40008000a8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001e8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffff4
+0;0x105e8;lw a3,0(a2);0x40008000c8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001e8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffff8
+0;0x105e8;lw a3,0(a2);0x40008000e8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001e8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffffc
+0;0x105e8;lw a3,0(a2);0x4000800108
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001e8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x40008001ec
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fffe0
+0;0x105e8;lw a3,0(a2);0x400080002c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001ec
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffe4
+0;0x105e8;lw a3,0(a2);0x400080004c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001ec
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffe8
+0;0x105e8;lw a3,0(a2);0x400080006c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001ec
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffec
+0;0x105e8;lw a3,0(a2);0x400080008c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001ec
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffff0
+0;0x105e8;lw a3,0(a2);0x40008000ac
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001ec
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffff4
+0;0x105e8;lw a3,0(a2);0x40008000cc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001ec
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffff8
+0;0x105e8;lw a3,0(a2);0x40008000ec
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001ec
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffffc
+0;0x105e8;lw a3,0(a2);0x400080010c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001ec
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x40008001f0
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fffe0
+0;0x105e8;lw a3,0(a2);0x4000800030
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001f0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffe4
+0;0x105e8;lw a3,0(a2);0x4000800050
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001f0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffe8
+0;0x105e8;lw a3,0(a2);0x4000800070
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001f0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffec
+0;0x105e8;lw a3,0(a2);0x4000800090
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001f0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffff0
+0;0x105e8;lw a3,0(a2);0x40008000b0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001f0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffff4
+0;0x105e8;lw a3,0(a2);0x40008000d0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001f0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffff8
+0;0x105e8;lw a3,0(a2);0x40008000f0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001f0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffffc
+0;0x105e8;lw a3,0(a2);0x4000800110
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001f0
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x40008001f4
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fffe0
+0;0x105e8;lw a3,0(a2);0x4000800034
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001f4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffe4
+0;0x105e8;lw a3,0(a2);0x4000800054
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001f4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffe8
+0;0x105e8;lw a3,0(a2);0x4000800074
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001f4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffec
+0;0x105e8;lw a3,0(a2);0x4000800094
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001f4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffff0
+0;0x105e8;lw a3,0(a2);0x40008000b4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001f4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffff4
+0;0x105e8;lw a3,0(a2);0x40008000d4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001f4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffff8
+0;0x105e8;lw a3,0(a2);0x40008000f4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001f4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffffc
+0;0x105e8;lw a3,0(a2);0x4000800114
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001f4
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x40008001f8
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fffe0
+0;0x105e8;lw a3,0(a2);0x4000800038
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001f8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffe4
+0;0x105e8;lw a3,0(a2);0x4000800058
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001f8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffe8
+0;0x105e8;lw a3,0(a2);0x4000800078
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001f8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffec
+0;0x105e8;lw a3,0(a2);0x4000800098
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001f8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffff0
+0;0x105e8;lw a3,0(a2);0x40008000b8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001f8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffff4
+0;0x105e8;lw a3,0(a2);0x40008000d8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001f8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffff8
+0;0x105e8;lw a3,0(a2);0x40008000f8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001f8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffffc
+0;0x105e8;lw a3,0(a2);0x4000800118
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001f8
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x40008001fc
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x40007fffe0
+0;0x105e8;lw a3,0(a2);0x400080003c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001fc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffe4
+0;0x105e8;lw a3,0(a2);0x400080005c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001fc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffe8
+0;0x105e8;lw a3,0(a2);0x400080007c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001fc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007fffec
+0;0x105e8;lw a3,0(a2);0x400080009c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001fc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffff0
+0;0x105e8;lw a3,0(a2);0x40008000bc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001fc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffff4
+0;0x105e8;lw a3,0(a2);0x40008000dc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001fc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffff8
+0;0x105e8;lw a3,0(a2);0x40008000fc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001fc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x40007ffffc
+0;0x105e8;lw a3,0(a2);0x400080011c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x40008001fc
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x10602;addiw t6,t6,1
+0;0x10604;add t3,t3,a6
+0;0x10606;add a7,a7,a6
+0;0x10608;add t5,t5,a6
+0;0x1060a;bne t2,t6,-46 # 0x105dc
+0;0x105dc;mv t1,t0
+0;0x105de;mv a0,t5
+0;0x105e0;lw a5,0(a0);0x4000800200
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x4000800000
+0;0x105e8;lw a3,0(a2);0x4000800020
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800200
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800004
+0;0x105e8;lw a3,0(a2);0x4000800040
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800200
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800008
+0;0x105e8;lw a3,0(a2);0x4000800060
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800200
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x400080000c
+0;0x105e8;lw a3,0(a2);0x4000800080
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800200
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800010
+0;0x105e8;lw a3,0(a2);0x40008000a0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800200
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800014
+0;0x105e8;lw a3,0(a2);0x40008000c0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800200
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800018
+0;0x105e8;lw a3,0(a2);0x40008000e0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800200
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x400080001c
+0;0x105e8;lw a3,0(a2);0x4000800100
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800200
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800204
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x4000800000
+0;0x105e8;lw a3,0(a2);0x4000800024
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800204
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800004
+0;0x105e8;lw a3,0(a2);0x4000800044
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800204
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800008
+0;0x105e8;lw a3,0(a2);0x4000800064
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800204
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x400080000c
+0;0x105e8;lw a3,0(a2);0x4000800084
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800204
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800010
+0;0x105e8;lw a3,0(a2);0x40008000a4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800204
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800014
+0;0x105e8;lw a3,0(a2);0x40008000c4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800204
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800018
+0;0x105e8;lw a3,0(a2);0x40008000e4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800204
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x400080001c
+0;0x105e8;lw a3,0(a2);0x4000800104
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800204
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800208
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x4000800000
+0;0x105e8;lw a3,0(a2);0x4000800028
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800208
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800004
+0;0x105e8;lw a3,0(a2);0x4000800048
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800208
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800008
+0;0x105e8;lw a3,0(a2);0x4000800068
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800208
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x400080000c
+0;0x105e8;lw a3,0(a2);0x4000800088
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800208
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800010
+0;0x105e8;lw a3,0(a2);0x40008000a8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800208
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800014
+0;0x105e8;lw a3,0(a2);0x40008000c8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800208
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800018
+0;0x105e8;lw a3,0(a2);0x40008000e8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800208
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x400080001c
+0;0x105e8;lw a3,0(a2);0x4000800108
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800208
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x400080020c
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x4000800000
+0;0x105e8;lw a3,0(a2);0x400080002c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080020c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800004
+0;0x105e8;lw a3,0(a2);0x400080004c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080020c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800008
+0;0x105e8;lw a3,0(a2);0x400080006c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080020c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x400080000c
+0;0x105e8;lw a3,0(a2);0x400080008c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080020c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800010
+0;0x105e8;lw a3,0(a2);0x40008000ac
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080020c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800014
+0;0x105e8;lw a3,0(a2);0x40008000cc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080020c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800018
+0;0x105e8;lw a3,0(a2);0x40008000ec
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080020c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x400080001c
+0;0x105e8;lw a3,0(a2);0x400080010c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080020c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800210
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x4000800000
+0;0x105e8;lw a3,0(a2);0x4000800030
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800210
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800004
+0;0x105e8;lw a3,0(a2);0x4000800050
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800210
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800008
+0;0x105e8;lw a3,0(a2);0x4000800070
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800210
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x400080000c
+0;0x105e8;lw a3,0(a2);0x4000800090
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800210
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800010
+0;0x105e8;lw a3,0(a2);0x40008000b0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800210
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800014
+0;0x105e8;lw a3,0(a2);0x40008000d0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800210
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800018
+0;0x105e8;lw a3,0(a2);0x40008000f0
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800210
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x400080001c
+0;0x105e8;lw a3,0(a2);0x4000800110
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800210
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800214
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x4000800000
+0;0x105e8;lw a3,0(a2);0x4000800034
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800214
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800004
+0;0x105e8;lw a3,0(a2);0x4000800054
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800214
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800008
+0;0x105e8;lw a3,0(a2);0x4000800074
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800214
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x400080000c
+0;0x105e8;lw a3,0(a2);0x4000800094
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800214
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800010
+0;0x105e8;lw a3,0(a2);0x40008000b4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800214
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800014
+0;0x105e8;lw a3,0(a2);0x40008000d4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800214
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800018
+0;0x105e8;lw a3,0(a2);0x40008000f4
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800214
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x400080001c
+0;0x105e8;lw a3,0(a2);0x4000800114
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800214
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x4000800218
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x4000800000
+0;0x105e8;lw a3,0(a2);0x4000800038
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800218
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800004
+0;0x105e8;lw a3,0(a2);0x4000800058
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800218
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800008
+0;0x105e8;lw a3,0(a2);0x4000800078
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800218
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x400080000c
+0;0x105e8;lw a3,0(a2);0x4000800098
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800218
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800010
+0;0x105e8;lw a3,0(a2);0x40008000b8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800218
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800014
+0;0x105e8;lw a3,0(a2);0x40008000d8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800218
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800018
+0;0x105e8;lw a3,0(a2);0x40008000f8
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800218
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x400080001c
+0;0x105e8;lw a3,0(a2);0x4000800118
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x4000800218
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x105e0;lw a5,0(a0);0x400080021c
+0;0x105e2;mv a2,t1
+0;0x105e4;mv a4,t3
+0;0x105e6;lw a1,0(a4);0x4000800000
+0;0x105e8;lw a3,0(a2);0x400080003c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080021c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800004
+0;0x105e8;lw a3,0(a2);0x400080005c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080021c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800008
+0;0x105e8;lw a3,0(a2);0x400080007c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080021c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x400080000c
+0;0x105e8;lw a3,0(a2);0x400080009c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080021c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800010
+0;0x105e8;lw a3,0(a2);0x40008000bc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080021c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800014
+0;0x105e8;lw a3,0(a2);0x40008000dc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080021c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x4000800018
+0;0x105e8;lw a3,0(a2);0x40008000fc
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080021c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105e6;lw a1,0(a4);0x400080001c
+0;0x105e8;lw a3,0(a2);0x400080011c
+0;0x105ea;addi a4,a4,4
+0;0x105ec;add a2,a2,a6
+0;0x105ee;mulw a3,a3,a1
+0;0x105f2;addw a5,a5,a3
+0;0x105f4;sw a5,0(a0);0x400080021c
+0;0x105f6;bne a7,a4,-16 # 0x105e6
+0;0x105fa;addi t1,t1,4
+0;0x105fc;addi a0,a0,4
+0;0x105fe;bne t4,t1,-30 # 0x105e0
+0;0x10602;addiw t6,t6,1
+0;0x10604;add t3,t3,a6
+0;0x10606;add a7,a7,a6
+0;0x10608;add t5,t5,a6
+0;0x1060a;bne t2,t6,-46 # 0x105dc
+0;0x1060e;lw a0,0(s0);0x4000800120
+0;0x10610;ld s0,8(sp);0x40007fff18
+0;0x10612;addi sp,sp,16
+0;0x10614;ret 

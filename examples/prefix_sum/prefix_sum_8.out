@@ -1,0 +1,56 @@
+0;0x104cc;mv a5,a0
+0;0x104ce;lw a0,0(a0);0x40008001d0
+0;0x104d0;addi a4,zero,1
+0;0x104d2;sw a0,0(a1);0x40008001f0
+0;0x104d4;ble a2,a4,46 # 0x10502
+0;0x104d8;addiw a3,a2,-2
+0;0x104dc;slli a4,a3,32
+0;0x104e0;srli a3,a4,30
+0;0x104e4;addi a2,a5,8
+0;0x104e8;addi a4,a1,4
+0;0x104ec;addi a5,a5,4
+0;0x104ee;add a3,a3,a2
+0;0x104f0;lw a2,0(a5);0x40008001d4
+0;0x104f2;addi a4,a4,4
+0;0x104f4;addi a5,a5,4
+0;0x104f6;addw a0,a0,a2
+0;0x104f8;sw a0,-4(a4);0x40008001f4
+0;0x104fc;bne a3,a5,-12 # 0x104f0
+0;0x104f0;lw a2,0(a5);0x40008001d8
+0;0x104f2;addi a4,a4,4
+0;0x104f4;addi a5,a5,4
+0;0x104f6;addw a0,a0,a2
+0;0x104f8;sw a0,-4(a4);0x40008001f8
+0;0x104fc;bne a3,a5,-12 # 0x104f0
+0;0x104f0;lw a2,0(a5);0x40008001dc
+0;0x104f2;addi a4,a4,4
+0;0x104f4;addi a5,a5,4
+0;0x104f6;addw a0,a0,a2
+0;0x104f8;sw a0,-4(a4);0x40008001fc
+0;0x104fc;bne a3,a5,-12 # 0x104f0
+0;0x104f0;lw a2,0(a5);0x40008001e0
+0;0x104f2;addi a4,a4,4
+0;0x104f4;addi a5,a5,4
+0;0x104f6;addw a0,a0,a2
+0;0x104f8;sw a0,-4(a4);0x4000800200
+0;0x104fc;bne a3,a5,-12 # 0x104f0
+0;0x104f0;lw a2,0(a5);0x40008001e4
+0;0x104f2;addi a4,a4,4
+0;0x104f4;addi a5,a5,4
+0;0x104f6;addw a0,a0,a2
+0;0x104f8;sw a0,-4(a4);0x4000800204
+0;0x104fc;bne a3,a5,-12 # 0x104f0
+0;0x104f0;lw a2,0(a5);0x40008001e8
+0;0x104f2;addi a4,a4,4
+0;0x104f4;addi a5,a5,4
+0;0x104f6;addw a0,a0,a2
+0;0x104f8;sw a0,-4(a4);0x4000800208
+0;0x104fc;bne a3,a5,-12 # 0x104f0
+0;0x104f0;lw a2,0(a5);0x40008001ec
+0;0x104f2;addi a4,a4,4
+0;0x104f4;addi a5,a5,4
+0;0x104f6;addw a0,a0,a2
+0;0x104f8;sw a0,-4(a4);0x400080020c
+0;0x104fc;bne a3,a5,-12 # 0x104f0
+0;0x10500;lw a0,0(a1);0x40008001f0
+0;0x10502;ret 

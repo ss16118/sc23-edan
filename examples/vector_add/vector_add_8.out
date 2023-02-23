@@ -1,0 +1,70 @@
+0;0x104ac;blez a0,30 # 0x104ca
+0;0x104b0;slli a0,a0,2
+0;0x104b2;mv a4,a3
+0;0x104b4;add a6,a1,a0
+0;0x104b8;lw a0,0(a1);0x40008001b0
+0;0x104ba;lw a5,0(a2);0x40008001d0
+0;0x104bc;addi a1,a1,4
+0;0x104be;addi a2,a2,4
+0;0x104c0;addw a5,a5,a0
+0;0x104c2;sw a5,0(a4);0x40008001f0
+0;0x104c4;addi a4,a4,4
+0;0x104c6;bne a1,a6,-14 # 0x104b8
+0;0x104b8;lw a0,0(a1);0x40008001b4
+0;0x104ba;lw a5,0(a2);0x40008001d4
+0;0x104bc;addi a1,a1,4
+0;0x104be;addi a2,a2,4
+0;0x104c0;addw a5,a5,a0
+0;0x104c2;sw a5,0(a4);0x40008001f4
+0;0x104c4;addi a4,a4,4
+0;0x104c6;bne a1,a6,-14 # 0x104b8
+0;0x104b8;lw a0,0(a1);0x40008001b8
+0;0x104ba;lw a5,0(a2);0x40008001d8
+0;0x104bc;addi a1,a1,4
+0;0x104be;addi a2,a2,4
+0;0x104c0;addw a5,a5,a0
+0;0x104c2;sw a5,0(a4);0x40008001f8
+0;0x104c4;addi a4,a4,4
+0;0x104c6;bne a1,a6,-14 # 0x104b8
+0;0x104b8;lw a0,0(a1);0x40008001bc
+0;0x104ba;lw a5,0(a2);0x40008001dc
+0;0x104bc;addi a1,a1,4
+0;0x104be;addi a2,a2,4
+0;0x104c0;addw a5,a5,a0
+0;0x104c2;sw a5,0(a4);0x40008001fc
+0;0x104c4;addi a4,a4,4
+0;0x104c6;bne a1,a6,-14 # 0x104b8
+0;0x104b8;lw a0,0(a1);0x40008001c0
+0;0x104ba;lw a5,0(a2);0x40008001e0
+0;0x104bc;addi a1,a1,4
+0;0x104be;addi a2,a2,4
+0;0x104c0;addw a5,a5,a0
+0;0x104c2;sw a5,0(a4);0x4000800200
+0;0x104c4;addi a4,a4,4
+0;0x104c6;bne a1,a6,-14 # 0x104b8
+0;0x104b8;lw a0,0(a1);0x40008001c4
+0;0x104ba;lw a5,0(a2);0x40008001e4
+0;0x104bc;addi a1,a1,4
+0;0x104be;addi a2,a2,4
+0;0x104c0;addw a5,a5,a0
+0;0x104c2;sw a5,0(a4);0x4000800204
+0;0x104c4;addi a4,a4,4
+0;0x104c6;bne a1,a6,-14 # 0x104b8
+0;0x104b8;lw a0,0(a1);0x40008001c8
+0;0x104ba;lw a5,0(a2);0x40008001e8
+0;0x104bc;addi a1,a1,4
+0;0x104be;addi a2,a2,4
+0;0x104c0;addw a5,a5,a0
+0;0x104c2;sw a5,0(a4);0x4000800208
+0;0x104c4;addi a4,a4,4
+0;0x104c6;bne a1,a6,-14 # 0x104b8
+0;0x104b8;lw a0,0(a1);0x40008001cc
+0;0x104ba;lw a5,0(a2);0x40008001ec
+0;0x104bc;addi a1,a1,4
+0;0x104be;addi a2,a2,4
+0;0x104c0;addw a5,a5,a0
+0;0x104c2;sw a5,0(a4);0x400080020c
+0;0x104c4;addi a4,a4,4
+0;0x104c6;bne a1,a6,-14 # 0x104b8
+0;0x104ca;lw a0,0(a3);0x40008001f0
+0;0x104cc;ret 

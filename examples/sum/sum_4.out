@@ -1,0 +1,22 @@
+0;0x104b0;blez a1,26 # 0x104ca
+0;0x104b4;slli a1,a1,2
+0;0x104b6;mv a5,a0
+0;0x104b8;add a3,a0,a1
+0;0x104bc;mv a0,zero
+0;0x104be;lw a4,0(a5);0x4000800210
+0;0x104c0;addi a5,a5,4
+0;0x104c2;addw a0,a0,a4
+0;0x104c4;bne a3,a5,-6 # 0x104be
+0;0x104be;lw a4,0(a5);0x4000800214
+0;0x104c0;addi a5,a5,4
+0;0x104c2;addw a0,a0,a4
+0;0x104c4;bne a3,a5,-6 # 0x104be
+0;0x104be;lw a4,0(a5);0x4000800218
+0;0x104c0;addi a5,a5,4
+0;0x104c2;addw a0,a0,a4
+0;0x104c4;bne a3,a5,-6 # 0x104be
+0;0x104be;lw a4,0(a5);0x400080021c
+0;0x104c0;addi a5,a5,4
+0;0x104c2;addw a0,a0,a4
+0;0x104c4;bne a3,a5,-6 # 0x104be
+0;0x104c8;ret 
