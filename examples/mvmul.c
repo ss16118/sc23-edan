@@ -3,7 +3,7 @@
  * in a recursive approach.
  */
 #include <stdio.h>
-#define N 1024
+#define N 2
 
 /**
  * Main computation kernel that multiplies a square matrix A
