@@ -3,6 +3,7 @@ from tqdm import tqdm
 from typing import List, Optional, Dict
 from enum import Enum, auto
 from time import time
+from collections import defaultdict
 from eDAG import EDag, Vertex, OpType
 from instruction_parser import InstructionParser
 from riscv_parser import RiscvParser
@@ -86,9 +87,11 @@ class EDagGenerator:
         trace = open(self.trace_file, "r")
 
         eDag = EDag()
-        # A dictionary that maps a register or memory location represented
-        # as a string to the most recent vertex which updated its value
-        curr_vertex: Dict[str, Vertex] = {}
+        # A dictionary that maps a CPU index and a register or
+        # memory location, represented as a string to the most recent
+        # vertex which updated its value
+        curr_vertex: Dict[int, Dict[str, Vertex]] = defaultdict(dict)
+
         # A number that is used to uniquely identify each vertex
         # increments after a vertex is added to the eDAG
         vertex_id = 0
@@ -103,13 +106,14 @@ class EDagGenerator:
             # Strips the newline character on the right of a line
             line = line.strip()
             parsed_line = self.parser.parse_line(line)
-
+            
             if parsed_line is None:
                 continue
-            
             # Creates a new vertex as per the instruction
             new_vertex: Vertex = \
                 self.parser.generate_vertex(id=vertex_id, **parsed_line)
+            
+            cpu_id = new_vertex.cpu
 
             # If a cache model is used
             if self.cache_model is not None and \
@@ -143,7 +147,8 @@ class EDagGenerator:
 
                 # Creates dependency edges
                 for dep in new_vertex.dependencies:
-                    source = curr_vertex.get(dep)
+                    # source = curr_vertex.get(dep)
+                    source = curr_vertex[cpu_id].get(dep)
                     if source is not None:
                         eDag.add_edge(source, new_vertex)
                 
@@ -154,7 +159,7 @@ class EDagGenerator:
                 #     eDag.add_edge(prev_vertex, new_vertex)
 
                 if new_vertex.target is not None:
-                    curr_vertex[new_vertex.target] = new_vertex
+                    curr_vertex[cpu_id][new_vertex.target] = new_vertex
             
             vertex_id += 1
         trace.close()

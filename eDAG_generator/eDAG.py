@@ -30,6 +30,8 @@ class OpType(Enum):
     MOVE = auto()
     # Branch
     BRANCH = auto()
+    # Jump
+    JUMP = auto()
     
 
 class Vertex:
@@ -306,7 +308,7 @@ class EDag:
         if len(self.removed_vertices) > 0:
             raise RuntimeError("[ERROR] Topological sort can only be computed if no vertices have been removed")
         # Uses the igraph library to get the topological sort
-        graph = igraph.Graph(edges=self.edges(False), directed=True)
+        graph = igraph.Graph(n=len(self.vertices), edges=self.edges(False), directed=True)
         # graph.add_vertices(map(str, self.vertices))
         # graph.add_edges(self.edges())
         # vertices_to_remove = [v.index for v in graph.vs if v.index not in self.vertices]

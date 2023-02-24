@@ -130,13 +130,16 @@ class RiscvParser(InstructionParser):
         cpu_id, insn_addr, *tokens = tokens
         insn_tokens = tokens[0].split()
         instruction = insn_tokens[0]
-        # Skips instructions that do not have any operands, e.g. ret
-        if instruction in RiscvParser.ret_instructions:
-            return None
-        operands = insn_tokens[1].split(",")
         res["cpu"] = int(cpu_id)
         res["insn_addr"] = insn_addr
         res["instruction"] = instruction
+        res["operands"] = []
+
+        # Skips instructions that do not have any operands, e.g. ret
+        if instruction in RiscvParser.ret_instructions:
+            return res
+        
+        operands = insn_tokens[1].split(",")
         res["operands"] = operands
         if len(tokens) > 1:
             # The last token should be the memory address of the data
@@ -239,7 +242,10 @@ class RiscvParser(InstructionParser):
             dependencies.add(operands[1])
             dependencies.add(self.__get_offset_reg(operands[2]))
             # FIXME: Should probably have a separate Op type for atomic operations
-            op_type = OpType.LOAD_MEM
+            # The amount of data movement is data_size * 2 since an atomic
+            # operation both loads and stores to memory
+            data_size = self.get_insn_data_size(instruction) * 2
+            op_type = OpType.STORE_MEM
 
         elif instruction in RiscvParser.comp_and_set_instructions:
             # Compare and set instructions
@@ -274,7 +280,7 @@ class RiscvParser(InstructionParser):
                 dependencies.add(operands[1])
             else:
                 assert(len(operands) == 1)
-            op_type = OpType.BRANCH
+            op_type = OpType.JUMP
 
         elif instruction in RiscvParser.cond_br_2ops_instructions:
             # Conditional branch instructions with 2 operands
@@ -332,7 +338,14 @@ class RiscvParser(InstructionParser):
                 target = operands[1]
                 dependencies.update(operands[2:])
             op_type = OpType.ARITHMETIC
-
+        
+        elif instruction in RiscvParser.ret_instructions:
+            if instruction == "ret":
+                # In RISC-V 'ret' is a pseudo-instruction that
+                # depends on the value in register `ra`
+                assert(len(operands) == 0)
+                dependencies.add("ra")
+            op_type = OpType.JUMP
         else:
             # An unknown instruction has been encountered
             raise ValueError(f"[ERROR] Unknown instruction {instruction}")
