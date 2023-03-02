@@ -13,11 +13,11 @@ from riscv_subgraph_optimizer import RiscvSubgraphOptimizer
 
 
 
-compress = True
+compress = False
 
 insn_cycles = [
     # Memory load
-    ({ "lb", "lh", "lw", "ld", "lhu", "lbu", "fld", "flw" }, 200.0),
+    ({ "lb", "lh", "lw", "ld", "lhu", "lbu", "fld", "flw", "lwu"}, 200.0),
     # Load immediate
     ({ "li", "lui" }, 1.0),
     (RiscvParser.store_instructions, 200.0),
@@ -36,6 +36,8 @@ insn_cycles = [
     (RiscvParser.fp_2ops_instructions, 1.0),
     (RiscvParser.fp_3ops_instructions, 20.0),
     (RiscvParser.fp_4ops_instructions, 1.0),
+    (RiscvParser.ret_instructions, 2),
+    (RiscvParser.uncategorized_instructions, 1.0)
 ]
 
 if __name__ == "__main__":
@@ -79,6 +81,9 @@ if __name__ == "__main__":
     parser.add_argument("--work-depth", dest="calc_work_depth",
                         default=False, action="store_true",
                         help="If set, will calculate the work and depth of the eDAG")
+    parser.add_argument("-p", "--processes", dest="processes", 
+                        type=int, default=1,
+                        help="Number of processes to use for generating the eDAG")
     args = parser.parse_args()
 
     if args.trace_file_path is None and args.load_path is None:
@@ -94,7 +99,7 @@ if __name__ == "__main__":
 
     if args.use_cpu_model:
         print("[INFO] Using default CPU model")
-        cpu_model = CPUModel(insn_cycles, frequency=3 * G)
+        cpu_model = CPUModel(insn_cycles, frequency=1 * G)
     else:
         cpu_model = None
 
@@ -102,22 +107,28 @@ if __name__ == "__main__":
         assert(args.trace_file_path is None)
         filename_root = Path(args.load_path).stem
         print(f"[INFO] Loading eDAG from {args.load_path}")
+        start = time()
         eDag = EDag.load(args.load_path, compress)
+        print(f"[DEBUG] Time take to load saved eDAG: {time - start():.3f} s")
         
     if args.trace_file_path:
         assert(args.load_path is None)
         filename_root = Path(args.trace_file_path).stem
         # Initializes eDAG generator
         print("[INFO] Generating eDAG")
+        print(f"[INFO] Number of processes: {args.processes}")
         generator = EDagGenerator(args.trace_file_path, ISA.RISC_V,
                     args.only_mem_acc, args.sanitize,
-                    cache_model=cache, cpu_model=cpu_model)
+                    cache_model=cache, cpu_model=cpu_model,)
+        start = time()
         eDag = generator.generate()
+        print(f"[DEBUG] Time take for generation: {time() - start:.3f} s")
 
     if args.save_path:
         save_path = args.save_path
+        print(f"[INFO] Saving generated eDAG to {save_path}")
         eDag.save(save_path, compress)
-        print(f"[INFO] Saved generated eDAG to {save_path}")
+        print(f"[INFO] Saved generated eDAG")
         file_size = os.path.getsize(save_path)
         print(f"[INFO] File size of {save_path}: {file_size / K:.2f} KB")
 
@@ -148,15 +159,16 @@ if __name__ == "__main__":
         # Computes the average bandwidth
         avg_bandwidth = bandwidth_metric.get_avg_bandwidth(critical_path_cycles)
         print(f"Average bandwidth utilization: {avg_bandwidth / M:.2f} MB/s")
-
-        # Retrieves the critical path itself
-        critical_path = bandwidth_metric.get_critical_path(dp)
-
+        if args.graph_file is not None:
+            # Retrieves the critical path itself
+            critical_path = bandwidth_metric.get_critical_path(dp)
+        print("[INFO] Computing data movement over time")
         # Computes the data movement over time
         bins, data_movement = \
-            bandwidth_metric.get_data_movement_over_time(1, False)
-        # fig_path = f"../tmp/{filename_root}_dm.png"
-        visualize_data_movement_over_time(bins, data_movement, False)
+            bandwidth_metric.get_data_movement_over_time(1, "requests")
+        fig_path = f"../tmp/{filename_root}_dm.png"
+        visualize_data_movement_over_time(bins, data_movement, 
+                                          "requests", fig_path)
 
     if args.optimize_subgraph:
         print("[INFO] Optimizing subgraph")
@@ -183,9 +195,12 @@ if __name__ == "__main__":
         # Generates the reuse distance histogram based on the given trace
         print("[INFO] Generating reuse distance histogram")
         reuse_distance_metric = ReuseDistance(eDag)
-        reuse_histograms = \
-            reuse_distance_metric.get_all_reuse_histograms()
-        for i, reuse_histogram in enumerate(reuse_histograms):
-            save_filename = f"../histos/{filename_root}_histo_{i}.png"
-            visualize_reuse_histogram(reuse_histogram, save_filename)
+        reuse_histogram = reuse_distance_metric.get_sequential_reuse_histogram()
+        save_fig = f"../histos/{filename_root}_histo.png"
+        visualize_reuse_histogram(reuse_histogram, save_fig)
+        # reuse_histograms = \
+        #     reuse_distance_metric.get_all_reuse_histograms()
+        # for i, reuse_histogram in enumerate(reuse_histograms):
+        #     save_filename = f"../histos/{filename_root}_histo_{i}.png"
+        #     visualize_reuse_histogram(reuse_histogram, save_filename)
 

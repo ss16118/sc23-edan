@@ -235,7 +235,7 @@ class BandwidthUtilization:
         return data_movement * self.cpu_frequency / critical_path_cycles
 
     def get_data_movement_over_time(self, cycles: float = 10.0,
-                                        use_bandwidth: bool = True) \
+                                    mode: Optional[str] = None) \
                                             -> Tuple[List, np.array]:
         """
         Estimates how the amount of data movement, i.e. number of
@@ -252,16 +252,34 @@ class BandwidthUtilization:
         split into 200 / 20 = 10 bins, and data movement will be
         computed separately for each bin.
 
+        @param mode: Specifies the representation of the result. If None,
+        will return the data movement as number of bytes transferred. Other
+        possible options include "bandwidth" and "requests". If "bandwidth"
+        is chosen, will convert the result from number of bytes to
+        bandwidth utilization. If "requests" is used, will return the result
+        as the number of outstanding memory requests issued regardless of
+        the size of data that is transferred.
+
         @return A tuple containing a two items. The first item will be
         the bins or time intervals while the second item is a numpy array 
         containing the amount of data movement for each time interval, either
         in bytes or in bytes/s, as per the value of `use_bandwidth`.
         """
+        use_bandwidth = False
+        use_requests = False
+        if mode is not None:
+            if mode == "bandwidth":
+                use_bandwidth = True
+            elif mode == "requests":
+                use_requests = True
+            else:
+                raise ValueError(f"[ERROR] Unknown mode: {mode}")
+            
         topo_sorted = self.eDag.topological_sort(reverse=False)
         dp = array('f', [0] * len(topo_sorted))
         # Computes the maximum number of cycles it takes to
         # reach each vertex from any starting node
-        # The algorithm is similar to the one used in `EDag.get_vertex_ran()`
+        # The algorithm is similar to the one used in `EDag.get_vertex_rank()`
         max_cycles = 0
         for v_id in topo_sorted:
             _, out_vertices = self.eDag.adj_list[v_id]
@@ -290,8 +308,11 @@ class BandwidthUtilization:
                 # Computes how many buckets the 
                 start_bin = bisect.bisect_left(bins, v_cycles)
                 end_bin = bisect.bisect_left(bins, v_cycles + vertex.cycles)
-                res[start_bin:end_bin] += vertex.data_size
+                res[start_bin:end_bin] += \
+                    1 if use_requests else vertex.data_size
+
         if use_bandwidth:
             # Converts bytes to bytes/s
             res = res * self.cpu_frequency / cycles
+        
         return bins, res

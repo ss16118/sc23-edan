@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from graphviz import Digraph
+from multiprocessing import Value, Lock
 from typing import Dict, List, Optional, Set
 from eDAG import EDag, Vertex
 
@@ -8,6 +9,35 @@ from eDAG import EDag, Vertex
 G = 10 ** 9
 M = 10 ** 6
 K = 10 ** 3
+
+
+class AtomicCounter(object):
+    """
+    An atomic counter that can be shared among multiple processes.
+    Implementation from:
+    https://stackoverflow.com/questions/2080660/how-to-increment-a-shared-counter-from-multiple-processes
+    """
+    def __init__(self, n: int = 0) -> None:
+        """
+        Initializes the value of the counter to be `n`.
+        """
+        self.val = Value('i', n)
+    
+    def increment(self) -> None:
+        """
+        Increments the value of the counter by 1 in a process-safe manner.
+        """
+        with self.val.get_lock():
+            self.val.value += 1
+    
+    @property
+    def value(self) -> int:
+        """
+        Returns the current value of the counter.
+        """
+        with self.val.get_lock():
+            return self.val.value
+
 
 
 def get_vertex_attrs(vertex: Vertex, highlight_mem_acc: bool) -> Dict:
@@ -119,7 +149,7 @@ def visualize_path(eDag: EDag, graph: Digraph, highlight_mem_acc: bool,
         graph.edge(str(source), str(dst), color=color, penwidth="3")
 
 def visualize_data_movement_over_time(bins: List[int], data_movement: np.array,
-                                      use_bandwidth: bool = True,
+                                      mode: Optional[str] = None,
                                       fig_path: Optional[str] = None) -> None:
     """
     Plots the data movement over time of a program based on the given
@@ -127,9 +157,22 @@ def visualize_data_movement_over_time(bins: List[int], data_movement: np.array,
     in bytes or bytes/s. See `Bandwidth.data_movement_over_time()` for
     more information.
 
+    @param mode: See description of argument `mode` in 
+    `BandwidthUtilization.get_data_movement_over_time()`.
+
     @param fig_path: If not None, the plot will be saved to the
     given file.
     """
+    use_bandwidth = False
+    use_requests = False
+    if mode is not None:
+        if mode == "bandwidth":
+            use_bandwidth = True
+        elif mode == "requests":
+            use_requests = True
+        else:
+            raise ValueError(f"[ERROR] Unknown mode: {mode}")
+        
     plt.figure()
     y_label = "Bytes moved"
     x_label = "CPU cycles"
@@ -138,10 +181,14 @@ def visualize_data_movement_over_time(bins: List[int], data_movement: np.array,
         # print(data_movement)
         data_movement /= G
         y_label = "Bandwidth utilization [GB/s]"
+    
+    if use_requests:
+        y_label = "Number of outstanding memory requests"
+
     assert len(bins) >= 2
     bar_width = bins[1] - bins[0]
     plt.bar(bins, data_movement, width=bar_width, align="edge")
-
+    plt.yscale("log")
     plt.xlabel(x_label)
     plt.ylabel(y_label)
     if fig_path is not None:

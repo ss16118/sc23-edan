@@ -37,6 +37,7 @@ class CPUModel:
         will be raised.
         """
         # TODO Find a more accurate CPU model
+
         # First checks if the vertex is a cache hit
         if vertex.cache_hit and self.use_cache_model:
             return self.cache_hit_cycles

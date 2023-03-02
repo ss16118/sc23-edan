@@ -18,16 +18,16 @@ class RiscvParser(InstructionParser):
     }
     load_instructions = {
         "lb", "lh", "lw", "ld", "li", "lhu", "lbu", "lui",
-        "fld", "flw"
+        "fld", "flw", "lwu"
     }
     store_instructions = { "sb", "sh", "sw", "sd", "fsd" }
-    mv_instructions = { "mv", "sext.w", "fmv.d.x" }
+    mv_instructions = { "mv", "sext.w", "fmv.d.x", "fmv.d" }
     # FIXME: Probably it is better to combine all the arithmetic
     # operations into one category
     add_instructions = { "addi", "addw", "addiw", "add" }
-    sub_instructions = { "sub", "subw" }
+    sub_instructions = { "sub", "subw", "neg", "negw" }
     mul_instructions = { "mul", "mulw" }
-    div_instructions = { "divw", "divuw" }
+    div_instructions = { "divw", "divuw", "div" }
     rem_instructions = { "remw", "remuw" }
     atomic_op_instructions = {
         "amoswap.w", "amoxor.w", "amoadd.w", "amoxor.w",
@@ -36,19 +36,23 @@ class RiscvParser(InstructionParser):
     comp_and_set_instructions = { "slti", "sltiu", "slt", "sltu" }
     bit_op_instructions = \
         { "xori", "ori", "andi", "slli", "srli", "srai", "sll", "xor", "srl", 
-        "sra", "or", "and", "srliw", "sraiw" }
+        "sra", "or", "and", "srliw", "sraiw", "sraw" }
     uncond_jump_instructions = { "j", "jal", "jalr" }
-    cond_br_2ops_instructions = { "bgez", "blez", "bgtz" }
-    cond_br_3ops_instructions = \
-        { "beq", "bne", "bge", "bgt", "bgtu", "blt", "bltu", "bgeu", "ble"}
+    cond_br_2ops_instructions = { "beqz", "bgez", "blez", "bgtz", "bnez" }
+    cond_br_3ops_instructions = {
+        "beq", "bne", "bge", "bgt", "bgtu", "blt", "bltu", "bgeu", "ble", "bleu"
+    }
     ret_instructions = { "ret", "uret", "sret", "mret", "tail", "ecall" }
 
     # Floating point operations
-    fp_2ops_instructions = { "fcvt.d.w" }
+    fp_2ops_instructions = { "fcvt.d.w", "fcvt.w.d" }
     fp_3ops_instructions = {
-        "fmul.d", "fmul.s", "fmadd.s", "fdiv.s"
+        "fsub.d", "fsub.s", "fmul.d", "fmul.s", "fmadd.s", "fdiv.d", "fdiv.s",
+        "flt.d", "flt.s", "fadd.d", "fadd.s"
      }
     fp_4ops_instructions = { "fmadd.d", "fmadd.s", "fnmadd.d" }
+    # Uncategorized instructions
+    uncategorized_instructions = { "auipc" }
 
     # Associative and commutative operations
     comm_assoc_ops = {
@@ -208,10 +212,13 @@ class RiscvParser(InstructionParser):
                 op_type = OpType.ARITHMETIC_IMM
                 
         elif instruction in RiscvParser.sub_instructions:
-            assert(len(operands) == 3)
             target = operands[0]
             dependencies.add(operands[1])
-            dependencies.add(operands[2])
+            if instruction in { "neg", "negw" }:
+                assert(len(operands) == 2)
+            else:
+                assert(len(operands) == 3)
+                dependencies.add(operands[2])
             op_type = OpType.ARITHMETIC
 
         elif instruction in RiscvParser.mul_instructions:
@@ -346,6 +353,14 @@ class RiscvParser(InstructionParser):
                 assert(len(operands) == 0)
                 dependencies.add("ra")
             op_type = OpType.JUMP
+
+        elif instruction in RiscvParser.uncategorized_instructions:
+            # Uncategorized instructions
+            if instruction == "auipc":
+                assert(len(operands) == 2)
+                target = operands[0]
+            op_type == OpType.UNCATEGORIZED
+
         else:
             # An unknown instruction has been encountered
             raise ValueError(f"[ERROR] Unknown instruction {instruction}")

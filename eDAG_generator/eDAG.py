@@ -32,6 +32,8 @@ class OpType(Enum):
     BRANCH = auto()
     # Jump
     JUMP = auto()
+    # Uncategorized operation
+    UNCATEGORIZED = auto()
     
 
 class Vertex:
@@ -293,7 +295,7 @@ class EDag:
     
     # Uses caching to make sure that consecutive calls to this
     # function can be executed quickly
-    @lru_cache(maxsize=1)
+    @lru_cache(maxsize=2)
     def topological_sort(self, reverse: bool = False) -> List[int]:
         """
         Returns one topological sort of the vertices of an eDAG in a list
@@ -610,3 +612,30 @@ class EDag:
         else:
             with bz2.BZ2File(save_path, "rb") as compressed_file:
                 return pickle.load(compressed_file)
+    
+    @staticmethod
+    def merge_subgraphs(subgraphs: List[EDag], disjoint: bool = True) -> EDag:
+        """
+        Creates a new `EDag` object from all the vertices and
+        edges of the given list of subgraphs.
+        @param disjoint: If True, would assume that the given subgraphs are
+        all disjoint, meaning that they do not share vertices or edges, and
+        this would significantly accelerate the merging process.
+        """
+        merged = EDag()
+
+        for subgraph in subgraphs:
+            # Merges vertices
+            merged.vertices.update(subgraph.vertices)
+            merged.id_to_vertex.update(subgraph.id_to_vertex)
+            # Merges edges
+            if disjoint:
+                merged.adj_list.update(subgraph.adj_list)
+            else:
+                for v_id, (in_vs, out_vs) in subgraph.adj_list.items():
+                    if v_id in merged.adj_list:
+                        merged[v_id][EDag._in].update(in_vs)
+                        merged[v_id][EDag._out].update(out_vs)
+                    else:
+                        merged[v_id] = [in_vs, out_vs]
+        return merged
