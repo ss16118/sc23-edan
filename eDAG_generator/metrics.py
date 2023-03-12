@@ -5,13 +5,14 @@ import math
 import bisect
 import numpy as np
 import networkx as nx
-import matplotlib.pyplot as plt
-from typing import List, Optional, Set, Dict, Tuple, Union
+from scipy.stats import linregress
+from typing import List, Optional, Set, Dict, Tuple, Union, Callable
 from array import array
 from tqdm import tqdm
 from collections import OrderedDict, defaultdict
 from instruction_parser import InstructionParser
 from eDAG import EDag, OpType
+from utils import *
 
 
 
@@ -132,81 +133,6 @@ class BandwidthUtilization:
         self.eDag = eDag
         self.cpu_frequency = cpu_frequency
 
-    def get_critical_path_cycles(self, return_dp: bool = False) \
-        -> Union[float, Tuple[float, array]]:
-        """
-        Computes the critical path of the eDAG based on the number of CPU
-        cycles associated with each vertex. In turn, the total number of
-        compute cycles in the critical path will be returned.
-        Note that this function should only be called if a CPU model
-        has been used to construct the eDAG and all the vertices have
-        their corresponding CPU cycles.
-        @param return_dp: If True, the array that is used to the store
-        the intermediate values during the computation will also
-        be returned in a tuple along with the number of cycles.
-        """
-        # The critical path is computed with a similar approach as
-        # the depth function
-        # Computes the topologically sorted list of vertices
-        topo_sorted = self.eDag.topological_sort(reverse=True)
-        dp = array('f', [0] * len(topo_sorted))
-        length = 0
-        for v_id in tqdm(topo_sorted):
-            _, out_vertices = self.eDag.adj_list[v_id]
-            vertex = self.eDag.id_to_vertex[v_id]
-            assert vertex.cycles is not None
-            if not out_vertices:
-                # If vertex is an end node whose out-degree is 0
-                dp[v_id] = vertex.cycles
-            else:
-                for out_vertex_id in out_vertices:
-                    new_val = dp[out_vertex_id] + vertex.cycles
-                    dp[v_id] = dp[v_id] if dp[v_id] > new_val else new_val
-            length = length if length > dp[v_id] else dp[v_id]
-        
-        if return_dp:
-            return (length, dp)
-
-        return length
-    
-    def get_critical_path(self, dp: Optional[array] = None) -> List[int]:
-        """
-        Computes the critical path in the eDAG as a sequence of vertices
-        in based on the number of CPU cycles assigned to each vertex.
-        
-        See the similar function `EDag.get_longest_path()` for more details.
-        FIXME Duplicate code as `EDag.get_longest_path()`
-        @param dp: If provided, will forgo invoking `get_critical_path_cycles()`
-        """
-        if dp is None:
-            _, dp = self.get_critical_path_cycles(True)
-        
-        path = []
-        curr = None
-        curr_cycles = 0
-        # Finds the vertex that starts the critical path
-        # FIXME Can probably use reduce
-        for vertex in self.eDag.get_starting_vertices(True):
-            if dp[vertex] > curr_cycles:
-                curr = vertex
-                curr_cycles = dp[vertex]
-        assert curr is not None
-        path.append(curr)
-        # Follows the staring node until the end is reached
-        while True:
-            _, out_vertices = self.eDag.adj_list[curr]
-            curr_cycles = -1
-            for out_vertex in out_vertices:
-                if dp[out_vertex] > curr_cycles:
-                    curr = out_vertex
-                    curr_cycles = dp[out_vertex]
-            
-            if curr_cycles == -1:
-                break
-            else:
-                path.append(curr)
-
-        return path
 
     def get_avg_bandwidth(self,
                           critical_path_cycles: Optional[float] = None) \
@@ -222,7 +148,7 @@ class BandwidthUtilization:
         if critical_path_cycles is None:
             # Calculates the critical path length in terms of the number
             # of CPU cycles it takes
-            critical_path_cycles = self.get_critical_path_cycles()
+            critical_path_cycles = get_critical_path_cycles(self.eDag)
         
         print(f"[DEBUG] Critical path length: {critical_path_cycles} cycles")
         # Calculates the total amount of data movement in bytes between
@@ -292,12 +218,13 @@ class BandwidthUtilization:
         # `max_cycles` should equal to `critical_path_cycles`
         # Splits the time between 0 and `max_cycles` into bins
         # each of size `cycles`
-        num_bins = math.ceil(max_cycles / cycles) + 1
-        bins = list(range(0, int(max_cycles + cycles), int(cycles)))
+        num_bins = math.ceil(max_cycles / cycles)
+        bins = list(range(cycles, int(max_cycles + cycles), int(cycles)))
+        # print("Number of bins: ", bins)
         assert len(bins) == num_bins
         res = np.zeros(shape=num_bins,
                         dtype=np.float32 if use_bandwidth else np.int32)
-        
+
         for v_id, v_cycles in enumerate(dp):
             # `v_cycles` is the number of CPU cycles it takes
             # to reach `vertex`, i.e. at which time the
@@ -305,14 +232,129 @@ class BandwidthUtilization:
             vertex = self.eDag.id_to_vertex[v_id]
             # Ignores vertices that do not access memory
             if vertex.data_size > 0:
-                # Computes how many buckets the 
-                start_bin = bisect.bisect_left(bins, v_cycles)
-                end_bin = bisect.bisect_left(bins, v_cycles + vertex.cycles)
+                # Computes how many buckets the memory access crosses
+                if cycles > 1:
+                    start_bin = bisect.bisect_left(bins, v_cycles)
+                    end_bin = bisect.bisect_left(bins, v_cycles + vertex.cycles)
+                else:
+                    start_bin = int(v_cycles)
+                    end_bin = int(v_cycles + vertex.cycles)
+
                 res[start_bin:end_bin] += \
                     1 if use_requests else vertex.data_size
+                # print(f"[DEBUG] mem acc {v_id}, {v_cycles}-{v_cycles + vertex.cycles}, {start_bin}:{end_bin} ({len(res[start_bin:end_bin])})")
 
         if use_bandwidth:
             # Converts bytes to bytes/s
             res = res * self.cpu_frequency / cycles
-        
         return bins, res
+    
+
+
+class MemoryLatencySensitivity:
+    """
+    An object that computes the memory latency sensitivity
+    of a given eDAG based on different requirements and approaches.
+    """
+    def __init__(self, eDag: EDag) -> None:
+        """
+        @param eDag: An execution DAG object which will be the target
+        of memory latency sensitivity analysis.
+        """
+        self.eDag = eDag
+
+    def __recompute_critical_path_with_delta(self, dp: array, delta: float, 
+                                             topo_sorted: List[int],
+                                             cond: Callable[[Vertex], bool]) \
+                                                -> float:
+        """
+        Recomputes the critical path of an eDAG with the given additional
+        latency `delta`.
+        To make it more general, the additional latency is only added to 
+        vertices that satisfy the given condition.
+        Returns a single float representing the new critical path length.
+        """
+        length = 0
+        for v_id in topo_sorted:
+            vertex = self.eDag.id_to_vertex[v_id]
+            assert vertex.cycles is not None
+            if cond(vertex):
+                dp[v_id] += delta
+            _, out_vertices = self.eDag.adj_list[v_id]
+            for out_id in out_vertices:
+                new_val = dp[out_id] + vertex.cycles
+                dp[v_id] = dp[v_id] if dp[v_id] > new_val else new_val
+            length = length if length > dp[v_id] else dp[v_id]
+        return length
+            
+    def get_simple_mls(self, return_k: bool = False, 
+                       delta_range: Optional[range] = None,
+                       critical_path_cycles: Optional[float] = None,
+                       dp: Optional[array] = None,
+                       critical_path: Optional[List[int]] = None) \
+                        -> Union[Dict[float, float], float]:
+        """
+        Computes the memory latency sensitivity of the given eDAG as per
+        Brent's theorem, which states that the upper bound for the
+        execution of an eDAG is W/p + D where W is the total amount of
+        work, D is the critical path length, or in this case, the depth, 
+        and p is the number of processors in use. 
+        Since we are only considering an ideal scenario in which an
+        infinite number of processors are used, we know that the
+        both the lower bound and upper bound of execution time will be
+        determined simply by the critical path length. What this implies,
+        in turn, is that the memory latency sensitivity of any application,
+        under our idealized scenario, is entirely dependent on the number
+        of memory access vertices on the critical path. To this end,
+        we can vary the amount of additional latency within a given range
+        and measure the corresponding critical path lengths. When we plot
+        the slowdown against additional latency, the trendline we obtain
+        should be asymptotically linear, and we define the slope k 
+        to be the memory latency sensitivity.
+        @param return_k: If True, will return the memory latency
+        sensitivity as the slope of the trendline. If False, will
+        return a dictionary that represents the graph itself where the
+        keys are x and values are y.
+        @param delta_range: The range of additional latency to explore,
+        i.e. x values for the plot. If None, will use the default
+        `range(0, 200, 10)`.
+        @param critical_path_cycles: If given will forgo the invocation
+        of `get_critical_path_cycles()`. Used as the baseline of comparison
+        @param critical_path: A list containing the IDs of the vertices on
+        the critical path. If given will forgo the invocation of
+        `get_critical_path()`.
+        """
+        
+        if return_k:
+            # If we only need the slope of the trend line, we have to simply
+            # to find the number of vertices along the critical
+            # path with the most number of memory access vertices
+            # and divide that by the original critical path length
+
+            # Obtains the number of memory access vertices along the path
+            m = self.eDag.get_depth(mem_acc_only=True)
+            print(f"[DEBUG] Number of mem acc vs: {m}")
+            return m / critical_path_cycles
+        
+        if delta_range is None:
+            delta_range = range(0, 200, 10)
+
+        if critical_path_cycles is None or dp is None:
+            critical_path_cycles, dp = get_critical_path_cycles(self.eDag, True)
+        
+        if critical_path is None:
+            critical_path = get_critical_path(self.eDag, dp)
+
+        topo_sorted = self.eDag.topological_sort(reverse=True)
+
+        res = {}
+        for delta in tqdm(list(delta_range)[1:]):
+            # New critical path length
+            # Makes sure to copy the original array
+            new_cp = self.__recompute_critical_path_with_delta(
+                        array('f', dp), delta, topo_sorted,
+                        lambda v: v.is_mem_acc and not v.cache_hit)
+            slowdown = new_cp / critical_path_cycles
+            res[delta] = slowdown
+            
+        return res

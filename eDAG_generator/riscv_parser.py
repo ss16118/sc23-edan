@@ -192,7 +192,7 @@ class RiscvParser(InstructionParser):
             target = data_addr
             dependencies.add(operands[0])
             dependencies.add(self.__get_offset_reg(operands[1]))
-            # data_size = self.get_insn_data_size(instruction)
+            data_size = self.get_insn_data_size(instruction)
             op_type = OpType.STORE_MEM
 
         elif instruction in RiscvParser.mv_instructions:

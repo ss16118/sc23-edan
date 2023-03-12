@@ -402,6 +402,22 @@ class EDag:
 
         return sub_eDag
     
+    def get_vertices(self, cond: Callable[[Vertex], bool],
+                     id_only: bool = True) -> Set[Union[int, Vertex]]:
+        """
+        Retrieves all vertices in the eDAG that satisfy the given condition.
+        Returns the result as a set. If `id_only` is True, only the IDs
+        of the vertices will be returned.
+        """
+        res = set()
+        # FIXME Can probably use higher-order functions like `map()`
+        # and `reduce()`
+        for vertex_id in self.vertices:
+            vertex = self.id_to_vertex[vertex_id]
+            if cond(vertex):
+                res.add(vertex_id if id_only else vertex)
+        return res
+
     def filter_vertices(self, cond: Callable[[Vertex], bool]) -> None:
         """
         Given a certain condition, iteratively removes all nodes from the eDAG 
@@ -428,13 +444,16 @@ class EDag:
             if not changed:
                 break
     
-    def get_longest_path(self, id_only: bool = True) -> List[int]:
+    def get_longest_path(self, id_only: bool = True,
+                         mem_acc_only: bool = False) -> List[int]:
         """
         Computes the longest path in the eDAG in a list of consecutive vertices
         that should be followed.
         @param id_only: If True, only IDs of the vertices will be returned.
+        @param mem_acc_only: If True, only non-cache-hit memory access vertices
+        will be taken into account when computing the longest path.
         """
-        depth, dp = self.get_depth(True)
+        depth, dp = self.get_depth(True, mem_acc_only)
         path = []
         curr = None
         curr_depth = 0
@@ -460,7 +479,9 @@ class EDag:
             else:
                 # Appends the current vertex to the path
                 path.append(curr if id_only else self.id_to_vertex[curr])
-        assert depth == len(path)
+
+        if not mem_acc_only:
+            assert depth == len(path)
         return path
     
     def get_vertex_rank(self) -> Dict[int, Set[int]]:
@@ -492,7 +513,7 @@ class EDag:
         
         return res
 
-    def get_depth(self, return_dp: bool = False) \
+    def get_depth(self, return_dp: bool = False, mem_acc_only: bool = False) \
          -> Union[int, Tuple[int, array]]:
         """
         Calculates the depth, i.e. in this case diameter of the eDAG, by 
@@ -501,6 +522,8 @@ class EDag:
         @param return_dp: If True, the array that is used to store the
         intermediate values during the depth computation will also be
         returned in a tuple along with the depth itself.
+        @param mem_acc_only: If True, will only consider the number of
+        non-cache-hit memory access vertices when calculating the depth.
         """
         # Calculates the depth using an iterative and DP approach
         # to guarantee maximum efficiency and to avoid stack overflow
@@ -512,18 +535,39 @@ class EDag:
         dp = array('L', [0] * len(topo_sorted))
         depth = 0
 
-        for vertex in tqdm(topo_sorted):
-            _, out_vertices = self.adj_list[vertex]
-            for out_vertex in out_vertices:
-                new_val = dp[out_vertex] + 1
-                # `if` statement is faster than `max()`
-                dp[vertex] = dp[vertex] if dp[vertex] > new_val else new_val
-            depth = depth if depth > dp[vertex] else dp[vertex]
-        
-        if return_dp:
-            return (depth + 1, dp)
-        
-        return depth + 1
+        # TODO Refactor code
+        if not mem_acc_only:
+            for vertex in tqdm(topo_sorted):
+                _, out_vertices = self.adj_list[vertex]
+                for out_vertex in out_vertices:
+                    new_val = dp[out_vertex] + 1
+                    # `if` statement is faster than `max()`
+                    dp[vertex] = dp[vertex] if dp[vertex] > new_val else new_val
+
+                depth = depth if depth > dp[vertex] else dp[vertex]
+
+            if return_dp:
+                return (depth + 1, dp)
+            
+            return depth + 1
+        else:
+            for vertex_id in tqdm(topo_sorted):
+                vertex = self.id_to_vertex[vertex_id]
+                val = int(vertex.is_mem_acc and not vertex.cache_hit)
+                _, out_vertices = self.adj_list[vertex_id]
+                # If the vertex is an end vertex that has no outgoing edges
+                if not out_vertices:
+                    dp[vertex_id] = val
+                else:
+                    for out_vertex in out_vertices:
+                        new_val = dp[out_vertex] + val
+                        dp[vertex_id] = dp[vertex_id] if dp[vertex_id] > new_val else new_val
+                depth = depth if depth > dp[vertex_id] else dp[vertex_id]
+            
+            if return_dp:
+                return (depth, dp)
+
+            return depth
 
     def get_work(self, cond: Optional[Callable[[Vertex], bool]] = None) -> int:
         """

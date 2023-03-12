@@ -2,7 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from graphviz import Digraph
 from multiprocessing import Value, Lock
-from typing import Dict, List, Optional, Set
+from array import array
+from tqdm import tqdm
+from typing import Dict, List, Optional, Set, Union, Tuple
 from eDAG import EDag, Vertex
 
 
@@ -148,6 +150,7 @@ def visualize_path(eDag: EDag, graph: Digraph, highlight_mem_acc: bool,
         dst = longest_path[i + 1]
         graph.edge(str(source), str(dst), color=color, penwidth="3")
 
+
 def visualize_data_movement_over_time(bins: List[int], data_movement: np.array,
                                       mode: Optional[str] = None,
                                       fig_path: Optional[str] = None) -> None:
@@ -188,7 +191,7 @@ def visualize_data_movement_over_time(bins: List[int], data_movement: np.array,
     assert len(bins) >= 2
     bar_width = bins[1] - bins[0]
     plt.bar(bins, data_movement, width=bar_width, align="edge")
-    plt.yscale("log")
+    # plt.yscale("log")
     plt.xlabel(x_label)
     plt.ylabel(y_label)
     if fig_path is not None:
@@ -197,3 +200,103 @@ def visualize_data_movement_over_time(bins: List[int], data_movement: np.array,
         plt.show()
     plt.close()
 
+
+def visualize_memory_latency_sensitivity(data: Dict[float, float],
+                                         fig_path: Optional[str] = None) \
+                                            -> None:
+    """
+    Plots the memory latency sensitivity graph where the x-axis is the
+    additional latency and the y-axis is the slowdown.
+    """
+
+    x, y = list(zip(*data.items()))
+    
+    plt.plot(x, y)
+    
+    if fig_path is not None:
+        plt.savefig(fig_path, bbox_inches="tight")
+    else:
+        plt.show()
+    plt.close()
+
+
+"""
+TODO: Move the following functions to be class functions of EDag.
+"""
+
+def get_critical_path_cycles(eDag: EDag, return_dp: bool = False) \
+    -> Union[float, Tuple[float, array]]:
+    """
+    Computes the critical path of the eDAG based on the number of CPU
+    cycles associated with each vertex. In turn, the total number of
+    compute cycles in the critical path will be returned.
+    Note that this function should only be called if a CPU model
+    has been used to construct the eDAG and all the vertices have
+    their corresponding CPU cycles.
+    @param return_dp: If True, the array that is used to the store
+    the intermediate values during the computation will also
+    be returned in a tuple along with the number of cycles.
+    """
+    # The critical path is computed with a similar approach as
+    # the depth function
+    # Computes the topologically sorted list of vertices
+    topo_sorted = eDag.topological_sort(reverse=True)
+    dp = array('f', [0] * len(topo_sorted))
+    length = 0
+    for v_id in tqdm(topo_sorted):
+        _, out_vertices = eDag.adj_list[v_id]
+        vertex = eDag.id_to_vertex[v_id]
+        assert vertex.cycles is not None
+        if not out_vertices:
+            # If vertex is an end node whose out-degree is 0
+            dp[v_id] = vertex.cycles
+        else:
+            for out_vertex_id in out_vertices:
+                new_val = dp[out_vertex_id] + vertex.cycles
+                dp[v_id] = dp[v_id] if dp[v_id] > new_val else new_val
+        length = length if length > dp[v_id] else dp[v_id]
+    
+    if return_dp:
+        return (length, dp)
+
+    return length
+
+
+def get_critical_path(eDag: EDag, dp: Optional[array] = None) -> List[int]:
+    """
+    Computes the critical path in the eDAG as a sequence of vertices
+    in based on the number of CPU cycles assigned to each vertex.
+    
+    See the similar function `EDag.get_longest_path()` for more details.
+    FIXME Duplicate code as `EDag.get_longest_path()`
+    @param dp: If provided, will forgo invoking `get_critical_path_cycles()`
+    """
+    if dp is None:
+        _, dp = get_critical_path_cycles(eDag, True)
+    
+    path = []
+    curr = None
+    curr_cycles = 0
+    # Finds the vertex that starts the critical path
+    # FIXME Can probably use reduce()
+    for vertex in eDag.get_starting_vertices(True):
+        if dp[vertex] > curr_cycles:
+            curr = vertex
+            curr_cycles = dp[vertex]
+    assert curr is not None
+    path.append(curr)
+    # Follows the staring node until the end is reached
+    while True:
+        _, out_vertices = eDag.adj_list[curr]
+        curr_cycles = -1
+        for out_vertex in out_vertices:
+            if dp[out_vertex] > curr_cycles:
+                curr = out_vertex
+                curr_cycles = dp[out_vertex]
+        
+        if curr_cycles == -1:
+            break
+        else:
+            path.append(curr)
+
+    return path

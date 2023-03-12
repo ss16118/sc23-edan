@@ -81,6 +81,9 @@ if __name__ == "__main__":
     parser.add_argument("--work-depth", dest="calc_work_depth",
                         default=False, action="store_true",
                         help="If set, will calculate the work and depth of the eDAG")
+    parser.add_argument("--mls", dest="calc_mls",
+                        default=False, action="store_true",
+                        help="If set, will compute the memory latency sensitivity of the application based on its eDAG")
     parser.add_argument("-p", "--processes", dest="processes", 
                         type=int, default=1,
                         help="Number of processes to use for generating the eDAG")
@@ -118,8 +121,8 @@ if __name__ == "__main__":
         print("[INFO] Generating eDAG")
         print(f"[INFO] Number of processes: {args.processes}")
         generator = EDagGenerator(args.trace_file_path, ISA.RISC_V,
-                    args.only_mem_acc, args.sanitize,
-                    cache_model=cache, cpu_model=cpu_model,)
+                                    args.only_mem_acc, args.sanitize,
+                                    cache_model=cache, cpu_model=cpu_model,)
         start = time()
         eDag = generator.generate()
         print(f"[DEBUG] Time take for generation: {time() - start:.3f} s")
@@ -140,12 +143,11 @@ if __name__ == "__main__":
         print("[INFO] Calculating eDAG depth")
         # cProfile.run('depth = eDag.get_depth()')
         start = time()
-        longest_path = eDag.get_longest_path(True)
+        longest_path = eDag.get_longest_path()
         depth = len(longest_path)
         print(f"[DEBUG] Time taken: {time() - start}")
         print(f"Depth: {depth}")
         print(f"Parallelism: {work / depth:.2f}")
-
 
     critical_path = None
     if args.calc_bandwidth:
@@ -155,20 +157,31 @@ if __name__ == "__main__":
         # Obtains some intermediate values that will help with
         # the calculation of other metrics
         critical_path_cycles, dp = \
-            bandwidth_metric.get_critical_path_cycles(True)
+            get_critical_path_cycles(eDag, True)
         # Computes the average bandwidth
         avg_bandwidth = bandwidth_metric.get_avg_bandwidth(critical_path_cycles)
         print(f"Average bandwidth utilization: {avg_bandwidth / M:.2f} MB/s")
         if args.graph_file is not None:
             # Retrieves the critical path itself
-            critical_path = bandwidth_metric.get_critical_path(dp)
+            critical_path = get_critical_path(eDag, dp)
         print("[INFO] Computing data movement over time")
         # Computes the data movement over time
+        mode = None
         bins, data_movement = \
-            bandwidth_metric.get_data_movement_over_time(1, "requests")
+            bandwidth_metric.get_data_movement_over_time(1, mode)
         fig_path = f"../tmp/{filename_root}_dm.png"
+        # fig_path = None
         visualize_data_movement_over_time(bins, data_movement, 
-                                          "requests", fig_path)
+                                          mode, fig_path)
+
+    if args.calc_mls:
+        print("[INFO] Calculating memory latency sensitivity")
+        mls_metric = MemoryLatencySensitivity(eDag)
+        mls = \
+            mls_metric.get_simple_mls(critical_path_cycles=critical_path_cycles,
+                                      dp=dp, critical_path=critical_path)
+        # print(mls)
+        visualize_memory_latency_sensitivity(mls)
 
     if args.optimize_subgraph:
         print("[INFO] Optimizing subgraph")
