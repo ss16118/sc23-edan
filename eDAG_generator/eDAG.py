@@ -46,19 +46,20 @@ class Vertex:
                 target: Optional[str], dependencies: Set[str],
                 op_type: OpType, is_comm_assoc: bool = False,
                 # Optional attributes
+                sec_target: Optional[str] = None,
                 cpu: Optional[int] = None,
                 insn_addr: Optional[str] = None,
                 data_addr: Optional[str] = None,
                 data_size: int = 0) -> None:
         """
-        @param id: a unique number given to each vertex by the parser.
-        @param opcode: opcode of the assembly instruction, e.g. add, sub, mv.
-        @param operands: a list of operands represented as strings.
-        @param target: target register or memory location, i.e. the register 
+        @param id: A unique number given to each vertex by the parser.
+        @param opcode: Opcode of the assembly instruction, e.g. add, sub, mv.
+        @param operands: A list of operands represented as strings.
+        @param target: Target register or memory location, i.e. the register 
         or memory location whose value is updated. It can be None for 
         certain instructions. As an example, the target for `sd a1,-64(s0)` is
         the memory location `-64(s0)`.
-        @param dependencies: a set of registers or memory locations on which
+        @param dependencies: A set of registers or memory locations on which
         this vertex depends. As an example, the command `sd a1,-64(s0)` depends
         on the registers a1 and s0, whereas the command `ld a5,-40(s0)` depends
         on the memory location denoted by `-40(s0)`.
@@ -66,6 +67,7 @@ class Vertex:
         @param is_comm_assoc: Indicates whether the operation performed by
         the instruction is both commutative and associative. Used by
         the subgraph optimizer.
+        @param sec_target: Second target.
         @param cpu: ID of the CPU on which the instruction was executed.
         @param insn_addr: Virtual memory address where the instruction contained
         in this vertex is stored.
@@ -84,6 +86,7 @@ class Vertex:
         self.dependencies = dependencies
         self.op_type = op_type
         self.is_comm_assoc = is_comm_assoc
+        self.sec_target = sec_target
         self.cpu = cpu
         self.insn_addr = insn_addr
         self.data_addr = data_addr
@@ -300,10 +303,8 @@ class EDag:
         """
         Returns one topological sort of the vertices of an eDAG in a list
         containing their IDs.
-        Implementation from
-        https://www.geeksforgeeks.org/python-program-for-topological-sorting/
         TODO Re-indexing of the Python library is annoying and it causes
-        an error in this function when vertices are removed.
+        an error in this function when vertices have been removed.
         @param reverse: If True, all predecessors will be on the right as
         opposed to on the left.
         """
@@ -445,15 +446,23 @@ class EDag:
                 break
     
     def get_longest_path(self, id_only: bool = True,
-                         mem_acc_only: bool = False) -> List[int]:
+                         mem_acc_only: bool = False,
+                         dp: Optional[array] = None) -> Tuple[float, List[int]]:
         """
         Computes the longest path in the eDAG in a list of consecutive vertices
         that should be followed.
         @param id_only: If True, only IDs of the vertices will be returned.
         @param mem_acc_only: If True, only non-cache-hit memory access vertices
         will be taken into account when computing the longest path.
+        @param dp: If present will forgo the invocation of `get_depth()`.
+        
+        @return a tuple containing two items, the first item being 
+        a float representing the depth and the second item is a list containing
+        the vertices of the longest path.
         """
-        depth, dp = self.get_depth(True, mem_acc_only)
+        if dp is None:
+            depth, dp = self.get_depth(True, mem_acc_only)
+        
         path = []
         curr = None
         curr_depth = 0
@@ -464,6 +473,7 @@ class EDag:
                 curr = vertex
                 curr_depth = dp[vertex]
         assert curr is not None
+        depth = curr_depth
         path.append(curr)
         # Follows the starting node until the end is reached
         while True:
@@ -479,37 +489,40 @@ class EDag:
             else:
                 # Appends the current vertex to the path
                 path.append(curr if id_only else self.id_to_vertex[curr])
+            
+        return depth, path
 
-        if not mem_acc_only:
-            assert depth == len(path)
-        return path
-    
-    def get_vertex_rank(self) -> Dict[int, Set[int]]:
+    def get_vertex_rank(self, interval: float = 1) -> Dict[int, Set[int]]:
         """
         Calculates the maximum distance between every vertex and an
         arbitrary starting vertex in the eDAG, which is called its rank,
         i.e. the depth of the vertex.
-        Returns a dictionary that maps each rank to a set of vertices
+        @param interval: The time interval to use in CPU cycles to split
+        the critical path into different ranks.
+
+        @return a dictionary that maps each rank to a set of vertices
         which belong to that rank. Note that only the IDs of the
         vertices will be contained in the dictionary.
         FIXME The term rank comes from how layout engines are implemented and 
         is probably not the best term in this case.
         """
-        # Computes the topological sort of the vertices
-        topo_sorted = self.topological_sort(reverse=False)
-        # Uses an array to keep track of the rank of each vertex
-        dp = array('L', [0] * len(topo_sorted))
-        for vertex in topo_sorted:
-            _, out_vertices = self.adj_list[vertex]
-            for out in out_vertices:
-                new_val = dp[vertex] + 1
-                dp[out] = dp[out] if dp[out] > new_val else new_val
-        
         res = defaultdict(set)
-        # Iterates through the dp array to construct the sets
-        # containing vertices belonging to a specific rank
-        for vertex, rank in enumerate(dp):
-            res[rank].add(vertex)
+        topo_sorted = self.topological_sort(reverse=False)
+        dp = array('f', [0] * len(self.vertices))
+        # Constructs an DP array which indicates the maximum number
+        # of cycles it takes to reach a certain vertex
+        for v_id in topo_sorted:
+            out_vertices = self.adj_list[v_id][EDag._out]
+            cycles = self.id_to_vertex[v_id].cycles
+            for out_id in out_vertices:
+                new_val = dp[v_id] + cycles
+                dp[out_id] = dp[out_id] if dp[out_id] > new_val else new_val
+
+        for v_id, cycles in enumerate(dp):
+            rank = cycles // interval if interval != 1 else cycles
+            # Adds the vertex ID to a set that contains
+            # all vertices belonging to the same rank
+            res[rank].add(v_id)
         
         return res
 
@@ -518,7 +531,12 @@ class EDag:
         """
         Calculates the depth, i.e. in this case diameter of the eDAG, by 
         exploring the graph from each starting vertex to each end vertex
-        and keeping track of the longest distance.
+        and keeping track of the longest distance. Note that
+        if a CPU model has been used, each vertex will be weighted
+        by its corresponding number of CPU cycles. For instance, 
+        if a vertex takes 200 cycles to execute, it will contribute
+        to the length of the path by 200 units as opposed to only 1 unit.
+
         @param return_dp: If True, the array that is used to store the
         intermediate values during the depth computation will also be
         returned in a tuple along with the depth itself.
@@ -532,24 +550,30 @@ class EDag:
         # Computes the topologically sorted list of vertices
         topo_sorted = self.topological_sort(reverse=True)
         # array.array is faster than np.array
-        dp = array('L', [0] * len(topo_sorted))
+        dp = array('f', [0] * len(topo_sorted))
         depth = 0
 
         # TODO Refactor code
         if not mem_acc_only:
-            for vertex in tqdm(topo_sorted):
-                _, out_vertices = self.adj_list[vertex]
-                for out_vertex in out_vertices:
-                    new_val = dp[out_vertex] + 1
-                    # `if` statement is faster than `max()`
-                    dp[vertex] = dp[vertex] if dp[vertex] > new_val else new_val
+            for vertex_id in tqdm(topo_sorted):
+                vertex = self.id_to_vertex[vertex_id]
+                cycles = vertex.cycles
+                _, out_vertices = self.adj_list[vertex_id]
+                if len(out_vertices) == 0:
+                    dp[vertex_id] = cycles
+                else:
+                    for out_vertex in out_vertices:
+                        new_val = dp[out_vertex] + cycles
+                        # `if` statement is faster than `max()`
+                        dp[vertex_id] = \
+                            dp[vertex_id] if dp[vertex_id] > new_val else new_val
 
-                depth = depth if depth > dp[vertex] else dp[vertex]
+                depth = depth if depth > dp[vertex_id] else dp[vertex_id]
 
             if return_dp:
-                return (depth + 1, dp)
+                return (depth, dp)
             
-            return depth + 1
+            return depth
         else:
             for vertex_id in tqdm(topo_sorted):
                 vertex = self.id_to_vertex[vertex_id]
@@ -574,15 +598,21 @@ class EDag:
         Counts the number of vertices which satisfy the given condition. If
         a condition is not provided, the output will simply be the total number
         of vertices in the eDAG.
+
+        FIXME Can probably use higher-order functions, e.g. map, filter
         """
         if cond is None:
-            return len(self.vertices)
+            work = 0
+            for vertex_id in self.vertices:
+                vertex = self.id_to_vertex[vertex_id]
+                work += vertex.cycles
+            return work
 
-        # FIXME: Can probably use Python `filter()`
         work_count = 0
         for vertex_id in self.vertices:
-            if cond(self.id_to_vertex[vertex_id]):
-                work_count += 1
+            vertex = self.id_to_vertex[vertex_id]
+            if cond(vertex):
+                work_count += vertex.cycles
         return work_count
 
     def split_disjoint_subgraphs(self) -> None:

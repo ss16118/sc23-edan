@@ -130,6 +130,10 @@ class EDagGenerator:
             # If a CPU model is used
             if self.cpu_model is not None:
                 new_vertex.cycles = self.cpu_model.get_op_cycles(new_vertex)
+            else:
+                # If no CPU model is used, the computation time
+                # of each vertex defaults to 1 cycle
+                new_vertex.cycles = 1
 
             is_critical = True
             # if self.sanitize:
@@ -160,6 +164,9 @@ class EDagGenerator:
 
                 if new_vertex.target is not None:
                     curr_vertex[cpu_id][new_vertex.target] = new_vertex
+                
+                if new_vertex.sec_target is not None:
+                    curr_vertex[cpu_id][new_vertex.sec_target] = new_vertex
             
             vertex_id += 1
         trace.close()

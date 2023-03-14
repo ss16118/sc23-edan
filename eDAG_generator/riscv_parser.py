@@ -45,14 +45,15 @@ class RiscvParser(InstructionParser):
     ret_instructions = { "ret", "uret", "sret", "mret", "tail", "ecall" }
 
     # Floating point operations
-    fp_2ops_instructions = { "fcvt.d.w", "fcvt.w.d" }
+    fp_2ops_instructions = { "fcvt.d.w", "fcvt.w.d", "fsqrt.d" }
     fp_3ops_instructions = {
         "fsub.d", "fsub.s", "fmul.d", "fmul.s", "fmadd.s", "fdiv.d", "fdiv.s",
         "flt.d", "flt.s", "fadd.d", "fadd.s"
      }
-    fp_4ops_instructions = { "fmadd.d", "fmadd.s", "fnmadd.d" }
+    fp_4ops_instructions = \
+        { "fmadd.d", "fmadd.s", "fnmadd.d", "fnmsub.s", "fnmsub.d" }
     # Uncategorized instructions
-    uncategorized_instructions = { "auipc" }
+    uncategorized_instructions = { "auipc", "frflags", "fsflags" }
 
     # Associative and commutative operations
     comm_assoc_ops = {
@@ -162,14 +163,18 @@ class RiscvParser(InstructionParser):
         # TODO Not the most efficient way to do this, probably 
         # needs to be improved
         target = None
+        # In very rare cases, instructions can have two
+        # target registers
+        sec_target = None
         op_type = None
         dependencies = set()
         data_size = 0
         is_comm_assoc = instruction in RiscvParser.comm_assoc_ops
+        opr_len = len(operands)
         # Iterates through all types of instructions and checks to which
         # group of instructions it belongs
         if instruction in RiscvParser.load_instructions:
-            assert(len(operands) == 2)
+            assert(opr_len == 2)
             # Target is always the first operand
             target = operands[0]
             # Letter 'i' in the instruction indicates that
@@ -185,7 +190,7 @@ class RiscvParser(InstructionParser):
                 op_type = OpType.LOAD_IMM
 
         elif instruction in RiscvParser.store_instructions:
-            assert(len(operands) == 2)
+            assert(opr_len == 2)
             # Target of a `load` instruction is always the second operand
             # target = operands[1]
             assert(data_addr is not None)
@@ -196,13 +201,13 @@ class RiscvParser(InstructionParser):
             op_type = OpType.STORE_MEM
 
         elif instruction in RiscvParser.mv_instructions:
-            assert(len(operands) == 2)
+            assert(opr_len == 2)
             target = operands[0]
             dependencies.add(operands[1])
             op_type = OpType.MOVE
 
         elif instruction in RiscvParser.add_instructions:
-            assert(len(operands) == 3)
+            assert(opr_len == 3)
             target = operands[0]
             dependencies.add(operands[1])
             if 'i' not in instruction:
@@ -215,28 +220,28 @@ class RiscvParser(InstructionParser):
             target = operands[0]
             dependencies.add(operands[1])
             if instruction in { "neg", "negw" }:
-                assert(len(operands) == 2)
+                assert(opr_len == 2)
             else:
-                assert(len(operands) == 3)
+                assert(opr_len == 3)
                 dependencies.add(operands[2])
             op_type = OpType.ARITHMETIC
 
         elif instruction in RiscvParser.mul_instructions:
-            assert(len(operands) == 3)
+            assert(opr_len == 3)
             target = operands[0]
             dependencies.add(operands[1])
             dependencies.add(operands[2])
             op_type = OpType.ARITHMETIC
         
         elif instruction in RiscvParser.div_instructions:
-            assert(len(operands) == 3)
+            assert(opr_len == 3)
             target = operands[0]
             dependencies.add(operands[1])
             dependencies.add(operands[2])
             op_type = OpType.ARITHMETIC
 
         elif instruction in RiscvParser.rem_instructions:
-            assert(len(operands) == 3)
+            assert(opr_len == 3)
             target = operands[0]
             dependencies.add(operands[1])
             dependencies.add(operands[2])
@@ -244,7 +249,7 @@ class RiscvParser(InstructionParser):
 
         elif instruction in RiscvParser.atomic_op_instructions:
             # Atomic operations that require memory access
-            assert(len(operands) == 3)
+            assert(opr_len == 3)
             target = operands[0]
             dependencies.add(operands[1])
             dependencies.add(self.__get_offset_reg(operands[2]))
@@ -256,7 +261,7 @@ class RiscvParser(InstructionParser):
 
         elif instruction in RiscvParser.comp_and_set_instructions:
             # Compare and set instructions
-            assert(len(operands) == 3)
+            assert(opr_len == 3)
             target = operands[0]
             dependencies.add(operands[1])
             if 'i' not in instruction:
@@ -267,7 +272,7 @@ class RiscvParser(InstructionParser):
                 
         elif instruction in RiscvParser.bit_op_instructions:
             # Bit-wise operation instructions
-            assert(len(operands) == 3)
+            assert(opr_len == 3)
             target = operands[0]
             dependencies.add(operands[1])
             if 'i' not in instruction:
@@ -279,25 +284,25 @@ class RiscvParser(InstructionParser):
         elif instruction in RiscvParser.uncond_jump_instructions:
             # Unconditional jump instructions
             if instruction == "jal":
-                assert(len(operands) == 2)
+                assert(opr_len == 2)
                 target = operands[0]
             elif instruction == "jalr":
-                assert(len(operands) == 3)
+                assert(opr_len == 3)
                 target = operands[0]
                 dependencies.add(operands[1])
             else:
-                assert(len(operands) == 1)
+                assert(opr_len == 1)
             op_type = OpType.JUMP
 
         elif instruction in RiscvParser.cond_br_2ops_instructions:
             # Conditional branch instructions with 2 operands
-            assert(len(operands) == 2)
+            assert(opr_len == 2)
             dependencies.add(operands[0])
             op_type = OpType.BRANCH
 
         elif instruction in RiscvParser.cond_br_3ops_instructions:
             # Conditional branch instructions with 3 operands
-            assert(len(operands) == 3)
+            assert(opr_len == 3)
             dependencies.add(operands[0])
             dependencies.add(operands[1])
             op_type = OpType.BRANCH
@@ -307,8 +312,8 @@ class RiscvParser(InstructionParser):
             # The number of elements in the operand list can
             # be either 2 or 3 depending on whether the round mode
             # field exists or not
-            assert(len(operands) == 2 or len(operands) == 3)
-            if len(operands) == 2:
+            assert(opr_len == 2 or opr_len == 3)
+            if opr_len == 2:
                 # If rounding mode does not exist
                 target = operands[0]
                 dependencies.add(operands[1])
@@ -320,8 +325,8 @@ class RiscvParser(InstructionParser):
         
         elif instruction in RiscvParser.fp_3ops_instructions:
             # Floating point operations with three operands
-            assert(len(operands) == 3 or len(operands) == 4)
-            if len(operands) == 3:
+            assert(opr_len == 3 or opr_len == 4)
+            if opr_len == 3:
                 # If rounding mode does not exist
                 target = operands[0]
                 dependencies.add(operands[1])
@@ -335,8 +340,8 @@ class RiscvParser(InstructionParser):
 
         elif instruction in RiscvParser.fp_4ops_instructions:
             # Floating point operations with four operands
-            assert(len(operands) == 4 or len(operands) == 5)
-            if len(operands) == 4:
+            assert(opr_len == 4 or opr_len == 5)
+            if opr_len == 4:
                 # If rounding mode does not exist
                 target = operands[0]
                 dependencies.update(operands[1:])
@@ -350,15 +355,27 @@ class RiscvParser(InstructionParser):
             if instruction == "ret":
                 # In RISC-V 'ret' is a pseudo-instruction that
                 # depends on the value in register `ra`
-                assert(len(operands) == 0)
+                assert(opr_len == 0)
                 dependencies.add("ra")
             op_type = OpType.JUMP
 
         elif instruction in RiscvParser.uncategorized_instructions:
             # Uncategorized instructions
             if instruction == "auipc":
-                assert(len(operands) == 2)
+                assert(opr_len == 2)
                 target = operands[0]
+            elif instruction == "frflags":
+                assert(opr_len == 1)
+                dependencies.add(operands[0])
+            elif instruction == "fsflags":
+                assert(opr_len == 2 or opr_len == 1)
+                # In this strange case the two operands
+                # are both targets and dependencies
+                target = operands[0]
+                sec_target = operands[1]
+                dependencies.add(target)
+                dependencies.add(sec_target)
+
             op_type == OpType.UNCATEGORIZED
 
         else:

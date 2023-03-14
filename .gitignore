@@ -4,3 +4,6 @@
 **/.DS_Store
 /.vscode
 **/*~
+**/*.png
+tmp/
+eDAG/

@@ -4,8 +4,10 @@ from graphviz import Digraph
 from multiprocessing import Value, Lock
 from array import array
 from tqdm import tqdm
-from typing import Dict, List, Optional, Set, Union, Tuple
+from typing import Dict, List, Optional, Set, Union, Tuple, Iterable
 from eDAG import EDag, Vertex
+from matplotlib.animation import FuncAnimation, PillowWriter
+from metrics import MemoryLatencySensitivity
 
 
 G = 10 ** 9
@@ -39,7 +41,6 @@ class AtomicCounter(object):
         """
         with self.val.get_lock():
             return self.val.value
-
 
 
 def get_vertex_attrs(vertex: Vertex, highlight_mem_acc: bool) -> Dict:
@@ -82,7 +83,7 @@ def visualize_eDAG(eDag: EDag, highlight_mem_acc: bool = True,
     if vertex_rank:
         # Organizes the diagram by placing vertices with the same
         # distance from the starting vertices on a single line
-        for _, vertices in vertex_rank.items():
+        for _, vertices in sorted(vertex_rank.items(), key=lambda p: p[0]):
             subgraph = graph.subgraph()
             with graph.subgraph() as subgraph:
                 subgraph.attr(rank="same")
@@ -220,83 +221,67 @@ def visualize_memory_latency_sensitivity(data: Dict[float, float],
     plt.close()
 
 
-"""
-TODO: Move the following functions to be class functions of EDag.
-"""
-
-def get_critical_path_cycles(eDag: EDag, return_dp: bool = False) \
-    -> Union[float, Tuple[float, array]]:
+def visualize_distribution(data: Iterable,
+                           baseline: Optional[float] = None,
+                           fig_path: Optional[str] = None) -> None:
     """
-    Computes the critical path of the eDAG based on the number of CPU
-    cycles associated with each vertex. In turn, the total number of
-    compute cycles in the critical path will be returned.
-    Note that this function should only be called if a CPU model
-    has been used to construct the eDAG and all the vertices have
-    their corresponding CPU cycles.
-    @param return_dp: If True, the array that is used to the store
-    the intermediate values during the computation will also
-    be returned in a tuple along with the number of cycles.
+    Visualizes the given data in a histogram.
     """
-    # The critical path is computed with a similar approach as
-    # the depth function
-    # Computes the topologically sorted list of vertices
-    topo_sorted = eDag.topological_sort(reverse=True)
-    dp = array('f', [0] * len(topo_sorted))
-    length = 0
-    for v_id in tqdm(topo_sorted):
-        _, out_vertices = eDag.adj_list[v_id]
-        vertex = eDag.id_to_vertex[v_id]
-        assert vertex.cycles is not None
-        if not out_vertices:
-            # If vertex is an end node whose out-degree is 0
-            dp[v_id] = vertex.cycles
-        else:
-            for out_vertex_id in out_vertices:
-                new_val = dp[out_vertex_id] + vertex.cycles
-                dp[v_id] = dp[v_id] if dp[v_id] > new_val else new_val
-        length = length if length > dp[v_id] else dp[v_id]
-    
-    if return_dp:
-        return (length, dp)
+    print(plt.hist(data, bins=20, color='orange'))
+    if baseline is not None:
+        plt.axvline(x=baseline, color="blue", label="Baseline")
+        plt.legend()
 
-    return length
+    if fig_path is not None:
+        plt.savefig(fig_path, bbox_inches="tight")
+    else:
+        plt.show()
+    plt.close()
 
 
-def get_critical_path(eDag: EDag, dp: Optional[array] = None) -> List[int]:
+def animate_crit_path_dist(mls_metric: MemoryLatencySensitivity,
+                           trial_num: int = 1000,
+                           baseline: Optional[float] = None,
+                           dp: Optional[array] = None,
+                           num_frames: int = 20,
+                           seed: Optional[int] = 42,
+                           fig_path: Optional[str] = None) -> None:
     """
-    Computes the critical path in the eDAG as a sequence of vertices
-    in based on the number of CPU cycles assigned to each vertex.
-    
-    See the similar function `EDag.get_longest_path()` for more details.
-    FIXME Duplicate code as `EDag.get_longest_path()`
-    @param dp: If provided, will forgo invoking `get_critical_path_cycles()`
+    Animates how the critical path length distribution changes
+    as different parameters vary.
     """
-    if dp is None:
-        _, dp = get_critical_path_cycles(eDag, True)
-    
-    path = []
-    curr = None
-    curr_cycles = 0
-    # Finds the vertex that starts the critical path
-    # FIXME Can probably use reduce()
-    for vertex in eDag.get_starting_vertices(True):
-        if dp[vertex] > curr_cycles:
-            curr = vertex
-            curr_cycles = dp[vertex]
-    assert curr is not None
-    path.append(curr)
-    # Follows the staring node until the end is reached
-    while True:
-        _, out_vertices = eDag.adj_list[curr]
-        curr_cycles = -1
-        for out_vertex in out_vertices:
-            if dp[out_vertex] > curr_cycles:
-                curr = out_vertex
-                curr_cycles = dp[out_vertex]
-        
-        if curr_cycles == -1:
-            break
-        else:
-            path.append(curr)
+    num_bins = 20
 
-    return path
+    def animate(frame_number):
+        if frame_number > 5:
+            return
+        plt.cla()
+        p = frame_number / num_frames
+        data = mls_metric.get_random_delay_dist(trial_num=trial_num,
+                                                dp=dp,
+                                                remote_mem_per=p,
+                                                seed=seed)
+        plt.hist(data, bins=num_bins, color="orange")
+        # hist, bins = np.histogram(data, bins=num_bins)
+        # plt.bar(bins[:-1], hist, color="orange")
+        plt.title(f"p = {p:.3}")
+        plt.xlabel("Critical Path Length (Cycles)")
+        plt.ylabel("Counts")
+        plt.ylim([0, trial_num + 5])
+        if baseline is not None:
+            plt.axvline(x=baseline, color="blue", label="Baseline")
+            plt.legend()
+
+    fig = plt.figure()
+    # data = mls_metric.get_random_delay_dist(dp=dp, remote_mem_per=0)
+    # plt.hist(data, num_bins, color='orange')
+    anim = FuncAnimation(fig, animate, num_frames, repeat=True, blit=False,
+                         cache_frame_data=True)
+
+    if fig_path is not None:
+        # Saves the animation as a gif file
+        writer = PillowWriter(fps=2)
+        anim.save(fig_path, writer=writer)
+    else:
+        plt.show()
+    plt.close()

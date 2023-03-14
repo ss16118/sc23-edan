@@ -102,7 +102,9 @@ if __name__ == "__main__":
 
     if args.use_cpu_model:
         print("[INFO] Using default CPU model")
-        cpu_model = CPUModel(insn_cycles, frequency=1 * G)
+        cpu_model = CPUModel(insn_cycles, 
+                             use_cache_model=args.use_cache_model,
+                             frequency=1 * G)
     else:
         cpu_model = None
 
@@ -135,6 +137,7 @@ if __name__ == "__main__":
         file_size = os.path.getsize(save_path)
         print(f"[INFO] File size of {save_path}: {file_size / K:.2f} KB")
 
+    depth = None
     longest_path = None
     if args.calc_work_depth:
         print("[INFO] Calculating eDAG work")
@@ -143,45 +146,48 @@ if __name__ == "__main__":
         print("[INFO] Calculating eDAG depth")
         # cProfile.run('depth = eDag.get_depth()')
         start = time()
-        longest_path = eDag.get_longest_path()
-        depth = len(longest_path)
+        depth, longest_path = eDag.get_longest_path()
         print(f"[DEBUG] Time taken: {time() - start}")
         print(f"Depth: {depth}")
         print(f"Parallelism: {work / depth:.2f}")
 
-    critical_path = None
+    dp = None
     if args.calc_bandwidth:
         print("[INFO] Calculating the average bandwidth utilization")
-        assert cpu_model is not None
         bandwidth_metric = BandwidthUtilization(eDag, cpu_model.frequency)
         # Obtains some intermediate values that will help with
         # the calculation of other metrics
-        critical_path_cycles, dp = \
-            get_critical_path_cycles(eDag, True)
+        depth, dp = eDag.get_depth(True)
         # Computes the average bandwidth
-        avg_bandwidth = bandwidth_metric.get_avg_bandwidth(critical_path_cycles)
+        avg_bandwidth = bandwidth_metric.get_avg_bandwidth(depth)
         print(f"Average bandwidth utilization: {avg_bandwidth / M:.2f} MB/s")
-        if args.graph_file is not None:
-            # Retrieves the critical path itself
-            critical_path = get_critical_path(eDag, dp)
         print("[INFO] Computing data movement over time")
         # Computes the data movement over time
         mode = None
         bins, data_movement = \
             bandwidth_metric.get_data_movement_over_time(1, mode)
-        fig_path = f"../tmp/{filename_root}_dm.png"
-        # fig_path = None
+        # fig_path = f"../tmp/{filename_root}_dm.png"
+        fig_path = None
         visualize_data_movement_over_time(bins, data_movement, 
                                           mode, fig_path)
 
     if args.calc_mls:
         print("[INFO] Calculating memory latency sensitivity")
+        return_k = True
         mls_metric = MemoryLatencySensitivity(eDag)
-        mls = \
-            mls_metric.get_simple_mls(critical_path_cycles=critical_path_cycles,
-                                      dp=dp, critical_path=critical_path)
-        # print(mls)
-        visualize_memory_latency_sensitivity(mls)
+        # mls = mls_metric.get_simple_mls(return_k,
+        #                                 depth=depth,
+        #                                 dp=dp, critical_path=longest_path)
+        mls = mls_metric.get_crit_path_mem_acc_p()
+        print(f"Memory latency sensitivity measure: {mls}")
+        # data = mls_metric.get_random_delay_dist(dp=dp, remote_mem_per=0.1)
+        # visualize_distribution(data, depth)
+        # fig_path = f"../tmp/{filename_root}_anim.gif"
+        # animate_crit_path_dist(mls_metric, baseline=depth,
+        #                        dp=dp, fig_path=fig_path)
+
+        if not return_k:
+            visualize_memory_latency_sensitivity(mls)
 
     if args.optimize_subgraph:
         print("[INFO] Optimizing subgraph")
@@ -194,14 +200,15 @@ if __name__ == "__main__":
     if args.graph_file is not None:
         highlight = args.highlight_mem_acc
         print("[INFO] Generating graph")
-        vertex_rank = eDag.get_vertex_rank()
+        large_graph_thresh = 5000
+        vertex_rank = None
+        if len(eDag.vertices) <= large_graph_thresh:
+            vertex_rank = eDag.get_vertex_rank(interval=1)
         # vertex_rank = None
         graph = visualize_eDAG(eDag, highlight, vertex_rank=vertex_rank)
         # Highlights the longest path if it exists
         if longest_path:
-            visualize_path(eDag, graph, highlight, longest_path, "blue")
-        if critical_path:
-            visualize_path(eDag, graph, highlight, critical_path)
+            visualize_path(eDag, graph, highlight, longest_path)
         graph.render(args.graph_file, view=True)
 
     if args.reuse_histogram:
