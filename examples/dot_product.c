@@ -6,18 +6,33 @@
  * z = x . y = 1 * 3 + 2 * 4= 11
  */
 #include <stdio.h>
-#define N 2
+#define N 1024
+
+/**
+ * Main computation kernel that calculates the dot product
+ * of two vectors.
+ */
+int __attribute__ ((noinline)) kernel(int n, int *a, int *b)
+{
+  int res = 0;
+  for (int i = 0; i < n; ++i)
+    res += a[i] * b[i];
+    
+  return res;
+}
+
+
+
 int main(int argc, char **argv)
 {
   // Vector initialization
-  int x[N] = { 1, 2 };
-  int y[N] = { 3, 4 };
-  int z = 0;
-  
-  // Main computation kernel, computes the dot product of the
-  // two vectors
+  int x[N];
+  int y[N];
   for (int i = 0; i < N; ++i)
   {
-    z += x[i] * y[i];
+    x[i] = i;
+    y[i] = i;
   }
+
+  return kernel(N, x, y);
 }
