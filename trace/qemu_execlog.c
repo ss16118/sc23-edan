@@ -12,10 +12,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
 #include <qemu-plugin.h>
 
-#define TRACE_MARK "nop"
+#define START_SYMBOL "main"
+#define END_SYMBOL "_dl_fini"
+#define FLUSH_FREQ 1000000
 
 QEMU_PLUGIN_EXPORT int qemu_plugin_version = QEMU_PLUGIN_VERSION;
 
@@ -25,12 +26,43 @@ static GMutex expand_array_lock;
 
 static GPtrArray *imatches;
 static GArray *amatches;
+
 // Stores all functions whose instructions need to be traced
 static GPtrArray *fmatches;
 
+// Stores all functions whose instructions need to be excluded from tracing
+static GPtrArray *fexcludes;
+
+// If true, will trace all instructions that are executed between
+// `main()` and `_dl_init()`. This is compatible with `ffilter` and `fexclude`.
+static bool trace_main = false;
+// Is only used when `trace_main` is set
 static bool start = false;
 // A mutex for multi-threaded trace logging
 static GMutex log_lock;
+
+static GPtrArray *log_entries;
+static int log_entry_count = 0;
+
+
+/**
+ * Flushes all the trace entries to the log file.
+ */
+static void flush_log_entries()
+{
+    int i = 0;
+    g_mutex_lock(&log_lock);
+    for (i = 0; i < log_entries->len; ++i)
+    {
+        char *entry = g_ptr_array_index(log_entries, i);
+        qemu_plugin_outs(entry);
+        free(entry);
+    }
+    // Reinitializes log_entries
+    log_entries = g_ptr_array_new();
+    g_mutex_unlock(&log_lock);
+}
+
 
 /**
  * Removes all extra spaces in a given disassembled instruction.
@@ -41,28 +73,28 @@ static GMutex log_lock;
  * https://codescracker.com/c/program/c-program-remove-extra-spaces.htm
  * https://stackoverflow.com/questions/13035624/how-to-remove-first-word-from-string-in-c
  */
-static char *cleanup_disas_insn(char *str)
-{
-    int i, j, len;
-    len = strlen(str);
-    for(i = 0; i < len; ++i)
-    {
-        if(str[i] == 32 && str[i + 1] == 32)
-        {
-            for(j = i; j < (len - 1); ++j)
-            {
-                str[j] = str[j + 1];
-            }
-            len--;
-            str[len] = '\0';
-            i = 0;
-        }
-    }
-    char *tmp = strchr(str, ' ');
-    if(tmp != NULL)
-        return tmp + 1;
-    return str;
-}
+/* static char *cleanup_disas_insn(char *str) */
+/* { */
+/*     int i, j, len; */
+/*     len = strlen(str); */
+/*     for(i = 0; i < len; ++i) */
+/*     { */
+/*         if(str[i] == 32 && str[i + 1] == 32) */
+/*         { */
+/*             for(j = i; j < (len - 1); ++j) */
+/*             { */
+/*                 str[j] = str[j + 1]; */
+/*             } */
+/*             len--; */
+/*             str[len] = '\0'; */
+/*             i = 0; */
+/*         } */
+/*     } */
+/*     char *tmp = strchr(str, ' '); */
+/*     if(tmp != NULL) */
+/*         return tmp + 1; */
+/*     return str; */
+/* } */
 
 
 /*
@@ -115,6 +147,9 @@ static void vcpu_mem(unsigned int cpu_index, qemu_plugin_meminfo_t info,
     /* } */
 }
 
+
+
+
 /**
  * Log instruction execution
  */
@@ -131,8 +166,13 @@ static void vcpu_insn_exec(unsigned int cpu_index, void *udata)
     /* Print previous instruction in cache */
     if (s->len) {
         g_mutex_lock(&log_lock);
-        qemu_plugin_outs(s->str);
-        qemu_plugin_outs("\n");
+        char *tmp = malloc(64);
+        /* memcpy(tmp, s->str, 64); */
+        sprintf(tmp, "%s\n", s->str);
+        g_ptr_array_add(log_entries, tmp);
+        log_entry_count++;
+        /* qemu_plugin_outs(s->str); */
+        /* qemu_plugin_outs("\n"); */
         g_mutex_unlock(&log_lock);
     }
 
@@ -140,6 +180,9 @@ static void vcpu_insn_exec(unsigned int cpu_index, void *udata)
     /* vcpu_mem will add memory access information to last_exec */
     g_string_printf(s, "%u;", cpu_index);
     g_string_append(s, (char *)udata);
+
+    if (log_entry_count % FLUSH_FREQ == 0)
+        flush_log_entries();
 }
 
 /**
@@ -151,7 +194,8 @@ static void vcpu_insn_exec(unsigned int cpu_index, void *udata)
 static void vcpu_tb_trans(qemu_plugin_id_t id, struct qemu_plugin_tb *tb)
 {
     struct qemu_plugin_insn *insn;
-    bool skip = fmatches != NULL;
+    bool use_filter = (fmatches != NULL) || (fexcludes != NULL);
+    bool skip = (fmatches != NULL) || (fexcludes != NULL) || trace_main;
     
     size_t n = qemu_plugin_tb_n_insns(tb);
     for (size_t i = 0; i < n; i++)
@@ -160,7 +204,7 @@ static void vcpu_tb_trans(qemu_plugin_id_t id, struct qemu_plugin_tb *tb)
         
         char *insn_disas;
         const char *symbol;
-        uint64_t insn_vaddr;
+        /* uint64_t insn_vaddr; */
         /*
          * `insn` is shared between translations in QEMU, copy needed data here.
          * `output` is never freed as it might be used multiple times during
@@ -170,6 +214,14 @@ static void vcpu_tb_trans(qemu_plugin_id_t id, struct qemu_plugin_tb *tb)
          */
         insn = qemu_plugin_tb_get_insn(tb, i);
         symbol = qemu_plugin_insn_symbol(insn);
+        if (trace_main)
+        {
+            if (g_strcmp0(symbol, START_SYMBOL) == 0)
+                start = true;
+            else if (g_strcmp0(symbol, END_SYMBOL) == 0)
+                start = false;
+        }
+        
         insn_disas = qemu_plugin_insn_disas(insn);
         // If the disassembled code matches TRACE_MARK
         /* if (strncmp(insn_disas, TRACE_MARK, 3) == 0) */
@@ -183,48 +235,65 @@ static void vcpu_tb_trans(qemu_plugin_id_t id, struct qemu_plugin_tb *tb)
          * hits. The skip "latches" so we can track memory accesses
          * after the instruction we care about.
          */
-        if (skip && symbol != NULL)
+        if (trace_main && start && !use_filter)
+            skip = false;
+        
+        if ((trace_main && start) || !trace_main)
         {
-            int j;
-            for (j = 0; j < fmatches->len && skip; ++j)
+            /* if (symbol == NULL) */
+            /*     skip = false; */
+            
+            if (use_filter && symbol != NULL)
             {
-                char *fname = g_ptr_array_index(fmatches, j);
-                if (g_str_has_prefix(symbol, fname))
+                // Filter based on function names (i.e. symbols)
+                if (fexcludes)
                 {
                     skip = false;
+                    // Checks if the symbol belongs to a list of
+                    // functions that need to be ignored
+                    int j;
+                    for (j = 0; j < fexcludes->len && !skip; ++j)
+                    {
+                        char *fname = g_ptr_array_index(fexcludes, j);
+                        if (g_str_has_prefix(symbol, fname))
+                            skip = true;
+                    }
+                } else { skip = false; }
+                
+                if (!skip && fmatches)
+                {
+                    // Checks if the symbol belongs to a list of
+                    // functions that need to be traced. Note
+                    // that the excluded functions take priority.
+                    // In other words if a symbol prefix appears both
+                    // in `fmathces` and `fexcludes`, it will not
+                    // be traced.
+                    skip = true;
+                    int j;
+                    for (j = 0; j < fmatches->len && skip; ++j)
+                    {
+                        char *fname = g_ptr_array_index(fmatches, j);
+                        if (g_str_has_prefix(symbol, fname))
+                        {
+                            skip = false;
+                        }
+                    }
                 }
             }
         }
-        /* if (skip && imatches) { */
-        /*     int j; */
-        /*     for (j = 0; j < imatches->len && skip; j++) { */
-        /*         char *m = g_ptr_array_index(imatches, j); */
-        /*         if (g_str_has_prefix(insn_disas, m)) { */
-        /*             skip = false; */
-        /*         } */
-        /*     } */
-        /* } */
-
-        /* if (skip && amatches) { */
-        /*     int j; */
-        /*     for (j = 0; j < amatches->len && skip; j++) { */
-        /*         uint64_t v = g_array_index(amatches, uint64_t, j); */
-        /*         if (v == insn_vaddr) { */
-        /*             skip = false; */
-        /*         } */
-        /*     } */
-        /* } */
-
+        
+        
         if (skip) {
             g_free(insn_disas);
         } else {
-            insn_disas = cleanup_disas_insn(insn_disas);
-            insn_vaddr = qemu_plugin_insn_vaddr(insn);
+            /* insn_disas = cleanup_disas_insn(insn_disas); */
+            /* insn_vaddr = qemu_plugin_insn_vaddr(insn); */
             /* uint32_t insn_opcode; */
             /* insn_opcode = *((uint32_t *)qemu_plugin_insn_data(insn)); */
             /* char *output = g_strdup_printf("0x%"PRIx64", 0x%"PRIx32", \"%s\"", */
             /*                                insn_vaddr, insn_opcode, insn_disas); */
-            char *output = g_strdup_printf("0x%"PRIx64";%s", insn_vaddr, insn_disas);
+            /* char *output = g_strdup_printf("0x%"PRIx64";%s", insn_vaddr, insn_disas); */
+            char *output = g_strdup_printf("%s", insn_disas);
             // printf("[DEBUG] output: %s\n", output);
             /* Register callback on memory read or write */
             qemu_plugin_register_vcpu_mem_cb(insn, vcpu_mem,
@@ -237,7 +306,7 @@ static void vcpu_tb_trans(qemu_plugin_id_t id, struct qemu_plugin_tb *tb)
 
             /* reset skip */
             // skip = (imatches || amatches);
-            skip = fmatches != NULL;
+            skip = (fmatches != NULL) || (fexcludes != NULL) || trace_main;
         }
     }
 }
@@ -252,6 +321,7 @@ static void plugin_exit(qemu_plugin_id_t id, void *p)
     for (i = 0; i < last_exec->len; i++) {
         s = g_ptr_array_index(last_exec, i);
         if (s->str) {
+            flush_log_entries();
             qemu_plugin_outs(s->str);
             qemu_plugin_outs("\n");
         }
@@ -289,6 +359,41 @@ static void parse_function_match(char *match)
 
 
 /**
+ * Excludes a single function whose name is
+ * specified by `exclude` from being traced.
+ * If the argument is "default" however, a predefined
+ * list of functions such as `_dl_runtime_resolve()` and
+ * `_dl_start()` will be added to the list of
+ * functions to be excluded.
+ */
+static void parse_exclude_function(char *exclude)
+{
+
+    if (!fexcludes)
+        // Initializes the array
+        fexcludes = g_ptr_array_new();
+
+    if (g_strcmp0(exclude, "default") == 0)
+    {
+        const char *excluded_prefixes[] = {
+            "_", "dl", "index", "search_cache", "strlen", "check_match",
+            "do_lookup_x", "strcmp", "call_init", "lookup_malloc_symbol",
+            "memset", "sbrk"
+        };
+        // Adds a list of functions to be excluded from tracing
+        int len = sizeof(excluded_prefixes) / sizeof(char *);
+        for (int i = 0; i < len; ++i)
+            g_ptr_array_add(fexcludes, (char *) excluded_prefixes[i]);
+
+    }
+    else
+    {
+        g_ptr_array_add(fexcludes, exclude);
+    }
+}
+
+
+/**
  * Install the plugin
  */
 QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
@@ -320,13 +425,23 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
         {
             parse_function_match(tokens[1]);
         }
+        else if (g_strcmp0(tokens[0], "fexclude") == 0)
+        {
+            parse_exclude_function(tokens[1]);
+        }
+        else if (g_strcmp0(tokens[0], "trace_main") == 0)
+        {
+            if (g_strcmp0(tokens[1], "1") == 0)
+                trace_main = true;
+        }
         else
         {
             fprintf(stderr, "option parsing failed: %s\n", opt);
             return -1;
         }
     }
-    
+    // Initializes the log array
+    log_entries = g_ptr_array_new();
     /* Register translation block and exit callbacks */
     qemu_plugin_register_vcpu_tb_trans_cb(id, vcpu_tb_trans);
     qemu_plugin_register_atexit_cb(id, plugin_exit, NULL);
