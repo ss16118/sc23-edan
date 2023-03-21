@@ -16,7 +16,7 @@
 
 #define START_SYMBOL "main"
 #define END_SYMBOL "_dl_fini"
-#define FLUSH_FREQ 1000000
+#define FLUSH_FREQ 2000000
 
 QEMU_PLUGIN_EXPORT int qemu_plugin_version = QEMU_PLUGIN_VERSION;
 
@@ -59,6 +59,7 @@ static void flush_log_entries()
         free(entry);
     }
     // Reinitializes log_entries
+    g_ptr_array_free(log_entries, true);
     log_entries = g_ptr_array_new();
     g_mutex_unlock(&log_lock);
 }
@@ -166,7 +167,7 @@ static void vcpu_insn_exec(unsigned int cpu_index, void *udata)
     /* Print previous instruction in cache */
     if (s->len) {
         g_mutex_lock(&log_lock);
-        char *tmp = malloc(64);
+        char *tmp = malloc(60);
         /* memcpy(tmp, s->str, 64); */
         sprintf(tmp, "%s\n", s->str);
         g_ptr_array_add(log_entries, tmp);
