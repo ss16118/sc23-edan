@@ -16,7 +16,9 @@
 
 #define START_SYMBOL "main"
 #define END_SYMBOL "_dl_fini"
+#define HEX_DIGITS 16
 #define FLUSH_FREQ 2000000
+#define ENTRY_SIZE 64
 
 QEMU_PLUGIN_EXPORT int qemu_plugin_version = QEMU_PLUGIN_VERSION;
 
@@ -46,18 +48,73 @@ static int log_entry_count = 0;
 
 
 /**
+ * Fast integer to string function, assuming that the given
+ * unsigned 32-bit integer only has two digits.
+ */
+static int fast_int_to_str(char *buf, uint32_t n)
+{
+    if (n < 10)
+    {
+        buf[0] = n % 10 + '0';
+        return 1;
+    }
+    
+    int i = 1;
+    while (n > 0)
+    {
+        buf[i] = n % 10 + '0';
+        n /= 10;
+        i--;
+    }
+    return 2;
+}
+
+
+/**
+ * Fast conversion from an unsigned 64-bit integer to
+ * a string without any zero padding.
+ */
+static int fast_hex_to_str(char *buf, uint64_t addr)
+{
+    int offset = 3;
+    int i;
+
+    for (i = HEX_DIGITS - 1 + offset; i>= offset && addr > 0; --i)
+    {
+        int digit = addr & 0xf;
+        buf[i] = (digit < 10) ? (digit + '0') : (digit - 10 + 'a');
+        addr >>= 4;
+    }
+    buf[HEX_DIGITS + offset] = '\0';
+    return i;
+}
+
+
+
+/**
  * Flushes all the trace entries to the log file.
  */
 static void flush_log_entries()
 {
     int i = 0;
     g_mutex_lock(&log_lock);
+
+    GString *buf = g_string_new(NULL);
+    /* int freq = 10; */
     for (i = 0; i < log_entries->len; ++i)
     {
         char *entry = g_ptr_array_index(log_entries, i);
-        qemu_plugin_outs(entry);
+        g_string_append(buf, entry);
+        /* qemu_plugin_outs(entry); */
         free(entry);
+        /* printf("[DEBUG] %s\n", buf->str); */
+        /* if (i > 0 && i % freq == 0) */
+        /* { */
+        /*     qemu_plugin_outs(buf->str); */
+        /*     g_string_truncate(buf, 0); */
+        /* } */
     }
+    qemu_plugin_outs(buf->str);
     // Reinitializes log_entries
     g_ptr_array_free(log_entries, true);
     log_entries = g_ptr_array_new();
@@ -127,8 +184,14 @@ static void vcpu_mem(unsigned int cpu_index, qemu_plugin_meminfo_t info,
     /* Find vCPU in array */
     g_assert(cpu_index < last_exec->len);
     s = g_ptr_array_index(last_exec, cpu_index);
-    // printf("%s\n", );
-    g_string_append_printf(s, ";0x%08"PRIx64, vaddr);
+    char buf[20];
+    int i = fast_hex_to_str(buf, vaddr);
+    buf[i--] = 'x';
+    buf[i--] = '0';
+    buf[i] = ';';
+    /* printf("[DEBUG] buf: %s\n", &buf[i]); */
+    g_string_append(s, &buf[i]);
+    /* g_string_append_printf(s, ";0x%08"PRIx64, vaddr); */
     /* Indicate type of memory access */
     /*
     if (qemu_plugin_mem_is_store(info)) {
@@ -162,26 +225,32 @@ static void vcpu_insn_exec(unsigned int cpu_index, void *udata)
     if (cpu_index >= last_exec->len) {
         expand_last_exec(cpu_index);
     }
+    g_mutex_lock(&log_lock);
     s = g_ptr_array_index(last_exec, cpu_index);
 
     /* Print previous instruction in cache */
     if (s->len) {
-        g_mutex_lock(&log_lock);
-        char *tmp = malloc(60);
-        /* memcpy(tmp, s->str, 64); */
-        sprintf(tmp, "%s\n", s->str);
+        char *tmp = malloc(ENTRY_SIZE);
+        g_string_append(s, "\n");
+        memcpy(tmp, s->str, ENTRY_SIZE);
+        /* snprintf(tmp, 60, "%s\n", s->str); */
         g_ptr_array_add(log_entries, tmp);
         log_entry_count++;
         /* qemu_plugin_outs(s->str); */
+
         /* qemu_plugin_outs("\n"); */
-        g_mutex_unlock(&log_lock);
     }
 
     /* Store new instruction in cache */
     /* vcpu_mem will add memory access information to last_exec */
-    g_string_printf(s, "%u;", cpu_index);
+    char buf[4];
+    int i = fast_int_to_str(buf, cpu_index);
+    buf[i++] = ';';
+    buf[i] = '\0';
+    /* g_string_printf(s, "%u;", cpu_index); */
+    g_string_assign(s, buf);
     g_string_append(s, (char *)udata);
-
+    g_mutex_unlock(&log_lock);
     if (log_entry_count % FLUSH_FREQ == 0)
         flush_log_entries();
 }
@@ -294,8 +363,10 @@ static void vcpu_tb_trans(qemu_plugin_id_t id, struct qemu_plugin_tb *tb)
             /* char *output = g_strdup_printf("0x%"PRIx64", 0x%"PRIx32", \"%s\"", */
             /*                                insn_vaddr, insn_opcode, insn_disas); */
             /* char *output = g_strdup_printf("0x%"PRIx64";%s", insn_vaddr, insn_disas); */
-            char *output = g_strdup_printf("%s", insn_disas);
+            /* char *output = g_strdup_printf("%s", insn_disas); */
+            
             // printf("[DEBUG] output: %s\n", output);
+            char *output = insn_disas;
             /* Register callback on memory read or write */
             qemu_plugin_register_vcpu_mem_cb(insn, vcpu_mem,
                                              QEMU_PLUGIN_CB_NO_REGS,
