@@ -17,7 +17,7 @@
 #define START_SYMBOL "main"
 #define END_SYMBOL "_dl_fini"
 #define HEX_DIGITS 16
-#define FLUSH_FREQ 2000000
+#define FLUSH_FREQ 3000000
 #define ENTRY_SIZE 64
 
 QEMU_PLUGIN_EXPORT int qemu_plugin_version = QEMU_PLUGIN_VERSION;
@@ -43,7 +43,8 @@ static bool start = false;
 // A mutex for multi-threaded trace logging
 static GMutex log_lock;
 
-static GPtrArray *log_entries;
+/* static GPtrArray *log_entries; */
+static GString *log_entries;
 static int log_entry_count = 0;
 
 
@@ -96,28 +97,31 @@ static int fast_hex_to_str(char *buf, uint64_t addr)
  */
 static void flush_log_entries()
 {
-    int i = 0;
+    /* int i = 0; */
     g_mutex_lock(&log_lock);
 
-    GString *buf = g_string_new(NULL);
+    /* GString *buf = g_string_new(NULL); */
     /* int freq = 10; */
-    for (i = 0; i < log_entries->len; ++i)
-    {
-        char *entry = g_ptr_array_index(log_entries, i);
-        g_string_append(buf, entry);
-        /* qemu_plugin_outs(entry); */
-        free(entry);
-        /* printf("[DEBUG] %s\n", buf->str); */
-        /* if (i > 0 && i % freq == 0) */
-        /* { */
-        /*     qemu_plugin_outs(buf->str); */
-        /*     g_string_truncate(buf, 0); */
-        /* } */
-    }
-    qemu_plugin_outs(buf->str);
+    /* for (i = 0; i < log_entries->len; ++i) */
+    /* { */
+    /*     char *entry = g_ptr_array_index(log_entries, i); */
+    /*     g_string_append(buf, entry); */
+    /*     /\* qemu_plugin_outs(entry); *\/ */
+    /*     free(entry); */
+    /*     /\* printf("[DEBUG] %s\n", buf->str); *\/ */
+    /*     /\* if (i > 0 && i % freq == 0) *\/ */
+    /*     /\* { *\/ */
+    /*     /\*     qemu_plugin_outs(buf->str); *\/ */
+    /*     /\*     g_string_truncate(buf, 0); *\/ */
+    /*     /\* } *\/ */
+    /* } */
+    
+    /* qemu_plugin_outs(buf->str); */
     // Reinitializes log_entries
-    g_ptr_array_free(log_entries, true);
-    log_entries = g_ptr_array_new();
+    /* g_ptr_array_free(log_entries, true); */
+    /* log_entries = g_ptr_array_new(); */
+    qemu_plugin_outs(log_entries->str);
+    g_string_truncate(log_entries, 0);
     g_mutex_unlock(&log_lock);
 }
 
@@ -189,8 +193,10 @@ static void vcpu_mem(unsigned int cpu_index, qemu_plugin_meminfo_t info,
     buf[i--] = 'x';
     buf[i--] = '0';
     buf[i] = ';';
-    /* printf("[DEBUG] buf: %s\n", &buf[i]); */
-    g_string_append(s, &buf[i]);
+    g_string_insert_len(s, -1, (const char *) &buf[i], 19 - i);
+    /* g_string_append(s, &buf[i]); */
+    /* printf("[DEBUG] %d, len: %ld\n", i, strlen(&buf[i])); */
+    /* g_string_append(s, &buf[i]); */
     /* g_string_append_printf(s, ";0x%08"PRIx64, vaddr); */
     /* Indicate type of memory access */
     /*
@@ -227,14 +233,16 @@ static void vcpu_insn_exec(unsigned int cpu_index, void *udata)
     }
     g_mutex_lock(&log_lock);
     s = g_ptr_array_index(last_exec, cpu_index);
-
+    
     /* Print previous instruction in cache */
     if (s->len) {
-        char *tmp = malloc(ENTRY_SIZE);
-        g_string_append(s, "\n");
-        memcpy(tmp, s->str, ENTRY_SIZE);
+        /* char *tmp = malloc(ENTRY_SIZE); */
+        g_string_append_c(s, '\n');
+        /* g_string_insert_c(s, -1, '\n'); */
+        /* memcpy(tmp, s->str, ENTRY_SIZE); */
         /* snprintf(tmp, 60, "%s\n", s->str); */
-        g_ptr_array_add(log_entries, tmp);
+        /* g_ptr_array_add(log_entries, tmp); */
+        g_string_append(log_entries, s->str);
         log_entry_count++;
         /* qemu_plugin_outs(s->str); */
 
@@ -248,7 +256,9 @@ static void vcpu_insn_exec(unsigned int cpu_index, void *udata)
     buf[i++] = ';';
     buf[i] = '\0';
     /* g_string_printf(s, "%u;", cpu_index); */
-    g_string_assign(s, buf);
+    g_string_truncate(s, 0);
+    /* g_string_insert_len(s, -1, (const char *) buf, i); */
+    g_string_append_len(s, buf, i);
     g_string_append(s, (char *)udata);
     g_mutex_unlock(&log_lock);
     if (log_entry_count % FLUSH_FREQ == 0)
@@ -513,7 +523,7 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
         }
     }
     // Initializes the log array
-    log_entries = g_ptr_array_new();
+    log_entries = g_string_new(NULL);
     /* Register translation block and exit callbacks */
     qemu_plugin_register_vcpu_tb_trans_cb(id, vcpu_tb_trans);
     qemu_plugin_register_atexit_cb(id, plugin_exit, NULL);
