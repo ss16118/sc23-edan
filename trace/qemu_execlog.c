@@ -97,25 +97,7 @@ static int fast_hex_to_str(char *buf, uint64_t addr)
  */
 static void flush_log_entries()
 {
-    /* int i = 0; */
     g_mutex_lock(&log_lock);
-
-    /* GString *buf = g_string_new(NULL); */
-    /* int freq = 10; */
-    /* for (i = 0; i < log_entries->len; ++i) */
-    /* { */
-    /*     char *entry = g_ptr_array_index(log_entries, i); */
-    /*     g_string_append(buf, entry); */
-    /*     /\* qemu_plugin_outs(entry); *\/ */
-    /*     free(entry); */
-    /*     /\* printf("[DEBUG] %s\n", buf->str); *\/ */
-    /*     /\* if (i > 0 && i % freq == 0) *\/ */
-    /*     /\* { *\/ */
-    /*     /\*     qemu_plugin_outs(buf->str); *\/ */
-    /*     /\*     g_string_truncate(buf, 0); *\/ */
-    /*     /\* } *\/ */
-    /* } */
-    
     /* qemu_plugin_outs(buf->str); */
     // Reinitializes log_entries
     /* g_ptr_array_free(log_entries, true); */
@@ -236,17 +218,10 @@ static void vcpu_insn_exec(unsigned int cpu_index, void *udata)
     
     /* Print previous instruction in cache */
     if (s->len) {
-        /* char *tmp = malloc(ENTRY_SIZE); */
         g_string_append_c(s, '\n');
         /* g_string_insert_c(s, -1, '\n'); */
-        /* memcpy(tmp, s->str, ENTRY_SIZE); */
-        /* snprintf(tmp, 60, "%s\n", s->str); */
-        /* g_ptr_array_add(log_entries, tmp); */
         g_string_append(log_entries, s->str);
         log_entry_count++;
-        /* qemu_plugin_outs(s->str); */
-
-        /* qemu_plugin_outs("\n"); */
     }
 
     /* Store new instruction in cache */
@@ -257,7 +232,7 @@ static void vcpu_insn_exec(unsigned int cpu_index, void *udata)
     buf[i] = '\0';
     /* g_string_printf(s, "%u;", cpu_index); */
     g_string_truncate(s, 0);
-    /* g_string_insert_len(s, -1, (const char *) buf, i); */
+    /* g_string_insert_len(s, -1, buf, i); */
     g_string_append_len(s, buf, i);
     g_string_append(s, (char *)udata);
     g_mutex_unlock(&log_lock);
