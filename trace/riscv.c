@@ -4405,10 +4405,10 @@ static void format_inst(char *buf, size_t buflen, size_t tab, rv_decode *dec)
             /* while (strlen(buf) < tab * 2) { */
             /*     append(buf, " ", buflen); */
             /* } */
-            append(buf, " ", buflen);
-            snprintf(tmp, sizeof(tmp), "# 0x%" PRIx64,
-                dec->pc + dec->imm);
-            append(buf, tmp, buflen);
+            /* append(buf, " ", buflen); */
+            /* snprintf(tmp, sizeof(tmp), "# 0x%" PRIx64, */
+            /*     dec->pc + dec->imm); */
+            /* append(buf, tmp, buflen); */
             break;
         case 'c': {
             const char *name = csr_name(dec->imm & 0xfff);
