@@ -6,6 +6,7 @@ from array import array
 from tqdm import tqdm
 from typing import Dict, List, Optional, Set, Union, Tuple, Iterable
 from eDAG import EDag, Vertex
+from enum import Enum, auto
 from matplotlib.animation import FuncAnimation, PillowWriter
 from metrics import MemoryLatencySensitivity
 
@@ -13,6 +14,12 @@ from metrics import MemoryLatencySensitivity
 G = 10 ** 9
 M = 10 ** 6
 K = 10 ** 3
+
+
+class ISA(Enum):
+    RISC_V = auto()
+    ARM = auto()
+    X86 = auto()
 
 
 class AtomicCounter(object):
@@ -98,6 +105,10 @@ def visualize_eDAG(eDag: EDag, highlight_mem_acc: bool = True,
             vertex_attrs = get_vertex_attrs(vertex, highlight_mem_acc)
             graph.node(**vertex_attrs)
     graph.edges(eDag.edges())
+    # Adds memory dependencies caused by limited number of issue slots
+    # as dashed lines
+    for source, target in eDag.mem_slot_deps.items():
+        graph.edge(str(source), str(target), style="dashed")
     return graph
 
 
@@ -197,6 +208,7 @@ def visualize_data_movement_over_time(bins: List[int], data_movement: np.array,
     plt.ylabel(y_label)
     if fig_path is not None:
         plt.savefig(fig_path, bbox_inches="tight")
+        print(f"[INFO] Data movement plot saved to {fig_path}")
     else:
         plt.show()
     plt.close()

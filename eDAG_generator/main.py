@@ -9,7 +9,7 @@ from cpu_model import CPUModel
 from riscv_parser import RiscvParser
 from metrics import *
 from utils import *
-from riscv_subgraph_optimizer import RiscvSubgraphOptimizer
+from optimizer import EDagOptimizer
 
 
 
@@ -63,7 +63,10 @@ if __name__ == "__main__":
     parser.add_argument("--sanitize", dest="sanitize", 
                         default=False, action="store_true",
                         help="If set, will try to simplify the eDAG")
-    parser.add_argument("-o", "--optimize", dest="optimize_subgraph",
+    parser.add_argument("--num-slots", dest="num_slots", type=int, default=None,
+                        help="By default we assume infinite issue slot. If provided, will analyze "
+                        "the eDAG as if a limited number of memory issue slots are provided")
+    parser.add_argument("-O", "--optimize", dest="optimize",
                         default=False, action="store_true",
                         help="If set, will attempt optimize the eDAG in terms of work and depth according to pre-defined heuristics")
     parser.add_argument("--reuse-histogram", dest="reuse_histogram",
@@ -126,8 +129,19 @@ if __name__ == "__main__":
                                     args.only_mem_acc, args.sanitize,
                                     cache_model=cache, cpu_model=cpu_model,)
         start = time()
-        eDag = generator.generate()
+        # eDag = generator.generate()
+        cProfile.run('eDag = generator.generate()', sort="tottime")
         print(f"[DEBUG] Time take for generation: {time() - start:.3f} s")
+
+    if args.optimize:
+        print("[INFO] Optimizing eDAG")
+        optimizer = EDagOptimizer(eDag, ISA.RISC_V)
+        optimizer.optimize()
+
+    if args.num_slots:
+        print(f"[INFO] Number of memory issue slots set to {args.num_slots}")
+        eDag.limit_issue_slots(args.num_slots)
+        print("[INFO] Recomputing dependencies between memory accesses")
 
     if args.save_path:
         save_path = args.save_path
@@ -154,7 +168,11 @@ if __name__ == "__main__":
     dp = None
     if args.calc_bandwidth:
         print("[INFO] Calculating the average bandwidth utilization")
-        bandwidth_metric = BandwidthUtilization(eDag, cpu_model.frequency)
+        if cpu_model is None:
+            frequency = 10 ** 9
+        else:
+            frequency = cpu_model.frequency
+        bandwidth_metric = BandwidthUtilization(eDag, frequency)
         # Obtains some intermediate values that will help with
         # the calculation of other metrics
         depth, dp = eDag.get_depth(True)
@@ -163,7 +181,7 @@ if __name__ == "__main__":
         print(f"Average bandwidth utilization: {avg_bandwidth / M:.2f} MB/s")
         print("[INFO] Computing data movement over time")
         # Computes the data movement over time
-        mode = None
+        mode = "bandwidth"
         bins, data_movement = \
             bandwidth_metric.get_data_movement_over_time(1, mode)
         # fig_path = f"../tmp/{filename_root}_dm.png"
@@ -188,11 +206,6 @@ if __name__ == "__main__":
 
         if not return_k:
             visualize_memory_latency_sensitivity(mls)
-
-    if args.optimize_subgraph:
-        print("[INFO] Optimizing subgraph")
-        optimizer = RiscvSubgraphOptimizer()
-        optimizer.optimize(eDag)
 
     if args.remove_unconnected_vertices:
         eDag.remove_unconnected_vertices()

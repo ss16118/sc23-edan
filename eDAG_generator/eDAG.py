@@ -11,7 +11,6 @@ from functools import lru_cache
 from collections import defaultdict
 from multiprocessing import Pool, Process, Manager, JoinableQueue
 from typing import List, Dict, Optional, Set, Tuple, Callable, Union
-from graphviz import Digraph
 
 
 class OpType(Enum):
@@ -32,6 +31,8 @@ class OpType(Enum):
     BRANCH = auto()
     # Jump
     JUMP = auto()
+    # Return
+    RETURN = auto()
     # Uncategorized operation
     UNCATEGORIZED = auto()
     
@@ -46,9 +47,9 @@ class Vertex:
                 target: Optional[str], dependencies: Set[str],
                 op_type: OpType, is_comm_assoc: bool = False,
                 # Optional attributes
+                imm_val: Optional[int] = None,
                 sec_target: Optional[str] = None,
                 cpu: Optional[int] = None,
-                insn_addr: Optional[str] = None,
                 data_addr: Optional[str] = None,
                 data_size: int = 0) -> None:
         """
@@ -67,10 +68,10 @@ class Vertex:
         @param is_comm_assoc: Indicates whether the operation performed by
         the instruction is both commutative and associative. Used by
         the subgraph optimizer.
+        @param imm_val: Immediate value, only exists if the instruction
+        has a operand that is an immediate value.
         @param sec_target: Second target.
         @param cpu: ID of the CPU on which the instruction was executed.
-        @param insn_addr: Virtual memory address where the instruction contained
-        in this vertex is stored.
         @param data_addr: Data address of the virtual memory accessed in 
         this vertex. Note that this argument should be None unless the opcode 
         type is a memory access.
@@ -81,14 +82,18 @@ class Vertex:
         """
         self.id = id
         self.opcode = opcode
-        self.operands = tuple(operands)
+        self.operands = operands
         self.target = target
         self.dependencies = dependencies
         self.op_type = op_type
         self.is_comm_assoc = is_comm_assoc
+
+        self.imm_val = imm_val
+        # The second target of the instruction, only present
+        # for very few instructions
         self.sec_target = sec_target
         self.cpu = cpu
-        self.insn_addr = insn_addr
+        # self.insn_addr = insn_addr
         self.data_addr = data_addr
         self.data_size = data_size
         # Estimated number of cycles that will take for the instruction
@@ -138,9 +143,18 @@ class Vertex:
     
     def __repr__(self) -> str:
         return f"{self.id}: {self.asm}"
+    
+    def has_same_insn(self, v: Vertex) -> bool:
+        """
+        Returns true if the given vertex contains the exact
+        same instructions (i.e. opcode and operands) as the
+        current object, False otherwise.
+        """
+        return self.opcode == v.opcode and self.operands == v.operands
 
     def __hash__(self) -> int:
-        return hash((self.id, self.opcode, self.operands))
+        # return hash((self.id, self.opcode, self.operands))
+        return hash(self.id)
 
 
 class EDag:
@@ -172,6 +186,9 @@ class EDag:
         self.disjoint_subgraphs: List[EDag] = []
         # Keeps track of all vertices that have been removed
         self.removed_vertices = set()
+        # Dependencies between memory access vertices induced by
+        # limited number of memory request issue slots
+        self.mem_slot_deps = {}
 
     @property
     def sorted_vertices(self) -> List[Vertex]:
@@ -192,7 +209,7 @@ class EDag:
         if vertex not in self.adj_list:
             self.adj_list[vertex.id] = [set(), set()]
 
-    def add_edge(self, source: Vertex, target: Vertex) -> None:
+    def add_edge(self, source: int, target: int) -> None:
         """
         Adds a connection between the given source and target vertices,
         and the relationship between the vertices is that the target vertex
@@ -200,10 +217,9 @@ class EDag:
         """
         # Ensures that both the source and target vertices have already
         # been added to the eDAG
-        assert(source.id in self.vertices)
-        assert(target.id in self.vertices)
-        self.adj_list[source.id][EDag._out].add(target.id)
-        self.adj_list[target.id][EDag._in].add(source.id)
+        assert(source in self.vertices and target in self.vertices)
+        self.adj_list[source][EDag._out].add(target)
+        self.adj_list[target][EDag._in].add(source)
 
     def get_starting_vertices(self, id_only: bool = False) \
         -> Union[Set[Vertex], Set[int]]:
@@ -299,7 +315,8 @@ class EDag:
     # Uses caching to make sure that consecutive calls to this
     # function can be executed quickly
     @lru_cache(maxsize=2)
-    def topological_sort(self, reverse: bool = False) -> List[int]:
+    def topological_sort(self, reverse: bool = False,
+                         mem_acc_only: bool = False) -> List[int]:
         """
         Returns one topological sort of the vertices of an eDAG in a list
         containing their IDs.
@@ -307,18 +324,125 @@ class EDag:
         an error in this function when vertices have been removed.
         @param reverse: If True, all predecessors will be on the right as
         opposed to on the left.
+        @param mem_acc_only: If True, the returned list will only
+        contain memory access vertices.
         """
         if len(self.removed_vertices) > 0:
             raise RuntimeError("[ERROR] Topological sort can only be computed if no vertices have been removed")
         # Uses the igraph library to get the topological sort
         graph = igraph.Graph(n=len(self.vertices), edges=self.edges(False), directed=True)
+
+        if self.mem_slot_deps:
+            graph.add_edges(self.mem_slot_deps.items())
         # graph.add_vertices(map(str, self.vertices))
         # graph.add_edges(self.edges())
         # vertices_to_remove = [v.index for v in graph.vs if v.index not in self.vertices]
         # graph.delete_vertices(vertices_to_remove)
         path = graph.topological_sorting(mode="in" if reverse else "out")
         assert(len(path) == len(self.vertices))
+
+        if mem_acc_only:
+            # Filters out non-memory access vertices
+            path = [v for v in path if self.id_to_vertex[v].is_mem_acc and \
+                        not self.id_to_vertex[v].cache_hit]
         return path
+
+    def limit_issue_slots(self, num_slots: Optional[int] = None) -> None:
+        """
+        Traverses through all the memory access vertices and determine the
+        dependencies between them as per the given number of memory issue
+        slots as well as the time at which each of them is executed. For
+        example, if vertex 1, 2, and 3 are executed in the same time frame,
+        and there are only two issue slots, then vertex 3 will have to
+        be dependent on vertex 1.
+        
+        If `num_slots` is None, it will assume
+        that infinite issue slots are present and previously generated
+        memory slot dependencies will be removed.
+        """
+        # Clears the issue slot dependencies
+        self.mem_slot_deps.clear()
+
+        if num_slots is None:
+            return
+        
+        num_iter = 0
+        prev_dp = None
+
+        # Obtains the topological sort of the memory
+        # access vertices in the eDAG
+        mem_vertices = self.topological_sort(False, True)
+
+        # Repeats until no changes occur
+        while True:
+            _, dp = self.get_vertex_depth()
+            num_iter += 1
+            if prev_dp == dp:
+                break
+            prev_dp = dp
+
+            slots = [None for _ in range(num_slots)]
+            # Keeps track of the time at which the request
+            # at each slot will be finished
+            slot_time = [None for _ in range(num_slots)]
+            curr_slot = 0
+            
+            for v_id in mem_vertices:
+                vertex = self.id_to_vertex[v_id]
+                if slots[curr_slot] is not None:
+                    # Checks if the previous slot can be freed
+                    if slot_time[curr_slot] >= dp[v_id]:
+                        # If not, creates a dependency between the memory vertices
+                        self.mem_slot_deps[slots[curr_slot]] = v_id
+
+                slots[curr_slot] = v_id
+                slot_time[curr_slot] = dp[v_id] + vertex.cycles
+                curr_slot = (curr_slot + 1) % num_slots
+        
+        print(f"[DEBUG] Number of iterations: {num_iter}")
+    
+    def get_vertex_depth(self) -> Tuple[float, array]:
+        """
+        Returns the depth of the graph as well as an array that contains
+        the maximum number of cycles it takes to reach each vertex from
+        any starting vertex.
+
+        For instance, in an eDAG where there are three vertices
+        0 -> 1, 2 -> 1, meaning that vertex 1 depends both on vertex 0 and
+        vertex 2. The number of CPU cycles it takes to compute the vertices
+        are [10, 20, 5]. Then, the returned array will be [0, 10, 0],
+        since vertex 1 needs wait for both vertex 0 and 2 to complete.
+        """
+        topo_sorted = self.topological_sort(reverse=False)
+        res = array('f', [0] * len(topo_sorted))
+        depth = 0
+        for v_id in topo_sorted:
+            _, out_vertices = self.adj_list[v_id]
+            vertex = self.id_to_vertex[v_id]
+            new_val = res[v_id] + vertex.cycles
+            for out in out_vertices:
+                res[out] = res[out] if res[out] > new_val else new_val
+            
+            if v_id in self.mem_slot_deps:
+                out = self.mem_slot_deps[v_id]
+                res[out] = res[out] if res[out] > new_val else new_val
+            
+            depth = depth if depth > new_val else new_val
+        
+        return depth, res
+
+    def remove_edge(self, source: int, target: int) -> None:
+        """
+        Removes the edge between the vertices whose IDs are
+        specified by `source` and `target`.
+        """
+        assert(source in self.vertices and target in self.vertices)
+        # Removes the target vertex from the out-set of the source
+        _, src_outs = self.adj_list[source]
+        src_outs.remove(target)
+        # Removes the source vertex from the in-set of the target
+        tar_ins, _ = self.adj_list[target]
+        tar_ins.remove(source)
 
     def remove_vertex(self, vertex: Vertex, maintain_deps: bool = True) -> None:
         """
@@ -479,10 +603,17 @@ class EDag:
         while True:
             _, out_vertices = self.adj_list[curr]
             curr_depth = -1
+            if curr in self.mem_slot_deps:
+                target = self.mem_slot_deps[curr]
+                if dp[target] > curr_depth:
+                    curr = target
+                    curr_depth = dp[target]
+            
             for out_vertex in out_vertices:
                 if dp[out_vertex] > curr_depth:
                     curr = out_vertex
                     curr_depth = dp[out_vertex]
+            
             if curr_depth == -1:
                 # Reached the end
                 break
@@ -507,17 +638,8 @@ class EDag:
         is probably not the best term in this case.
         """
         res = defaultdict(set)
-        topo_sorted = self.topological_sort(reverse=False)
-        dp = array('f', [0] * len(self.vertices))
-        # Constructs an DP array which indicates the maximum number
-        # of cycles it takes to reach a certain vertex
-        for v_id in topo_sorted:
-            out_vertices = self.adj_list[v_id][EDag._out]
-            cycles = self.id_to_vertex[v_id].cycles
-            for out_id in out_vertices:
-                new_val = dp[v_id] + cycles
-                dp[out_id] = dp[out_id] if dp[out_id] > new_val else new_val
-
+        _, dp = self.get_vertex_depth()
+        
         for v_id, cycles in enumerate(dp):
             rank = cycles // interval if interval != 1 else cycles
             # Adds the vertex ID to a set that contains
@@ -559,12 +681,18 @@ class EDag:
                 vertex = self.id_to_vertex[vertex_id]
                 cycles = vertex.cycles
                 _, out_vertices = self.adj_list[vertex_id]
-                if len(out_vertices) == 0:
+                if not out_vertices and \
+                    vertex_id not in self.mem_slot_deps:
                     dp[vertex_id] = cycles
                 else:
                     for out_vertex in out_vertices:
                         new_val = dp[out_vertex] + cycles
                         # `if` statement is faster than `max()`
+                        dp[vertex_id] = \
+                            dp[vertex_id] if dp[vertex_id] > new_val else new_val
+                    
+                    if vertex_id in self.mem_slot_deps:
+                        new_val = dp[self.mem_slot_deps[vertex_id]] + cycles
                         dp[vertex_id] = \
                             dp[vertex_id] if dp[vertex_id] > new_val else new_val
 
@@ -580,14 +708,20 @@ class EDag:
                 val = int(vertex.is_mem_acc and not vertex.cache_hit)
                 _, out_vertices = self.adj_list[vertex_id]
                 # If the vertex is an end vertex that has no outgoing edges
-                if not out_vertices:
+                if not out_vertices and vertex_id not in self.mem_slot_deps:
                     dp[vertex_id] = val
                 else:
                     for out_vertex in out_vertices:
                         new_val = dp[out_vertex] + val
-                        dp[vertex_id] = dp[vertex_id] if dp[vertex_id] > new_val else new_val
+                        dp[vertex_id] = \
+                            dp[vertex_id] if dp[vertex_id] > new_val else new_val
+                    if vertex_id in self.mem_slot_deps:
+                        new_val = dp[self.mem_slot_deps[vertex_id]] + val
+                        dp[vertex_id] = \
+                            dp[vertex_id] if dp[vertex_id] > new_val else new_val
+                
                 depth = depth if depth > dp[vertex_id] else dp[vertex_id]
-            
+
             if return_dp:
                 return (depth, dp)
 

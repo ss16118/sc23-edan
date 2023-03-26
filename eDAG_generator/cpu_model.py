@@ -40,7 +40,6 @@ class CPUModel:
 
         # First checks if the vertex is a cache hit
         if vertex.cache_hit and self.use_cache_model:
-            print(f"[DEBUG] Vertex: {vertex.id} Cache hit cycles: {self.cache_hit_cycles}")
             return self.cache_hit_cycles
         
         opcode = vertex.opcode

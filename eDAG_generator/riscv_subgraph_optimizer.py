@@ -1,9 +1,13 @@
+"""
+=================================================
+Experimental feature which is no longer supported
+=================================================
+"""
 from optimizer_fsm import *
-from optimizer import SubgraphOptimizer
 from eDAG import EDag
 
 
-class RiscvSubgraphOptimizer(SubgraphOptimizer):
+class RiscvSubgraphOptimizer:
     """
     A subgraph optimizer that targets eDAGs generated from RISC-V
     assembly traces.

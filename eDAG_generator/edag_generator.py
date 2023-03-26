@@ -10,11 +10,7 @@ from riscv_parser import RiscvParser
 from cache_model import CacheModel
 from cpu_model import CPUModel
 from edag_sanitizer import *
-
-class ISA(Enum):
-    RISC_V = auto()
-    ARM = auto()
-    X86 = auto()
+from utils import *
 
 
 class EDagGenerator:
@@ -25,12 +21,12 @@ class EDagGenerator:
     """
     # Maps ISA to its corresponding `InstructionParser` object
     isa_to_parser: Dict[ISA, InstructionParser] = {
-        ISA.RISC_V : RiscvParser
+        ISA.RISC_V: RiscvParser
     }
 
     # Maps ISA to its corresponding `EDagSanitizer` object
     isa_to_sanitizer: Dict[ISA, EDagSanitizer] = {
-        ISA.RISC_V : RiscvEDagSanitizer
+        ISA.RISC_V: RiscvEDagSanitizer
     }
     
 
@@ -40,8 +36,8 @@ class EDagGenerator:
                 cache_model: Optional[CacheModel] = None,
                 cpu_model: Optional[CPUModel] = None)-> None:
         """
-        @param trace_file: path to the trace file as input for the constructor.
-        @isa: the ISA of the assembly instructions contained in the trace file.
+        @param trace_file: Path to the trace file as input for the constructor.
+        @isa: The ISA of the assembly instructions contained in the trace file.
         @param only_mem_acc: If set to True, only memory access related
         instructions will be included in the parsed execution DAG.
         @param sanitize: If set to True, only the most essential vertices
@@ -90,7 +86,7 @@ class EDagGenerator:
         # A dictionary that maps a CPU index and a register or
         # memory location, represented as a string to the most recent
         # vertex which updated its value
-        curr_vertex: Dict[int, Dict[str, Vertex]] = defaultdict(dict)
+        curr_vertex: Dict[int, Dict[str, int]] = defaultdict(dict)
 
         # A number that is used to uniquely identify each vertex
         # increments after a vertex is added to the eDAG
@@ -104,7 +100,8 @@ class EDagGenerator:
                 print(f"[INFO] Progress: {vertex_id} [{int(1000000 / (curr_time - prev_time))} iter/s]")
                 prev_time = curr_time
             # Strips the newline character on the right of a line
-            line = line.strip()
+            line = line.rstrip()
+            # line = line.strip()
             parsed_line = self.parser.parse_line(line)
             
             if parsed_line is None:
@@ -112,7 +109,12 @@ class EDagGenerator:
             # Creates a new vertex as per the instruction
             new_vertex: Vertex = \
                 self.parser.generate_vertex(id=vertex_id, **parsed_line)
-            
+            # if new_vertex.op_type == OpType.RETURN or \
+            #     new_vertex.op_type == OpType.BRANCH or \
+            #     new_vertex.op_type == OpType.JUMP:
+            if new_vertex.op_type == OpType.RETURN:
+                continue
+
             cpu_id = new_vertex.cpu
 
             # If a cache model is used
@@ -135,38 +137,36 @@ class EDagGenerator:
                 # of each vertex defaults to 1 cycle
                 new_vertex.cycles = 1
 
-            is_critical = True
             # if self.sanitize:
             #     # Only critical vertices are kept
             #     is_critical = self.sanitizer.is_critical_vertex(new_vertex)
 
-            if is_critical:
-                eDag.add_vertex(new_vertex)
+            eDag.add_vertex(new_vertex)
 
-                # if not self.sanitize and \
-                #     new_vertex.target is not None:
-                #     # If `simplified` is True, only true dependencies
-                #     # will be kept
-                #     new_vertex.dependencies.add(new_vertex.target)
+            # if not self.sanitize and \
+            #     new_vertex.target is not None:
+            #     # If `simplified` is True, only true dependencies
+            #     # will be kept
+            #     new_vertex.dependencies.add(new_vertex.target)
 
-                # Creates dependency edges
-                for dep in new_vertex.dependencies:
-                    # source = curr_vertex.get(dep)
-                    source = curr_vertex[cpu_id].get(dep)
-                    if source is not None:
-                        eDag.add_edge(source, new_vertex)
-                
-                # if prev_vertex and prev_vertex.op_type == OpType.BRANCH:
-                #     # If the previous vertex contains branch/jump
-                #     # instruction, adds a dependency between it
-                #     # and the current vertex
-                #     eDag.add_edge(prev_vertex, new_vertex)
+            # Creates dependency edges
+            for dep in new_vertex.dependencies:
+                # source = curr_vertex.get(dep)
+                source = curr_vertex[cpu_id].get(dep)
+                if source is not None:
+                    eDag.add_edge(source, new_vertex.id)
+            
+            # if prev_vertex and prev_vertex.op_type == OpType.BRANCH:
+            #     # If the previous vertex contains branch/jump
+            #     # instruction, adds a dependency between it
+            #     # and the current vertex
+            #     eDag.add_edge(prev_vertex, new_vertex)
 
-                if new_vertex.target is not None:
-                    curr_vertex[cpu_id][new_vertex.target] = new_vertex
-                
-                if new_vertex.sec_target is not None:
-                    curr_vertex[cpu_id][new_vertex.sec_target] = new_vertex
+            if new_vertex.target is not None:
+                curr_vertex[cpu_id][new_vertex.target] = new_vertex.id
+            
+            if new_vertex.sec_target is not None:
+                curr_vertex[cpu_id][new_vertex.sec_target] = new_vertex.id
             
             vertex_id += 1
         trace.close()

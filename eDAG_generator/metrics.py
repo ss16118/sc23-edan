@@ -199,20 +199,11 @@ class BandwidthUtilization:
                 use_requests = True
             else:
                 raise ValueError(f"[ERROR] Unknown mode: {mode}")
-            
-        topo_sorted = self.eDag.topological_sort(reverse=False)
-        dp = array('f', [0] * len(topo_sorted))
+        
         # Computes the maximum number of cycles it takes to
         # reach each vertex from any starting node
-        # The algorithm is similar to the one used in `EDag.get_vertex_rank()`
-        max_cycles = 0
-        for v_id in topo_sorted:
-            _, out_vertices = self.eDag.adj_list[v_id]
-            vertex = self.eDag.id_to_vertex[v_id]
-            new_val = dp[v_id] + vertex.cycles
-            for out in out_vertices:
-                dp[out] = dp[out] if dp[out] > new_val else new_val
-            max_cycles = max_cycles if max_cycles > new_val else new_val
+        max_cycles, dp = self.eDag.get_vertex_depth()
+
         # `max_cycles` should equal to `critical_path_cycles`
         # Splits the time between 0 and `max_cycles` into bins
         # each of size `cycles`
@@ -228,8 +219,9 @@ class BandwidthUtilization:
             # to reach `vertex`, i.e. at which time the
             # vertex will be executed
             vertex = self.eDag.id_to_vertex[v_id]
+            data_size = vertex.data_size
             # Ignores vertices that do not access memory
-            if vertex.data_size > 0:
+            if data_size > 0:
                 # Computes how many buckets the memory access crosses
                 if cycles > 1:
                     start_bin = bisect.bisect_left(bins, v_cycles)
@@ -237,16 +229,17 @@ class BandwidthUtilization:
                 else:
                     start_bin = int(v_cycles)
                     end_bin = int(v_cycles + vertex.cycles)
-
-                res[start_bin:end_bin] += \
-                    1 if use_requests else vertex.data_size
-        
-        if use_bandwidth:
-            # Converts bytes to bytes/s
-            res = res * self.cpu_frequency / cycles
+                
+                if use_requests:
+                    res[start_bin:end_bin] += 1
+                elif use_bandwidth:
+                    res[start_bin:end_bin] += \
+                        data_size * self.cpu_frequency / vertex.cycles
+                else:
+                    res[start_bin:end_bin] += data_size
+    
         return bins, res
     
-
 
 class MemoryLatencySensitivity:
     """

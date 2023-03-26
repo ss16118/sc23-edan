@@ -16,51 +16,54 @@ class RiscvParser(InstructionParser):
         "w": 4,
         "d": 8
     }
-    load_instructions = {
+    load_instructions = frozenset([
         "lb", "lh", "lw", "ld", "li", "lhu", "lbu", "lui",
         "fld", "flw", "lwu"
-    }
-    store_instructions = { "sb", "sh", "sw", "sd", "fsd" }
-    mv_instructions = { "mv", "sext.w", "fmv.d.x", "fmv.d" }
+    ])
+    store_instructions = frozenset([ "sb", "sh", "sw", "sd", "fsd" ])
+    mv_instructions = frozenset([ "mv", "sext.w", "fmv.d.x", "fmv.d" ])
     # FIXME: Probably it is better to combine all the arithmetic
     # operations into one category
-    add_instructions = { "addi", "addw", "addiw", "add" }
-    sub_instructions = { "sub", "subw", "neg", "negw" }
-    mul_instructions = { "mul", "mulw" }
-    div_instructions = { "divw", "divuw", "div" }
-    rem_instructions = { "remw", "remuw" }
-    atomic_op_instructions = {
+    # FIXME: Probably not the best way to categorize instructions either
+    add_instructions = frozenset([ "addi", "addw", "addiw", "add" ])
+    sub_instructions = frozenset([ "sub", "subw", "neg", "negw" ])
+    mul_instructions = frozenset([ "mul", "mulw" ])
+    div_instructions = frozenset([ "divw", "divuw", "div" ])
+    rem_instructions = frozenset([ "remw", "remuw" ])
+    atomic_op_instructions = frozenset([
         "amoswap.w", "amoxor.w", "amoadd.w", "amoxor.w",
         "amoand.w", "amoor.w", "amomin.w", "amomax.u", "amominu.w", "amomaxu.w" 
-    }
-    comp_and_set_instructions = { "slti", "sltiu", "slt", "sltu" }
-    bit_op_instructions = \
-        { "xori", "ori", "andi", "slli", "srli", "srai", "sll", "xor", "srl", 
-        "sra", "or", "and", "srliw", "sraiw", "sraw" }
-    uncond_jump_instructions = { "j", "jal", "jalr" }
-    cond_br_2ops_instructions = { "beqz", "bgez", "blez", "bgtz", "bnez" }
-    cond_br_3ops_instructions = {
+    ])
+    comp_and_set_instructions = frozenset([ "slti", "sltiu", "slt", "sltu" ])
+    bit_op_instructions = frozenset([
+        "xori", "ori", "andi", "slli", "srli", "srai", "sll", "xor", "srl", 
+        "sra", "or", "and", "srliw", "sraiw", "sraw"
+    ])
+    uncond_jump_instructions = frozenset([ "j", "jal", "jalr" ])
+    cond_br_2ops_instructions = frozenset([ "beqz", "bgez", "blez", "bgtz", "bnez" ])
+    cond_br_3ops_instructions = frozenset([
         "beq", "bne", "bge", "bgt", "bgtu", "blt", "bltu", "bgeu", "ble", "bleu"
-    }
-    ret_instructions = { "ret", "uret", "sret", "mret", "tail", "ecall" }
+    ])
+    ret_instructions = frozenset([ "ret", "uret", "sret", "mret", "tail", "ecall" ])
 
     # Floating point operations
-    fp_2ops_instructions = { "fcvt.d.w", "fcvt.w.d", "fsqrt.d" }
-    fp_3ops_instructions = {
+    fp_2ops_instructions = frozenset([ "fcvt.d.w", "fcvt.w.d", "fsqrt.d" ])
+    fp_3ops_instructions = frozenset([
         "fsub.d", "fsub.s", "fmul.d", "fmul.s", "fmadd.s", "fdiv.d", "fdiv.s",
         "flt.d", "flt.s", "fadd.d", "fadd.s"
-     }
+    ])
     fp_4ops_instructions = \
-        { "fmadd.d", "fmadd.s", "fnmadd.d", "fnmsub.s", "fnmsub.d" }
+        frozenset([ "fmadd.d", "fmadd.s", "fnmadd.d", "fnmsub.s", "fnmsub.d" ])
     # Uncategorized instructions
-    uncategorized_instructions = { "auipc", "frflags", "fsflags" }
+    uncategorized_instructions = frozenset([ "auipc", "frflags", "fsflags" ])
 
     # Associative and commutative operations
-    comm_assoc_ops = {
+    comm_assoc_ops = frozenset([
         "xor", "and", "or", "mul", "add", "addw", "mulw",
         "fmul.d", "fmul.s", "fmadd.d", "fmadd.s"
-    }
+    ])
 
+    trace_line_pattern = re.compile(r"(\d+);([\w\.]+) ?([^;]+)?;?(0x\w+)?")
     reg_offset_pattern = re.compile(r"-?\d*\((\w+\d?)\)")
 
     # =========== Constructor ===========
@@ -80,7 +83,8 @@ class RiscvParser(InstructionParser):
         offset_reg = matches.group(1)
         return offset_reg
     
-    def is_ret_instruction(self, instruction: str) -> bool:
+    @staticmethod
+    def is_ret_instruction(instruction: str) -> bool:
         """
         Returns True if the given instruction is considered `return`.
         """
@@ -120,28 +124,41 @@ class RiscvParser(InstructionParser):
         all the relevant information in a dictionary that contains the 
         following keys. Note that some of the values might be None.
         
-        ["cpu_id", "insn_addr", "instruction", "operands", "data_addr"]
+        ["cpu_id", "instruction", "operands", "data_addr"]
         
         If a return instruction is encountered, returns None.
         """
         res = dict.fromkeys(
-            ["cpu", "insn_addr", "instruction", "operands", "data_addr"]
+            ["cpu", "instruction", "operands", "data_addr"]
         )
+        # Parses the line with regex
+        # matches = RiscvParser.trace_line_pattern.match(line)
+        # assert matches is not None
+        # groups = matches.groups()
+        # if groups[2] is None:
+        #     return None
+
+        # res["cpu"] = int(groups[0])
+        # res["instruction"] = groups[1]
+        # res["operands"] = groups[2].split(',')
+        # if groups[3] is not None:
+        #     res["data_addr"] = groups[3]
         # Splits the line by the given delimiter
         tokens = line.split(";")
-        if len(tokens) < 3:
+        if len(tokens) < 2:
             return None
         # The first two tokens are CPU ID and instruction address
-        cpu_id, insn_addr, *tokens = tokens
+        # cpu_id, *tokens = tokens
+        cpu_id, *tokens = tokens
         insn_tokens = tokens[0].split()
         instruction = insn_tokens[0]
         res["cpu"] = int(cpu_id)
-        res["insn_addr"] = insn_addr
+        # res["insn_addr"] = insn_addr
         res["instruction"] = instruction
         res["operands"] = []
 
         # Skips instructions that do not have any operands, e.g. ret
-        if instruction in RiscvParser.ret_instructions:
+        if RiscvParser.is_ret_instruction(instruction):
             return res
         
         operands = insn_tokens[1].split(",")
@@ -154,7 +171,6 @@ class RiscvParser(InstructionParser):
 
     def generate_vertex(self, id: int, instruction: str,
                         operands: List[str], cpu: Optional[int] = None,
-                        insn_addr: Optional[str] = None,
                         data_addr: Optional[str] = None) -> Vertex:
         """
         A function that converts the given assembly instruction
@@ -169,6 +185,7 @@ class RiscvParser(InstructionParser):
         op_type = None
         dependencies = set()
         data_size = 0
+        imm_val = None
         is_comm_assoc = instruction in RiscvParser.comm_assoc_ops
         opr_len = len(operands)
         # Iterates through all types of instructions and checks to which
@@ -187,6 +204,7 @@ class RiscvParser(InstructionParser):
                 data_size = self.get_insn_data_size(instruction)
                 op_type = OpType.LOAD_MEM
             else:
+                imm_val = int(operands[1])
                 op_type = OpType.LOAD_IMM
 
         elif instruction in RiscvParser.store_instructions:
@@ -214,6 +232,7 @@ class RiscvParser(InstructionParser):
                 dependencies.add(operands[2])
                 op_type = OpType.ARITHMETIC
             else:
+                imm_val = int(operands[2])
                 op_type = OpType.ARITHMETIC_IMM
                 
         elif instruction in RiscvParser.sub_instructions:
@@ -279,6 +298,7 @@ class RiscvParser(InstructionParser):
                 dependencies.add(operands[2])
                 op_type = OpType.ARITHMETIC
             else:
+                imm_val = int(operands[2])
                 op_type = OpType.ARITHMETIC_IMM
             
         elif instruction in RiscvParser.uncond_jump_instructions:
@@ -357,7 +377,7 @@ class RiscvParser(InstructionParser):
                 # depends on the value in register `ra`
                 assert(opr_len == 0)
                 dependencies.add("ra")
-            op_type = OpType.JUMP
+            op_type = OpType.RETURN
 
         elif instruction in RiscvParser.uncategorized_instructions:
             # Uncategorized instructions
@@ -385,7 +405,7 @@ class RiscvParser(InstructionParser):
         new_vertex = Vertex(id, instruction, operands,
                             target=target, dependencies=dependencies,
                             op_type=op_type, is_comm_assoc=is_comm_assoc,
-                            cpu=cpu, insn_addr=insn_addr, data_addr=data_addr,
+                            cpu=cpu, imm_val=imm_val, data_addr=data_addr,
                             data_size=data_size)
 
         return new_vertex
