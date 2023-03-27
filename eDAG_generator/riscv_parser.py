@@ -28,18 +28,18 @@ class RiscvParser(InstructionParser):
     add_instructions = frozenset([ "addi", "addw", "addiw", "add" ])
     sub_instructions = frozenset([ "sub", "subw", "neg", "negw" ])
     mul_instructions = frozenset([ "mul", "mulw" ])
-    div_instructions = frozenset([ "divw", "divuw", "div" ])
+    div_instructions = frozenset([ "divw", "divuw", "div", "divu" ])
     rem_instructions = frozenset([ "remw", "remuw" ])
     atomic_op_instructions = frozenset([
-        "amoswap.w", "amoxor.w", "amoadd.w", "amoxor.w",
+        "amoswap.w", "amoswap.d", "amoxor.w", "amoadd.w", "amoxor.w",
         "amoand.w", "amoor.w", "amomin.w", "amomax.u", "amominu.w", "amomaxu.w" 
     ])
     comp_and_set_instructions = frozenset([ "slti", "sltiu", "slt", "sltu" ])
     bit_op_instructions = frozenset([
-        "xori", "ori", "andi", "slli", "srli", "srai", "sll", "xor", "srl", 
-        "sra", "or", "and", "srliw", "sraiw", "sraw"
+        "xori", "ori", "andi", "slli", "srli", "srai", "sll", "slliw", 
+        "xor", "srl", "sra", "or", "and", "srliw", "sraiw", "sraw"
     ])
-    uncond_jump_instructions = frozenset([ "j", "jal", "jalr" ])
+    uncond_jump_instructions = frozenset([ "j", "jal", "jalr", "jr" ])
     cond_br_2ops_instructions = frozenset([ "beqz", "bgez", "blez", "bgtz", "bnez" ])
     cond_br_3ops_instructions = frozenset([
         "beq", "bne", "bge", "bgt", "bgtu", "blt", "bltu", "bgeu", "ble", "bleu"
@@ -54,6 +54,9 @@ class RiscvParser(InstructionParser):
     ])
     fp_4ops_instructions = \
         frozenset([ "fmadd.d", "fmadd.s", "fnmadd.d", "fnmsub.s", "fnmsub.d" ])
+    fence_instructions = frozenset([
+        "fence", "fence.i"
+    ])
     # Uncategorized instructions
     uncategorized_instructions = frozenset([ "auipc", "frflags", "fsflags" ])
 
@@ -148,7 +151,6 @@ class RiscvParser(InstructionParser):
         if len(tokens) < 2:
             return None
         # The first two tokens are CPU ID and instruction address
-        # cpu_id, *tokens = tokens
         cpu_id, *tokens = tokens
         insn_tokens = tokens[0].split()
         instruction = insn_tokens[0]
@@ -158,7 +160,7 @@ class RiscvParser(InstructionParser):
         res["operands"] = []
 
         # Skips instructions that do not have any operands, e.g. ret
-        if RiscvParser.is_ret_instruction(instruction):
+        if instruction in RiscvParser.ret_instructions:
             return res
         
         operands = insn_tokens[1].split(",")
@@ -310,6 +312,11 @@ class RiscvParser(InstructionParser):
                 assert(opr_len == 3)
                 target = operands[0]
                 dependencies.add(operands[1])
+            elif instruction == "jr":
+                assert(opr_len == 1)
+                # implicit target
+                target = "ra"
+                dependencies.add(operands[0])
             else:
                 assert(opr_len == 1)
             op_type = OpType.JUMP
@@ -397,7 +404,10 @@ class RiscvParser(InstructionParser):
                 dependencies.add(sec_target)
 
             op_type == OpType.UNCATEGORIZED
-
+        elif instruction in RiscvParser.fence_instructions:
+            # Fence instructions
+            # Do nothing
+            pass
         else:
             # An unknown instruction has been encountered
             raise ValueError(f"[ERROR] Unknown instruction {instruction}")
