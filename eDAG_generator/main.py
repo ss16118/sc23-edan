@@ -99,7 +99,7 @@ if __name__ == "__main__":
     
     if args.use_cache_model:
         print("[INFO] Using cache model")
-        cache = SingleLevelSetAssociativeCache()
+        cache = SingleLevelSetAssociativeCache(64, 64000)
     else:
         cache = None
 
@@ -129,8 +129,8 @@ if __name__ == "__main__":
                                     args.only_mem_acc, args.sanitize,
                                     cache_model=cache, cpu_model=cpu_model,)
         start = time()
-        # eDag = generator.generate()
-        cProfile.run('eDag = generator.generate()', sort="tottime")
+        eDag = generator.generate()
+        # cProfile.run('eDag = generator.generate()', sort="tottime")
         print(f"[DEBUG] Time take for generation: {time() - start:.3f} s")
 
     if args.optimize:

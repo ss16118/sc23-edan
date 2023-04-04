@@ -1,3 +1,7 @@
+# ====================================================
+# Performs the experiment to measure the slowdown of
+# a set of kernels when traced in QEMU.
+# ====================================================
 import os
 import sys
 import subprocess
