@@ -649,7 +649,8 @@ class EDag:
         
         return res
 
-    def get_depth(self, return_dp: bool = False, mem_acc_only: bool = False) \
+    def get_depth(self, return_dp: bool = False, mem_acc_only: bool = False,
+                  unit_cost: bool = True) \
          -> Union[int, Tuple[int, array]]:
         """
         Calculates the depth, i.e. in this case diameter of the eDAG, by 
@@ -680,20 +681,20 @@ class EDag:
         if not mem_acc_only:
             for vertex_id in tqdm(topo_sorted):
                 vertex = self.id_to_vertex[vertex_id]
-                cycles = vertex.cycles
                 _, out_vertices = self.adj_list[vertex_id]
+                inc = 1 if unit_cost else vertex.cycles
                 if not out_vertices and \
                     vertex_id not in self.mem_slot_deps:
-                    dp[vertex_id] = cycles
+                    dp[vertex_id] = inc
                 else:
                     for out_vertex in out_vertices:
-                        new_val = dp[out_vertex] + cycles
+                        new_val = dp[out_vertex] + inc
                         # `if` statement is faster than `max()`
                         dp[vertex_id] = \
                             dp[vertex_id] if dp[vertex_id] > new_val else new_val
                     
                     if vertex_id in self.mem_slot_deps:
-                        new_val = dp[self.mem_slot_deps[vertex_id]] + cycles
+                        new_val = dp[self.mem_slot_deps[vertex_id]] + inc
                         dp[vertex_id] = \
                             dp[vertex_id] if dp[vertex_id] > new_val else new_val
 
@@ -728,7 +729,8 @@ class EDag:
 
             return depth
 
-    def get_work(self, cond: Optional[Callable[[Vertex], bool]] = None) -> int:
+    def get_work(self, unit_cost: bool = True, 
+                 cond: Optional[Callable[[Vertex], bool]] = None) -> int:
         """
         Counts the number of vertices which satisfy the given condition. If
         a condition is not provided, the output will simply be the total number
@@ -737,6 +739,9 @@ class EDag:
         FIXME Can probably use higher-order functions, e.g. map, filter
         """
         if cond is None:
+            if unit_cost:
+                return len(self.vertices)
+
             work = 0
             for vertex_id in self.vertices:
                 vertex = self.id_to_vertex[vertex_id]

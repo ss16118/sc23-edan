@@ -87,9 +87,9 @@ if __name__ == "__main__":
     parser.add_argument("--mls", dest="calc_mls",
                         default=False, action="store_true",
                         help="If set, will compute the memory latency sensitivity of the application based on its eDAG")
-    parser.add_argument("-p", "--processes", dest="processes", 
-                        type=int, default=1,
-                        help="Number of processes to use for generating the eDAG")
+    parser.add_argument("--log", dest="log_file", default=None,
+                        help="If set, will write all logs to the given file")
+    
     args = parser.parse_args()
 
     if args.trace_file_path is None and args.load_path is None:
@@ -124,7 +124,6 @@ if __name__ == "__main__":
         filename_root = Path(args.trace_file_path).stem
         # Initializes eDAG generator
         print("[INFO] Generating eDAG")
-        print(f"[INFO] Number of processes: {args.processes}")
         generator = EDagGenerator(args.trace_file_path, ISA.RISC_V,
                                     args.only_mem_acc, args.sanitize,
                                     cache_model=cache, cpu_model=cpu_model,)
@@ -175,7 +174,7 @@ if __name__ == "__main__":
         bandwidth_metric = BandwidthUtilization(eDag, frequency)
         # Obtains some intermediate values that will help with
         # the calculation of other metrics
-        depth, dp = eDag.get_depth(True)
+        depth, dp = eDag.get_depth(True, unit_cost=False)
         # Computes the average bandwidth
         avg_bandwidth = bandwidth_metric.get_avg_bandwidth(depth)
         print(f"Average bandwidth utilization: {avg_bandwidth / M:.2f} MB/s")
@@ -186,8 +185,12 @@ if __name__ == "__main__":
             bandwidth_metric.get_data_movement_over_time(1, mode)
         # fig_path = f"../tmp/{filename_root}_dm.png"
         fig_path = None
-        visualize_data_movement_over_time(bins, data_movement, 
-                                          mode, fig_path)
+        # visualize_data_movement_over_time(bins, data_movement,
+        #                                   mode, fig_path)
+        data_path = f"../{filename_root}_dm.csv"
+        if data_path is not None:
+            save_data_movement_to_file(data_path, bins, data_movement)
+            print(f"[INFO] Data movement data saved to {data_path}")
 
     if args.calc_mls:
         print("[INFO] Calculating memory latency sensitivity")
@@ -224,6 +227,7 @@ if __name__ == "__main__":
             visualize_path(eDag, graph, highlight, longest_path)
         graph.render(args.graph_file, view=True)
 
+    # ========== Experimental feature ==========
     if args.reuse_histogram:
         # Generates the reuse distance histogram based on the given trace
         print("[INFO] Generating reuse distance histogram")
@@ -231,9 +235,4 @@ if __name__ == "__main__":
         reuse_histogram = reuse_distance_metric.get_sequential_reuse_histogram()
         save_fig = f"../histos/{filename_root}_histo.png"
         visualize_reuse_histogram(reuse_histogram, save_fig)
-        # reuse_histograms = \
-        #     reuse_distance_metric.get_all_reuse_histograms()
-        # for i, reuse_histogram in enumerate(reuse_histograms):
-        #     save_filename = f"../histos/{filename_root}_histo_{i}.png"
-        #     visualize_reuse_histogram(reuse_histogram, save_filename)
 

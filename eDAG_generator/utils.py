@@ -4,7 +4,7 @@ from graphviz import Digraph
 from multiprocessing import Value, Lock
 from array import array
 from tqdm import tqdm
-from typing import Dict, List, Optional, Set, Union, Tuple, Iterable
+from typing import Dict, List, Optional, Set, Union, Tuple, Iterable, Any
 from eDAG import EDag, Vertex
 from enum import Enum, auto
 from matplotlib.animation import FuncAnimation, PillowWriter
@@ -86,7 +86,9 @@ def visualize_eDAG(eDag: EDag, highlight_mem_acc: bool = True,
     # Uses sfdp as the layout engine for large graph
     engine = "sfdp" if len(eDag.vertices) > large_graph_thresh else None
     graph = Digraph(engine=engine,
-                    graph_attr={"overlap": "scale"}, strict=True)
+                    graph_attr={"overlap": "scale"},
+                    node_attr={"fontsize": "14"},
+                    strict=True)
     if vertex_rank:
         # Organizes the diagram by placing vertices with the same
         # distance from the starting vertices on a single line
@@ -187,10 +189,14 @@ def visualize_data_movement_over_time(bins: List[int], data_movement: np.array,
             use_requests = True
         else:
             raise ValueError(f"[ERROR] Unknown mode: {mode}")
-        
-    plt.figure()
-    y_label = "Bytes moved"
+    plt.rcParams.update({'font.size': 14})
+    plt.figure(figsize=(12, 5))
+    y_label = "Data moved [Bytes]"
     x_label = "CPU cycles"
+    if np.max(data_movement) > 1000:
+        data_movement = np.divide(data_movement, 1000)
+        y_label = "Data moved [kB]"
+
     if use_bandwidth:
         # Convert bytes/s to GB/s
         # print(data_movement)
@@ -202,7 +208,7 @@ def visualize_data_movement_over_time(bins: List[int], data_movement: np.array,
 
     assert len(bins) >= 2
     bar_width = bins[1] - bins[0]
-    plt.bar(bins, data_movement, width=bar_width, align="edge")
+    plt.bar(bins, data_movement, width=bar_width, align="edge", alpha=1)
     # plt.yscale("log")
     plt.xlabel(x_label)
     plt.ylabel(y_label)
@@ -297,3 +303,18 @@ def animate_crit_path_dist(mls_metric: MemoryLatencySensitivity,
     else:
         plt.show()
     plt.close()
+
+
+def save_data_to_file(file_path: str, data: str) -> None:
+    """
+    Saves the given data in the form of a string to the specified file.
+    """
+    with open(file_path, "w+") as file:
+        file.write(data)
+
+def save_data_movement_to_file(file_path: str, bins: List[int], data: array) \
+    -> None:
+    str_data = ""
+    for bin, d in zip(bins, data):
+        str_data += f"{bin},{d}\n"
+    save_data_to_file(file_path, str_data)

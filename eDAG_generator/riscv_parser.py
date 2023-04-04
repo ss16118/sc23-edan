@@ -198,7 +198,7 @@ class RiscvParser(InstructionParser):
         
         if instruction in RiscvParser.ret_instructions:
             return res
-        print(insn_tokens)
+        
         operands = insn_tokens[1].split(",")
         res["operands"] = operands
 

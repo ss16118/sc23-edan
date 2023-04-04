@@ -100,8 +100,9 @@ class EDagGenerator:
         for line in trace:
             if vertex_id % 1000000 == 0 and vertex_id != 0:
                 curr_time = time()
-                print(f"[INFO] Progress: {vertex_id} [{int(1000000 / (curr_time - prev_time))} iter/s]")
+                print(f"[INFO] Progress: {vertex_id} [{int(1000000 / (curr_time - prev_time))} iter/s]", flush=True)
                 prev_time = curr_time
+
             # Strips the newline character on the right of a line
             # print(line)
             line = line.rstrip()

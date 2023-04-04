@@ -147,7 +147,7 @@ class BandwidthUtilization:
         if depth is None:
             # Calculates the critical path length in terms of the number
             # of CPU cycles it takes
-            depth = self.eDag.get_depth()
+            depth = self.eDag.get_depth(unit_cost=False)
         
         print(f"[DEBUG] Critical path length: {depth} cycles")
         # Calculates the total amount of data movement in bytes between
@@ -300,7 +300,7 @@ class MemoryLatencySensitivity:
             return False
 
         if dp is None:
-            _, dp = self.eDag.get_depth(True)
+            _, dp = self.eDag.get_depth(True, unit_cost=False)
         
         res = []
 
@@ -323,10 +323,11 @@ class MemoryLatencySensitivity:
         m = self.eDag.get_depth(mem_acc_only=True)
         mem_acc_vertices = \
             self.eDag.get_vertices(lambda v: v.is_mem_acc and not v.cache_hit)
-        print(f"[DEBUG] m: {m}, tot: {len(mem_acc_vertices)}")
+        tot_mem_acc_vertices = len(mem_acc_vertices)
+        print(f"[INFO] m: {m}, tot: {tot_mem_acc_vertices}")
         if not mem_acc_vertices:
             return 0
-        return m / len(mem_acc_vertices)
+        return m / tot_mem_acc_vertices
         
     def get_simple_mls(self, return_k: bool = False, 
                        delta_range: Optional[range] = None,
