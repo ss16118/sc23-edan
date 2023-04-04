@@ -1,7 +1,39 @@
-from typing import List, Optional, Dict, Tuple
+from enum import Enum, auto
+from collections import namedtuple
+from typing import List, Optional, Dict, Tuple, NamedTuple
 import re
 from instruction_parser import InstructionParser
 from eDAG import Vertex, OpType
+
+"""
+Enum for instruction format
+Reference:
+https://github.com/qemu/qemu/blob/652737c8090eb3792f8b4c4b22ab12d7cc32073f/disas/riscv.c
+"""
+class RiscvInsnFmt(Enum):
+    RV_FMT_NONE = auto()
+    RV_FMT_RD = auto()
+    RV_FMT_OFFSET = auto()
+    RV_FMT_PRED_SUCC = auto()
+    RV_FMT_RD_RS1 = auto()
+    RV_FMT_RD_RS1_RS2 = auto()
+    RV_FMT_RD_IMM = auto()
+    RV_FMT_RD_OFFSET = auto()
+    RV_FMT_RD_RS1_IMM = auto()
+    RV_FMT_RD_RS1_OFFSET = auto()
+
+class RiscvInsnParam(NamedTuple):
+    fmt: RiscvInsnFmt
+    op_type: OpType
+
+    data_size: int
+
+# A dictionary that maps opcode to the instruction format
+# as well as its instruction type
+insn_formats: Dict[str, RiscvInsnParam] = {
+
+}
+
 
 
 class RiscvParser(InstructionParser):
@@ -50,7 +82,7 @@ class RiscvParser(InstructionParser):
     fp_2ops_instructions = frozenset([ "fcvt.d.w", "fcvt.w.d", "fsqrt.d" ])
     fp_3ops_instructions = frozenset([
         "fsub.d", "fsub.s", "fmul.d", "fmul.s", "fmadd.s", "fdiv.d", "fdiv.s",
-        "flt.d", "flt.s", "fadd.d", "fadd.s"
+        "flt.d", "flt.s", "fadd.d", "fadd.s", "fneg.s", "fneg.d"
     ])
     fp_4ops_instructions = \
         frozenset([ "fmadd.d", "fmadd.s", "fnmadd.d", "fnmsub.s", "fnmsub.d" ])
@@ -160,15 +192,21 @@ class RiscvParser(InstructionParser):
         res["operands"] = []
 
         # Skips instructions that do not have any operands, e.g. ret
+        # FIXME: temporary fix
+        if instruction == "nop":
+            return None
+        
         if instruction in RiscvParser.ret_instructions:
             return res
-        
+        print(insn_tokens)
         operands = insn_tokens[1].split(",")
         res["operands"] = operands
+
         if len(tokens) > 1:
             # The last token should be the memory address of the data
             # that has been accessed
             res["data_addr"] = tokens[-1]
+
         return res
 
     def generate_vertex(self, id: int, instruction: str,
@@ -393,17 +431,20 @@ class RiscvParser(InstructionParser):
                 target = operands[0]
             elif instruction == "frflags":
                 assert(opr_len == 1)
-                dependencies.add(operands[0])
+                target = operands[0]
+                sec_target = "fflags"
+                dependencies.add("fflags")
+            
             elif instruction == "fsflags":
                 assert(opr_len == 2 or opr_len == 1)
                 # In this strange case the two operands
                 # are both targets and dependencies
-                target = operands[0]
-                sec_target = operands[1]
-                dependencies.add(target)
+                if opr_len == 2:
+                    target = operands[0]
+                sec_target = "fflags"
                 dependencies.add(sec_target)
-
-            op_type == OpType.UNCATEGORIZED
+            op_type = OpType.UNCATEGORIZED
+        
         elif instruction in RiscvParser.fence_instructions:
             # Fence instructions
             # Do nothing
@@ -411,12 +452,17 @@ class RiscvParser(InstructionParser):
         else:
             # An unknown instruction has been encountered
             raise ValueError(f"[ERROR] Unknown instruction {instruction}")
-
+        
+        if target == "zero":
+            target = None
+        if sec_target == "zero":
+            target = None
+        
         new_vertex = Vertex(id, instruction, operands,
                             target=target, dependencies=dependencies,
                             op_type=op_type, is_comm_assoc=is_comm_assoc,
                             cpu=cpu, imm_val=imm_val, data_addr=data_addr,
-                            data_size=data_size)
-
+                            data_size=data_size, sec_target=sec_target)
+        
         return new_vertex
         

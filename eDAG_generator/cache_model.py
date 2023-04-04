@@ -69,6 +69,7 @@ class SingleLevelSetAssociativeCache(CacheModel):
                 k: int = 2,
                 strategy: EvictionStrategy = EvictionStrategy.LRU) -> None:
         """
+        @param cache_line_size: Number of bytes in a cache line.
         @param cache_size: Total size of the cache in bytes.
         @param addr_len: Number of bits of an address.
         @param k: Number of cache lines in a set. k-way associative cache.

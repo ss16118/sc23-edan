@@ -93,8 +93,9 @@ class Vertex:
         # for very few instructions
         self.sec_target = sec_target
         self.cpu = cpu
-        # self.insn_addr = insn_addr
+
         self.data_addr = data_addr
+
         self.data_size = data_size
         # Estimated number of cycles that will take for the instruction
         # contained in this vertex to finish based on the pre-defined
