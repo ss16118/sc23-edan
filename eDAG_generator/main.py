@@ -101,8 +101,8 @@ if __name__ == "__main__":
         exit(-1)
     
     if args.use_cache_model:
-        print("[INFO] Using cache model")
-        cache = SingleLevelSetAssociativeCache(64, 64000)
+        print(f"[INFO] Using cache model of size: {args.cache_size}")
+        cache = SingleLevelSetAssociativeCache(64, args.cache_size)
     else:
         cache = None
 

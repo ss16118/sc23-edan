@@ -433,7 +433,7 @@ static void parse_exclude_function(char *exclude)
     if (g_strcmp0(exclude, "default") == 0)
     {
         const char *excluded_prefixes[] = {
-            "_", "dl", "index", "search_cache", "strlen", "check_match",
+            "dl", "index", "search_cache", "strlen", "check_match",
             "do_lookup_x", "strcmp", "call_init", "lookup_malloc_symbol",
             "memset", "sbrk"
         };

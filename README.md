@@ -68,5 +68,5 @@ The commandline options for the Python script are as follows:
 | --bandwidth         |                               | If set, bandwidth related metrics will be computed                                                    | False   |
 | --cpu               |                               | If set, a predefined CPU model will be used, otherwise, all instructions will have unit costs by default                                                          | False   |
 | --cache             |                               | If set, a predefined LRU cache model will be used                                                     | False   |
-| --cache-size        |                               |  Set the cache size in bytes. It only takes effect when the cache model is enabled                                                    | 3200   |
+| --cache-size        |                               |  Set the cache size in bytes. It only takes effect when the cache model is enabled                                                    | 32000   |
 | --work-depth        |                               | If set, will calculate the work and depth of the eDAG                                                 | False   |
