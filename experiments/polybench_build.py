@@ -4,7 +4,6 @@ import subprocess
 from pathlib import Path
 
 dataset_type = sys.argv[1]
-niters = int(sys.argv[2])
 
 # cross-compile polybench for riscv
 

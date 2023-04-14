@@ -1,4 +1,4 @@
-# Samsung GRO Work Package 1
+# EDAN: Towards Understanding Memory Parallelism and Latency Sensitivity of Real-World Applications
 ### Quick Start
 
 ##### Install Dependencies

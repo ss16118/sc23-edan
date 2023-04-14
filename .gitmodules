@@ -1,0 +1,3 @@
+[submodule "sc23-edan-gem5"]
+	path = sc23-edan-gem5
+	url = https://github.com/ss16118/sc23-edan-gem5.git
