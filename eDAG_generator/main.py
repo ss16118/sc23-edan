@@ -24,20 +24,22 @@ insn_cycles = [
     (RiscvParser.mv_instructions, 1.0),
     (RiscvParser.add_instructions, 1.0),
     (RiscvParser.sub_instructions, 1.0),
-    (RiscvParser.mul_instructions, 8.0),
-    (RiscvParser.div_instructions, 20.0),
-    (RiscvParser.rem_instructions, 20.0),
-    (RiscvParser.atomic_op_instructions, 1.0),
+    (RiscvParser.mul_instructions, 1.0),
+    (RiscvParser.div_instructions, 1.0),
+    (RiscvParser.rem_instructions, 1.0),
+    (RiscvParser.atomic_op_instructions, 200),
     (RiscvParser.comp_and_set_instructions, 1.0),
+    (RiscvParser.comp_and_set_2ops_instructions, 1.0),
     (RiscvParser.bit_op_instructions, 1.0),
-    (RiscvParser.uncond_jump_instructions, 3.0),
-    (RiscvParser.cond_br_2ops_instructions, 3.0),
-    (RiscvParser.cond_br_3ops_instructions, 3.0),
+    (RiscvParser.bit_op_2ops_instructions, 1.0),
+    (RiscvParser.uncond_jump_instructions, 1.0),
+    (RiscvParser.cond_br_2ops_instructions, 1.0),
+    (RiscvParser.cond_br_3ops_instructions, 1.0),
     (RiscvParser.fp_2ops_instructions, 1.0),
-    (RiscvParser.fp_3ops_instructions, 20.0),
+    (RiscvParser.fp_3ops_instructions, 1.0),
     (RiscvParser.fp_4ops_instructions, 1.0),
-    (RiscvParser.ret_instructions, 2),
-    (RiscvParser.uncategorized_instructions, 1.0)
+    (RiscvParser.ret_instructions, 1),
+    (RiscvParser.uncategorized_instructions, 1.0),
 ]
 
 if __name__ == "__main__":
@@ -81,14 +83,15 @@ if __name__ == "__main__":
     parser.add_argument("--cache", dest="use_cache_model",
                         default=False, action="store_true",
                         help="If set, a predefined LRU cache model will be used")
+    parser.add_argument("--cache-size", dest="cache_size",
+                        default=32000, type=int,
+                        help="Set the size of the cache in bytes")
     parser.add_argument("--work-depth", dest="calc_work_depth",
                         default=False, action="store_true",
                         help="If set, will calculate the work and depth of the eDAG")
     parser.add_argument("--mls", dest="calc_mls",
                         default=False, action="store_true",
                         help="If set, will compute the memory latency sensitivity of the application based on its eDAG")
-    parser.add_argument("--log", dest="log_file", default=None,
-                        help="If set, will write all logs to the given file")
     
     args = parser.parse_args()
 
@@ -137,6 +140,7 @@ if __name__ == "__main__":
         optimizer = EDagOptimizer(eDag, ISA.RISC_V)
         optimizer.optimize()
 
+    # =============== Experimental Feature ===============
     if args.num_slots:
         print(f"[INFO] Number of memory issue slots set to {args.num_slots}")
         eDag.limit_issue_slots(args.num_slots)
@@ -160,6 +164,7 @@ if __name__ == "__main__":
         # cProfile.run('depth = eDag.get_depth()')
         start = time()
         depth, longest_path = eDag.get_longest_path()
+        # depth = eDag.get_depth()
         print(f"[DEBUG] Time taken: {time() - start}")
         print(f"Depth: {depth}")
         print(f"Parallelism: {work / depth:.2f}")
@@ -180,11 +185,11 @@ if __name__ == "__main__":
         print(f"Average bandwidth utilization: {avg_bandwidth / M:.2f} MB/s")
         print("[INFO] Computing data movement over time")
         # Computes the data movement over time
-        mode = "bandwidth"
+        mode = None
         bins, data_movement = \
             bandwidth_metric.get_data_movement_over_time(1, mode)
-        # fig_path = f"../tmp/{filename_root}_dm.png"
-        fig_path = None
+        # fig_path = f"../tmp/{filename_root}_dm.pdf"
+        # # fig_path = None
         # visualize_data_movement_over_time(bins, data_movement,
         #                                   mode, fig_path)
         data_path = f"../{filename_root}_dm.csv"
@@ -225,7 +230,7 @@ if __name__ == "__main__":
         # Highlights the longest path if it exists
         if longest_path:
             visualize_path(eDag, graph, highlight, longest_path)
-        graph.render(args.graph_file, view=True)
+        graph.render(args.graph_file, view=True, format="svg")
 
     # ========== Experimental feature ==========
     if args.reuse_histogram:

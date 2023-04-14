@@ -63,14 +63,16 @@ class RiscvParser(InstructionParser):
     div_instructions = frozenset([ "divw", "divuw", "div", "divu" ])
     rem_instructions = frozenset([ "remw", "remuw" ])
     atomic_op_instructions = frozenset([
-        "amoswap.w", "amoswap.d", "amoxor.w", "amoadd.w", "amoxor.w",
-        "amoand.w", "amoor.w", "amomin.w", "amomax.u", "amominu.w", "amomaxu.w" 
+        "amoswap.w", "amoswap.d", "amoxor.w", "amoadd.w", "amoxor.w", "amoswap.d.aq",
+        "amoand.w", "amoor.w", "amomin.w", "amomaxu.d", "amominu.w", "amomaxu.w"
     ])
     comp_and_set_instructions = frozenset([ "slti", "sltiu", "slt", "sltu" ])
+    comp_and_set_2ops_instructions = frozenset([ "snez", "sltz" ])
     bit_op_instructions = frozenset([
-        "xori", "ori", "andi", "slli", "srli", "srai", "sll", "slliw", 
+        "xori", "ori", "andi", "slli", "srli", "srai", "sll", "slliw", "sllw",
         "xor", "srl", "sra", "or", "and", "srliw", "sraiw", "sraw"
     ])
+    bit_op_2ops_instructions = frozenset([ "not" ])
     uncond_jump_instructions = frozenset([ "j", "jal", "jalr", "jr" ])
     cond_br_2ops_instructions = frozenset([ "beqz", "bgez", "blez", "bgtz", "bnez" ])
     cond_br_3ops_instructions = frozenset([
@@ -79,13 +81,15 @@ class RiscvParser(InstructionParser):
     ret_instructions = frozenset([ "ret", "uret", "sret", "mret", "tail", "ecall" ])
 
     # Floating point operations
-    fp_2ops_instructions = frozenset([ "fcvt.d.w", "fcvt.w.d", "fsqrt.d" ])
+    fp_2ops_instructions = frozenset([
+        "fcvt.d.w", "fcvt.w.d", "fsqrt.d", "fneg.d", "fneg.s", "fle.d", "fabs.d", "fabs.s"
+    ])
     fp_3ops_instructions = frozenset([
         "fsub.d", "fsub.s", "fmul.d", "fmul.s", "fmadd.s", "fdiv.d", "fdiv.s",
-        "flt.d", "flt.s", "fadd.d", "fadd.s", "fneg.s", "fneg.d"
+        "flt.d", "flt.s", "fadd.d", "fadd.s", "feq.d"
     ])
     fp_4ops_instructions = \
-        frozenset([ "fmadd.d", "fmadd.s", "fnmadd.d", "fnmsub.s", "fnmsub.d" ])
+        frozenset([ "fmadd.d", "fmadd.s", "fnmadd.d", "fnmsub.s", "fnmsub.d", "fmsub.d" ])
     fence_instructions = frozenset([
         "fence", "fence.i"
     ])
@@ -148,6 +152,10 @@ class RiscvParser(InstructionParser):
         is manipulated.
         TODO: Currently only memory access operations are supported
         """
+        # Ad-hoc fix
+        if opcode.startswith("amo"):
+            return RiscvParser.data_size_symbol[opcode[-1]]
+        
         for symbol, size in RiscvParser.data_size_symbol.items():
             if symbol in opcode:
                 return size
@@ -306,18 +314,6 @@ class RiscvParser(InstructionParser):
             dependencies.add(operands[2])
             op_type = OpType.ARITHMETIC
 
-        elif instruction in RiscvParser.atomic_op_instructions:
-            # Atomic operations that require memory access
-            assert(opr_len == 3)
-            target = operands[0]
-            dependencies.add(operands[1])
-            dependencies.add(self.__get_offset_reg(operands[2]))
-            # FIXME: Should probably have a separate Op type for atomic operations
-            # The amount of data movement is data_size * 2 since an atomic
-            # operation both loads and stores to memory
-            data_size = self.get_insn_data_size(instruction) * 2
-            op_type = OpType.STORE_MEM
-
         elif instruction in RiscvParser.comp_and_set_instructions:
             # Compare and set instructions
             assert(opr_len == 3)
@@ -328,7 +324,12 @@ class RiscvParser(InstructionParser):
                 op_type = OpType.ARITHMETIC
             else:
                 op_type = OpType.ARITHMETIC_IMM
-                
+
+        elif instruction in RiscvParser.comp_and_set_2ops_instructions:
+            assert(opr_len == 2)
+            target = operands[0]
+            dependencies.add(operands[1])
+        
         elif instruction in RiscvParser.bit_op_instructions:
             # Bit-wise operation instructions
             assert(opr_len == 3)
@@ -340,7 +341,12 @@ class RiscvParser(InstructionParser):
             else:
                 imm_val = int(operands[2])
                 op_type = OpType.ARITHMETIC_IMM
-            
+        
+        elif instruction in RiscvParser.bit_op_2ops_instructions:
+            assert(opr_len == 2)
+            target = operands[0]
+            dependencies.add(operands[1])
+
         elif instruction in RiscvParser.uncond_jump_instructions:
             # Unconditional jump instructions
             if instruction == "jal":
@@ -416,6 +422,23 @@ class RiscvParser(InstructionParser):
                 dependencies.update(operands[2:])
             op_type = OpType.ARITHMETIC
         
+        elif instruction in RiscvParser.atomic_op_instructions:
+            # Atomic operations that require memory access
+            assert(opr_len == 3)
+            assert data_addr is not None
+            if instruction == "amoswap.d.aq":
+                instruction = "amoswap.d"
+            target = operands[0]
+            sec_target = data_addr
+            dependencies.add(operands[1])
+            dependencies.add(operands[2])
+            dependencies.add(self.__get_offset_reg(operands[2]))
+            # FIXME: Should probably have a separate Op type for atomic operations
+            # The amount of data movement is data_size * 2 since an atomic
+            # operation both loads and stores to memory
+            data_size = self.get_insn_data_size(instruction) * 2
+            op_type = OpType.ATOMIC
+        
         elif instruction in RiscvParser.ret_instructions:
             if instruction == "ret":
                 # In RISC-V 'ret' is a pseudo-instruction that
@@ -452,11 +475,12 @@ class RiscvParser(InstructionParser):
         else:
             # An unknown instruction has been encountered
             raise ValueError(f"[ERROR] Unknown instruction {instruction}")
+
         
         if target == "zero":
             target = None
         if sec_target == "zero":
-            target = None
+            sec_target = None
         
         new_vertex = Vertex(id, instruction, operands,
                             target=target, dependencies=dependencies,

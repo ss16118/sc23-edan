@@ -33,6 +33,8 @@ class OpType(Enum):
     JUMP = auto()
     # Return
     RETURN = auto()
+    # ATOMIC
+    ATOMIC = auto()
     # Uncategorized operation
     UNCATEGORIZED = auto()
     
@@ -115,7 +117,7 @@ class Vertex:
         either a LOAD_MEM or STORE_MEM.
         """
         return self.op_type == OpType.LOAD_MEM or \
-            self.op_type == OpType.STORE_MEM
+            self.op_type == OpType.STORE_MEM or self.op_type == OpType.ATOMIC
 
     @property
     def asm(self) -> str:

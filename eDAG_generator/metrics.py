@@ -214,12 +214,13 @@ class BandwidthUtilization:
         res = np.zeros(shape=num_bins,
                         dtype=np.float32 if use_bandwidth else np.int32)
 
-        for v_id, v_cycles in enumerate(dp):
+        for v_id, v_cycles in tqdm(enumerate(dp)):
             # `v_cycles` is the number of CPU cycles it takes
             # to reach `vertex`, i.e. at which time the
             # vertex will be executed
             vertex = self.eDag.id_to_vertex[v_id]
             data_size = vertex.data_size
+
             # Ignores vertices that do not access memory
             if data_size > 0:
                 # Computes how many buckets the memory access crosses
@@ -229,7 +230,7 @@ class BandwidthUtilization:
                 else:
                     start_bin = int(v_cycles)
                     end_bin = int(v_cycles + vertex.cycles)
-                
+
                 if use_requests:
                     res[start_bin:end_bin] += 1
                 elif use_bandwidth:
@@ -312,22 +313,22 @@ class MemoryLatencySensitivity:
         return res
 
 
-    def get_crit_path_mem_acc_p(self) -> float:
+    def get_crit_path_mem_acc_p(self, m: int = 4) -> float:
         """
-        Calculates the percentage of memory access vertices that lie
-        on the critical path compared to the total number of memory
-        access vertices in the eDAG.
+        Calculates the memory latency sensitivity metric lambda from
+        the memory work and memory depth of the eDAG as well as
+        the given number of memory issue slots.
         """
         # Calculates the number of memory access vertices along the
         # critical path
-        m = self.eDag.get_depth(mem_acc_only=True)
+        memory_depth = self.eDag.get_depth(mem_acc_only=True)
         mem_acc_vertices = \
             self.eDag.get_vertices(lambda v: v.is_mem_acc and not v.cache_hit)
-        tot_mem_acc_vertices = len(mem_acc_vertices)
-        print(f"[INFO] m: {m}, tot: {tot_mem_acc_vertices}")
+        memory_work = len(mem_acc_vertices)
+        print(f"[INFO] memory depth: {memory_depth}, memory work: {memory_work}")
         if not mem_acc_vertices:
             return 0
-        return m / tot_mem_acc_vertices
+        return (memory_work - memory_depth) / m + memory_depth
         
     def get_simple_mls(self, return_k: bool = False, 
                        delta_range: Optional[range] = None,

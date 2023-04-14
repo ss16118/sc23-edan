@@ -86,7 +86,7 @@ def visualize_eDAG(eDag: EDag, highlight_mem_acc: bool = True,
     # Uses sfdp as the layout engine for large graph
     engine = "sfdp" if len(eDag.vertices) > large_graph_thresh else None
     graph = Digraph(engine=engine,
-                    graph_attr={"overlap": "scale"},
+                    graph_attr={"overlap": "scale", "rankdir": "LR"},
                     node_attr={"fontsize": "14"},
                     strict=True)
     if vertex_rank:
@@ -180,6 +180,7 @@ def visualize_data_movement_over_time(bins: List[int], data_movement: np.array,
     @param fig_path: If not None, the plot will be saved to the
     given file.
     """
+
     use_bandwidth = False
     use_requests = False
     if mode is not None:
@@ -189,13 +190,13 @@ def visualize_data_movement_over_time(bins: List[int], data_movement: np.array,
             use_requests = True
         else:
             raise ValueError(f"[ERROR] Unknown mode: {mode}")
-    plt.rcParams.update({'font.size': 14})
-    plt.figure(figsize=(12, 5))
+    plt.rcParams.update({'font.size': 20})
+    plt.figure(figsize=(12, 4.7))
     y_label = "Data moved [Bytes]"
     x_label = "CPU cycles"
     if np.max(data_movement) > 1000:
         data_movement = np.divide(data_movement, 1000)
-        y_label = "Data moved [kB]"
+        y_label = "Data transferred [kB]"
 
     if use_bandwidth:
         # Convert bytes/s to GB/s

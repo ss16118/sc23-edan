@@ -122,15 +122,16 @@ class EDagGenerator:
 
             # If a cache model is used
             if self.cache_model is not None and \
-                new_vertex.op_type == OpType.LOAD_MEM:
+                (new_vertex.op_type == OpType.LOAD_MEM or \
+                 new_vertex.op_type == OpType.ATOMIC):
                 cache_hit = self.cache_model.find(new_vertex.data_addr)
-
-                new_vertex.cache_hit = cache_hit
-                if cache_hit:
-                    # If the data access is a cache hit, reduces the amount
-                    # of data movement to 0 since it does not need to
-                    # access the main memory
-                    new_vertex.data_size = 0
+                if new_vertex.op_type != OpType.ATOMIC:
+                    new_vertex.cache_hit = cache_hit
+                    if cache_hit:
+                        # If the data access is a cache hit, reduces the amount
+                        # of data movement to 0 since it does not need to
+                        # access the main memory
+                        new_vertex.data_size = 0
             
             # If a CPU model is used
             if self.cpu_model is not None:

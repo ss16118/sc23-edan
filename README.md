@@ -17,10 +17,11 @@ To collect trace and generate eDAG from scratch, it needs to be ensured that the
 
 If you simply want to check the eDAG generation and does not want to go through the process of compiling and tracing programs, you can just use the example traces included in the `examples` directory and skip ahead to the next section. However, the example traces are quite small, and does not work well as stress tests for the program. Therefore, to obtain traces for larger programs / kernels, tracing has to be done from scratch.
 
-To trace a program, first of all, copy __trace/qemu_execlog.c__ to __qemu/contrib/plugins/execlog.c__. Assuming that QEMU has already been built and the "build" directory exists:
+To trace a program, first of all, copy __trace/qemu_execlog.c__ to __qemu/contrib/plugins/execlog.c__ and replace __qemu/disas/riscv.c__ with __trace/riscv.c__. Assuming that QEMU has already been built and the "build" directory exists:
 
 ```console
 > cp trace/qemu_execlog.c <qemu-directory>/contrib/plugins/execlog.c
+> cp trace/riscv.c <qemu-directory>/disas/riscv.c
 > cd <qemu-directory>/build/contrib/plugins && make
 ```
 Then, generate the binary for any program with the RISC-V cross compiler. As a simple example:
@@ -62,30 +63,10 @@ The commandline options for the Python script are as follows:
 | -f                  | --trace-file                  | File path to the instruction trace file                                                               |         |
 | -l                  | --load-file                   | If set, will try to load the eDAG object directly from the given file                                 |         |
 | -g                  | --graph-file                  | Path to which the visualization of the eDAG will be saved                                             | None    |
-| -m                  | --only-mem-acc                | If set, only vertices with memory accesses will be displayed                                          | False   |
 | --highlight-mem-acc |                               | If set, memory access vertices will be highlighted when the eDAG is saved to PDF                      | False   |
-| -r                  | --remove-unconnected-vertices | If set, unconnected vertices without any connections will be removed                                  | False   |
 | -s                  | --save-path                   | If set, will save the original generated eDAG to the given path                                       | None    |
-| --sanitize          |                               | If set, will try to simplify the eDAG                                                                 | False   |
-| -o                  | --optimize                    | If set, will attempt optimize the eDAG in terms of work and depth according to pre-defined heuristics | False   |
-| --reuse-histogram   |                               | If set, will generate the reuse distance histogram based on the given trace                           | False   |
 | --bandwidth         |                               | If set, bandwidth related metrics will be computed                                                    | False   |
-| --cpu               |                               | If set, a predefined CPU model will be used                                                           | False   |
+| --cpu               |                               | If set, a predefined CPU model will be used, otherwise, all instructions will have unit costs by default                                                          | False   |
 | --cache             |                               | If set, a predefined LRU cache model will be used                                                     | False   |
+| --cache-size        |                               |  Set the cache size in bytes. It only takes effect when the cache model is enabled                                                    | 3200   |
 | --work-depth        |                               | If set, will calculate the work and depth of the eDAG                                                 | False   |
-
-Few things to note:
-- The `--trace-file` and `--load-file` options are mutually exclusive. In essence, you can choose either to create the eDAG from the trace or re-load it from a save file.
-- `--bandwidth` has to be used along with `--cpu` while `--cpu` can be used alone. [Needs to be fixed]
-- When used with `-g`, `--bandwidth` will highlight the critical path in orange while `--work-depth` will highlight the critical path in blue.
-- A lot of experimental features such as `--sanitize`, `-r`, `-o` are not compatible with a lot of the current features (specifically the _igraph_ library used for topological sort), so errors will likely occur when they are used alongside other flags.
-- Reuse histogram is a feature that is still under construction.
-
-### Program Tracing
-
-### eDAG Parsing
-
-### Metrics Calculation
-
-
-### TODO
