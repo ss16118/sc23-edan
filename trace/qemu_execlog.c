@@ -16,6 +16,7 @@
 
 #define START_SYMBOL "main"
 #define END_SYMBOL "_dl_fini"
+#define TRACE_MARK "nop"
 #define HEX_DIGITS 16
 #define FLUSH_FREQ 3000000
 #define ENTRY_SIZE 64
@@ -35,10 +36,11 @@ static GPtrArray *fmatches;
 // Stores all functions whose instructions need to be excluded from tracing
 static GPtrArray *fexcludes;
 
-// If true, will trace all instructions that are executed between
-// `main()` and `_dl_init()`. This is compatible with `ffilter` and `fexclude`.
-static bool trace_main = false;
-// Is only used when `trace_main` is set
+// If true, will trace all instructions that are
+// in between two trace marks.
+// This is compatible with `ffilter` and `fexclude`.
+static bool trace_marks = false;
+// Is only used when trace mark is set
 static bool start = false;
 // A mutex for multi-threaded trace logging
 static GMutex log_lock;
@@ -217,9 +219,8 @@ static void vcpu_insn_exec(unsigned int cpu_index, void *udata)
     s = g_ptr_array_index(last_exec, cpu_index);
     
     /* Print previous instruction in cache */
-    if (s->len) {
+    if (s->len && ((trace_marks && start) || !trace_marks)) {
         g_string_append_c(s, '\n');
-        /* g_string_insert_c(s, -1, '\n'); */
         g_string_append(log_entries, s->str);
         log_entry_count++;
     }
@@ -250,7 +251,7 @@ static void vcpu_tb_trans(qemu_plugin_id_t id, struct qemu_plugin_tb *tb)
 {
     struct qemu_plugin_insn *insn;
     bool use_filter = (fmatches != NULL) || (fexcludes != NULL);
-    bool skip = (fmatches != NULL) || (fexcludes != NULL) || trace_main;
+    bool skip = (fmatches != NULL) || (fexcludes != NULL) || trace_marks;
     
     size_t n = qemu_plugin_tb_n_insns(tb);
     for (size_t i = 0; i < n; i++)
@@ -269,15 +270,20 @@ static void vcpu_tb_trans(qemu_plugin_id_t id, struct qemu_plugin_tb *tb)
          */
         insn = qemu_plugin_tb_get_insn(tb, i);
         symbol = qemu_plugin_insn_symbol(insn);
-        if (trace_main)
-        {
-            if (g_strcmp0(symbol, START_SYMBOL) == 0)
-                start = true;
-            else if (g_strcmp0(symbol, END_SYMBOL) == 0)
-                start = false;
-        }
         
         insn_disas = qemu_plugin_insn_disas(insn);
+
+        if (trace_marks)
+        {
+            /* if (g_strcmp0(symbol, START_SYMBOL) == 0) */
+            /*     start = true; */
+            /* else if (g_strcmp0(symbol, END_SYMBOL) == 0) */
+            /*     start = false; */
+            if (strncmp(insn_disas, TRACE_MARK, 3) == 0)
+            {
+                start = !start;
+            }
+        }
         // If the disassembled code matches TRACE_MARK
         /* if (strncmp(insn_disas, TRACE_MARK, 3) == 0) */
         /*     // Sets `start` to false if it is true, false otherwise */
@@ -290,10 +296,10 @@ static void vcpu_tb_trans(qemu_plugin_id_t id, struct qemu_plugin_tb *tb)
          * hits. The skip "latches" so we can track memory accesses
          * after the instruction we care about.
          */
-        if (trace_main && start && !use_filter)
+        if (trace_marks && start && !use_filter)
             skip = false;
         
-        if ((trace_main && start) || !trace_main)
+        if ((trace_marks && start) || !trace_marks)
         {
             /* if (symbol == NULL) */
             /*     skip = false; */
@@ -337,7 +343,6 @@ static void vcpu_tb_trans(qemu_plugin_id_t id, struct qemu_plugin_tb *tb)
             }
         }
         
-        
         if (skip) {
             g_free(insn_disas);
         } else {
@@ -350,7 +355,6 @@ static void vcpu_tb_trans(qemu_plugin_id_t id, struct qemu_plugin_tb *tb)
             /* char *output = g_strdup_printf("0x%"PRIx64";%s", insn_vaddr, insn_disas); */
             /* char *output = g_strdup_printf("%s", insn_disas); */
             
-            // printf("[DEBUG] output: %s\n", output);
             char *output = insn_disas;
             /* Register callback on memory read or write */
             qemu_plugin_register_vcpu_mem_cb(insn, vcpu_mem,
@@ -363,7 +367,7 @@ static void vcpu_tb_trans(qemu_plugin_id_t id, struct qemu_plugin_tb *tb)
 
             /* reset skip */
             // skip = (imatches || amatches);
-            skip = (fmatches != NULL) || (fexcludes != NULL) || trace_main;
+            skip = (fmatches != NULL) || (fexcludes != NULL) || trace_marks;
         }
     }
 }
@@ -486,10 +490,13 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
         {
             parse_exclude_function(tokens[1]);
         }
-        else if (g_strcmp0(tokens[0], "trace_main") == 0)
+        else if (g_strcmp0(tokens[0], "trace_marks") == 0)
         {
             if (g_strcmp0(tokens[1], "1") == 0)
-                trace_main = true;
+            {
+                printf("[DEBUG] Trace marks enabled\n");
+                trace_marks = true;
+            }
         }
         else
         {
